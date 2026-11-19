@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leonardo Bazán · Portafolio</title>
+<meta name="description" content="Leonardo Bazán, desarrollador Power Platform en Lima: apps en Power Apps, automatizaciones con Power Automate y reportes en Power BI.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* Layout: página alineada a la izquierda; el hero muestra el perfil como un modelo estrella de Power BI
+   (tabla de hechos al centro, dimensiones alrededor). Proyectos como filas de un modelo, no tarjetas iguales. */
+:root{
+  --bg:#EDF0F3;
+  --surface:#FFFFFF;
+  --ink:#15212C;
+  --muted:#55626E;
+  --line:#C8D0D8;
+  --accent:#E2A900;
+  --accent-ink:#7D5900;
+  --model:#2E5E8E;
+  --font-display:"Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --step--1:.875rem; --step-0:1rem; --step-1:1.25rem; --step-2:1.6rem; --step-3:2.2rem; --step-4:clamp(2.6rem, 6vw, 4.4rem);
+  --wrap:1120px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F161D; --surface:#16202A; --ink:#E4EAF0; --muted:#9AA8B5; --line:#2B3946;
+    --accent:#F2C230; --accent-ink:#F2C230; --model:#86B5E0; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F161D; --surface:#16202A; --ink:#E4EAF0; --muted:#9AA8B5; --line:#2B3946;
+  --accent:#F2C230; --accent-ink:#F2C230; --model:#86B5E0; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none !important; animation:none !important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:var(--step-0);line-height:1.6}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+h1,h2,h3{font-family:var(--font-display);line-height:1.1;margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* Nav */
+.top{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:60px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-variation-settings:"wdth" 112;letter-spacing:.01em}
+.brand-mark{width:26px;height:26px;display:grid;grid-template-columns:repeat(3,1fr);align-items:end;gap:2px}
+.brand-mark i{display:block;background:var(--ink);border-radius:1px}
+.brand-mark i:nth-child(1){height:45%}.brand-mark i:nth-child(2){height:75%}.brand-mark i:nth-child(3){height:100%;background:var(--accent)}
+.nav{display:flex;gap:clamp(12px,2.5vw,28px);font-size:var(--step--1)}
+.nav a{text-decoration:none;color:var(--muted)}
+.nav a:hover{color:var(--ink)}
+@media (max-width:640px){.nav a:not(.nav-cta){display:none}}
+.nav-cta{color:var(--ink)!important;font-weight:600;border-bottom:2px solid var(--accent)}
+
+/* Hero */
+.hero{padding:clamp(40px,7vw,88px) 0 clamp(40px,6vw,72px)}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,5vw,64px);align-items:center}
+@media (max-width:860px){.hero .wrap{grid-template-columns:1fr}}
+.hero h1{font-size:var(--step-4);font-weight:800;font-variation-settings:"wdth" 75;letter-spacing:-.01em;line-height:.98}
+.hero .role{font-family:var(--font-display);font-size:var(--step-2);font-variation-settings:"wdth" 100;font-weight:500;color:var(--model);margin-top:14px}
+.hero .lede{margin-top:20px;max-width:52ch;color:var(--muted);font-size:1.075rem}
+.hero .lede strong{color:var(--ink);font-weight:600}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;font-weight:600;font-size:.95rem;text-decoration:none;border-radius:4px;border:1.5px solid var(--ink);cursor:pointer;font-family:var(--font-body);background:transparent;color:var(--ink)}
+.btn-primary{background:var(--ink);color:var(--bg)}
+.btn-primary:hover{background:var(--model);border-color:var(--model)}
+.btn:not(.btn-primary):hover{background:var(--surface)}
+.where{margin-top:22px;font-size:var(--step--1);color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+.where span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:#2F9E5B;display:inline-block}
+
+/* Star schema */
+.schema{width:100%;height:auto;display:block}
+.schema .tbl rect.body{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.schema .tbl rect.head{fill:var(--model)}
+.schema .tbl.fact rect.head{fill:var(--accent)}
+.schema .tbl.fact rect.body{stroke:var(--accent);stroke-width:2}
+.schema text{font-family:var(--font-body);fill:var(--muted);font-size:11.5px}
+.schema text.h{fill:#fff;font-weight:600;font-size:12.5px}
+.schema .fact text.h{fill:#1B1B12}
+.schema .rel{stroke:var(--muted);stroke-width:1.2;fill:none}
+.schema .card{font-size:12px;font-weight:700;fill:var(--ink)}
+.schema a .tbl{transition:transform .2s}
+.schema a:hover rect.body,.schema a:focus rect.body{stroke:var(--model);stroke-width:2}
+.schema-cap{font-size:var(--step--1);color:var(--muted);margin-top:10px}
+
+/* Sections */
+section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
+.sec-head{display:grid;grid-template-columns:260px 1fr;gap:clamp(16px,4vw,48px);margin-bottom:36px}
+@media (max-width:760px){.sec-head{grid-template-columns:1fr}}
+.sec-head h2{font-size:var(--step-3);font-weight:750;font-variation-settings:"wdth" 82}
+.sec-head p{color:var(--muted);max-width:60ch;align-self:end}
+
+/* Services */
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:var(--surface);border-radius:6px}
+@media (max-width:860px){.services{grid-template-columns:1fr}}
+.svc{padding:28px;display:flex;flex-direction:column;gap:12px}
+.svc + .svc{border-left:1px solid var(--line)}
+@media (max-width:860px){.svc + .svc{border-left:0;border-top:1px solid var(--line)}}
+.svc h3{font-size:var(--step-1);font-weight:700;font-variation-settings:"wdth" 100;display:flex;align-items:center;gap:10px}
+.svc h3 svg{flex:none}
+.svc p{color:var(--muted)}
+.svc ul{margin:4px 0 0;padding:0;list-style:none;display:grid;gap:6px;font-size:.95rem}
+.svc li{padding-left:16px;position:relative}
+.svc li::before{content:"";position:absolute;left:0;top:.7em;width:7px;height:2px;background:var(--accent)}
+
+/* Projects */
+.projects{display:grid;gap:0;border-top:2px solid var(--ink)}
+.proj{display:grid;grid-template-columns:220px 1fr 220px;gap:clamp(16px,3vw,40px);padding:30px 0;border-bottom:1px solid var(--line)}
+@media (max-width:900px){.proj{grid-template-columns:1fr}}
+.proj-meta{font-size:var(--step--1);color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.proj-meta .ctx{color:var(--ink);font-weight:600;font-size:.95rem}
+.proj h3{font-size:var(--step-2);font-weight:700;font-variation-settings:"wdth" 88;margin-bottom:10px}
+.proj .desc{color:var(--muted);max-width:62ch}
+.proj ul{margin:14px 0 0;padding:0 0 0 18px;max-width:62ch;display:grid;gap:4px;font-size:.95rem}
+.proj ul li::marker{color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
+.chip{font-size:.8rem;padding:3px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface);white-space:nowrap}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:999px;background:color-mix(in srgb, var(--accent) 22%, transparent);color:var(--accent-ink);width:fit-content}
+.proj.featured{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);padding:30px clamp(18px,3vw,32px);margin:22px 0;border-radius:4px}
+.note{font-size:var(--step--1);color:var(--muted);margin-top:18px;max-width:70ch}
+
+/* Timeline */
+.timeline{list-style:none;margin:0;padding:0;position:relative;display:grid;gap:0}
+.timeline::before{content:"";position:absolute;left:150px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl{display:grid;grid-template-columns:150px 1fr;gap:0 32px;padding:0 0 30px;position:relative}
+.tl::before{content:"";position:absolute;left:145px;top:7px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--model)}
+.tl.now::before{background:var(--accent);border-color:var(--accent)}
+.tl .when{font-size:var(--step--1);color:var(--muted);font-variant-numeric:tabular-nums;padding-right:24px;text-align:right}
+.tl .what{padding-left:8px}
+.tl h3{font-size:var(--step-1);font-weight:700;font-variation-settings:"wdth" 100}
+.tl .org{color:var(--model);font-weight:500}
+.tl p{color:var(--muted);max-width:60ch;margin-top:4px;font-size:.95rem}
+@media (max-width:600px){
+  .timeline::before{left:5px}
+  .tl{grid-template-columns:1fr;padding-left:28px}
+  .tl::before{left:0}
+  .tl .when{text-align:left;padding:0}
+  .tl .what{padding:0}
+}
+
+/* Stack */
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px 40px}
+.stack h3{font-size:var(--step-0);font-weight:700;font-variation-settings:"wdth" 100;padding-bottom:8px;border-bottom:2px solid var(--model);margin-bottom:10px}
+.stack ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;color:var(--muted)}
+.stack li b{color:var(--ink);font-weight:600}
+
+/* Contact */
+.contact{background:var(--ink);color:var(--bg);border-top:0}
+.contact .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,5vw,64px);align-items:end}
+@media (max-width:820px){.contact .wrap{grid-template-columns:1fr}}
+.contact h2{font-size:var(--step-4);font-weight:800;font-variation-settings:"wdth" 75;line-height:1}
+.contact p{opacity:.8;margin-top:16px;max-width:48ch}
+.contact-list{display:grid;gap:14px}
+.contact-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid color-mix(in srgb, var(--bg) 25%, transparent);flex-wrap:wrap}
+.contact-row .k{font-size:var(--step--1);opacity:.7}
+.contact-row .v{font-family:var(--font-display);font-size:var(--step-1);font-weight:600;font-variation-settings:"wdth" 100;word-break:break-all}
+.contact-row a{text-decoration:none;border-bottom:2px solid var(--accent)}
+.copy{font:inherit;font-size:.85rem;font-weight:600;padding:7px 12px;border-radius:4px;border:1.5px solid var(--accent);background:transparent;color:var(--bg);cursor:pointer}
+.copy:hover{background:var(--accent);color:#1B1B12}
+footer{background:var(--ink);color:var(--bg);opacity:1;font-size:var(--step--1)}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:20px;padding-bottom:28px;border-top:1px solid color-mix(in srgb, var(--bg) 18%, transparent)}
+footer span{opacity:.65}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio" aria-label="LDT Data, inicio">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      LDT Data
+    </a>
+    <nav class="nav" aria-label="Secciones">
+      <a href="#servicios">Servicios</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#trayectoria">Trayectoria</a>
+      <a href="#herramientas">Herramientas</a>
+      <a class="nav-cta" href="#contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main id="inicio">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Leonardo Bazán Levano</h1>
+        <p class="role">Desarrollador Power Platform y analista de datos</p>
+        <p class="lede">Construyo <strong>apps en Power Apps</strong>, <strong>automatizaciones con Power Automate</strong> y <strong>reportes en Power BI</strong> que reemplazan Excel sueltos y correos por procesos ordenados, con datos en SharePoint, SQL Server o Fabric.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#proyectos">Ver proyectos</a>
+          <a class="btn" href="#contacto">Escríbeme</a>
+        </div>
+        <div class="where">
+          <span><span class="dot" aria-hidden="true"></span>Disponible para proyectos freelance</span>
+          <span>Lima, Perú · remoto</span>
+        </div>
+      </div>
+
+      <figure style="margin:0">
+        <svg class="schema" viewBox="0 0 540 400" role="img" aria-labelledby="schema-t">
+          <title id="schema-t">Mi perfil como un modelo estrella: una tabla central de proyectos relacionada con Power Apps, Power Automate, Power BI, Fabric y bases SQL.</title>
+          <!-- relaciones -->
+          <g class="rel">
+            <path d="M200 175 L120 92"/>
+            <path d="M340 175 L420 92"/>
+            <path d="M340 215 L410 215"/>
+            <path d="M340 250 L420 318"/>
+            <path d="M200 250 L120 318"/>
+          </g>
+          <!-- cardinalidad -->
+          <g class="card">
+            <text x="122" y="112">1</text><text x="186" y="170">*</text>
+            <text x="410" y="112">1</text><text x="346" y="170">*</text>
+            <text x="398" y="208">1</text><text x="346" y="208">*</text>
+            <text x="408" y="306">1</text><text x="346" y="268">*</text>
+            <text x="126" y="306">1</text><text x="186" y="268">*</text>
+          </g>
+
+          <!-- tabla de hechos -->
+          <g class="tbl fact">
+            <rect class="body" x="200" y="150" width="140" height="122" rx="5"/>
+            <rect class="head" x="200" y="150" width="140" height="26" rx="5"/>
+            <rect x="200" y="166" width="140" height="10" style="fill:var(--accent)"/>
+            <text class="h" x="212" y="168">fact_Proyectos</text>
+            <text x="212" y="196">Cliente</text>
+            <text x="212" y="214">Proceso</text>
+            <text x="212" y="232">Usuarios</text>
+            <text x="212" y="250">Horas ahorradas</text>
+          </g>
+
+          <a href="#servicios" aria-label="Power Apps">
+            <g class="tbl">
+              <rect class="body" x="20" y="20" width="150" height="84" rx="5"/>
+              <rect class="head" x="20" y="20" width="150" height="26" rx="5"/>
+              <rect x="20" y="36" width="150" height="10" style="fill:var(--model)"/>
+              <text class="h" x="32" y="38">dim_PowerApps</text>
+              <text x="32" y="66">Canvas</text>
+              <text x="32" y="84">Model-driven</text>
+            </g>
+          </a>
+          <a href="#servicios" aria-label="Power Automate">
+            <g class="tbl">
+              <rect class="body" x="370" y="20" width="150" height="84" rx="5"/>
+              <rect class="head" x="370" y="20" width="150" height="26" rx="5"/>
+              <rect x="370" y="36" width="150" height="10" style="fill:var(--model)"/>
+              <text class="h" x="382" y="38">dim_PowerAutomate</text>
+              <text x="382" y="66">Flujos en la nube</text>
+              <text x="382" y="84">Desktop (RPA)</text>
+            </g>
+          </a>
+          <a href="#servicios" aria-label="Power BI">
+            <g class="tbl">
+              <rect class="body" x="410" y="172" width="120" height="102" rx="5"/>
+              <rect class="head" x="410" y="172" width="120" height="26" rx="5"/>
+              <rect x="410" y="188" width="120" height="10" style="fill:var(--model)"/>
+              <text class="h" x="422" y="190">dim_PowerBI</text>
+              <text x="422" y="218">DAX</text>
+              <text x="422" y="236">Power Query</text>
+              <text x="422" y="254">Deneb</text>
+            </g>
+          </a>
+          <a href="#herramientas" aria-label="Microsoft Fabric">
+            <g class="tbl">
+              <rect class="body" x="370" y="300" width="150" height="84" rx="5"/>
+              <rect class="head" x="370" y="300" width="150" height="26" rx="5"/>
+              <rect x="370" y="316" width="150" height="10" style="fill:var(--model)"/>
+              <text class="h" x="382" y="318">dim_Fabric</text>
+              <text x="382" y="346">Dataflows</text>
+              <text x="382" y="364">Modelos semánticos</text>
+            </g>
+          </a>
+          <a href="#herramientas" aria-label="Bases de datos">
+            <g class="tbl">
+              <rect class="body" x="20" y="300" width="150" height="84" rx="5"/>
+              <rect class="head" x="20" y="300" width="150" height="26" rx="5"/>
+              <rect x="20" y="316" width="150" height="10" style="fill:var(--model)"/>
+              <text class="h" x="32" y="318">dim_Datos</text>
+              <text x="32" y="346">SharePoint · SQL Server</text>
+              <text x="32" y="364">PostgreSQL · MySQL</text>
+            </g>
+          </a>
+        </svg>
+        <figcaption class="schema-cap">Mi trabajo, en el formato que mejor conozco: un modelo estrella.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <section id="servicios">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Lo que hago</h2>
+        <p>Tomo un proceso que hoy vive en hojas de cálculo, correos y aprobaciones a mano, y lo convierto en una app, un flujo y un reporte que el equipo usa a diario.</p>
+      </div>
+      <div class="services">
+        <div class="svc">
+          <h3>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="8" y="6" width="8" height="2" fill="var(--accent)"/><rect x="8" y="10" width="8" height="2" fill="currentColor"/><rect x="8" y="14" width="5" height="2" fill="currentColor"/></svg>
+            Apps de negocio
+          </h3>
+          <p>Apps canvas para registrar, aprobar y consultar información desde el celular o la PC.</p>
+          <ul>
+            <li>Formularios con validaciones y roles</li>
+            <li>Datos en SharePoint, Dataverse o SQL</li>
+            <li>Pantallas de seguimiento y paneles</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <h3>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="19" cy="18" r="2.5" fill="var(--accent)" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 6H14a3 3 0 0 1 3 3v6.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+            Automatizaciones
+          </h3>
+          <p>Flujos que mueven la información sin que nadie tenga que copiar y pegar.</p>
+          <ul>
+            <li>Aprobaciones y notificaciones por correo</li>
+            <li>Alertas programadas por vencimientos</li>
+            <li>RPA con Power Automate Desktop</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <h3>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="4" height="8" fill="currentColor"/><rect x="10" y="8" width="4" height="13" fill="currentColor"/><rect x="17" y="3" width="4" height="18" fill="var(--accent)"/></svg>
+            Reportes y modelos
+          </h3>
+          <p>Dashboards en Power BI sobre un modelo de datos limpio, con medidas que todos entienden igual.</p>
+          <ul>
+            <li>Modelado estrella y medidas DAX</li>
+            <li>Dataflows y Power Query</li>
+            <li>Indicadores operativos y financieros</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="proyectos">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Proyectos</h2>
+        <p>Una selección de trabajos reales. Por confidencialidad describo el problema y la solución sin datos de los clientes.</p>
+      </div>
+
+      <div class="projects">
+        <article class="proj">
+          <div class="proj-meta">
+            <span class="ctx">Consultora TI · uso interno</span>
+            <span>2026</span>
+          </div>
+          <div>
+            <h3>Sistema de gestión de vacaciones</h3>
+            <p class="desc">Las solicitudes se manejaban por correo y nadie tenía claro cuántos días le quedaban a cada persona. Ahora todo pasa por una app con aprobación del supervisor y un calendario del equipo.</p>
+            <ul>
+              <li>Solicitudes por bloques, con validación de 4 a 15 días por bloque y feriados</li>
+              <li>Correos HTML de aprobación, rechazo y cancelación</li>
+              <li>Aviso diario al colaborador y su jefe cuando un periodo está por vencer</li>
+              <li>Calendario del equipo en Power BI con un visual Deneb a medida</li>
+            </ul>
+          </div>
+          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">Power BI</span><span class="chip">Deneb</span><span class="chip">SharePoint</span></div>
+        </article>
+
+        <article class="proj">
+          <div class="proj-meta">
+            <span class="ctx">Empresa de servicios mineros</span>
+            <span>2026</span>
+          </div>
+          <div>
+            <h3>Indicadores de mantenimiento de flota</h3>
+            <p class="desc">Reportes sobre la base de datos del sistema de gestión de activos para seguir la confiabilidad de cientos de equipos en mina subterránea.</p>
+            <ul>
+              <li>MTBF, MTTR, disponibilidad y utilización con ventanas móviles</li>
+              <li>Estado y vida útil de componentes mayores por tipo de tarea</li>
+              <li>Reporte diario de equipos y migración de fuentes SharePoint a SQL</li>
+            </ul>
+          </div>
+          <div class="chips"><span class="chip">Power BI</span><span class="chip">DAX</span><span class="chip">Dataflows</span><span class="chip">SQL Server</span></div>
+        </article>
+
+        <article class="proj">
+          <div class="proj-meta">
+            <span class="ctx">Área legal</span>
+            <span>2026</span>
+          </div>
+          <div>
+            <h3>Expedientes judiciales</h3>
+            <p class="desc">App para registrar cada proceso y su avance por instancia, con un robot que trae los datos desde la web del Poder Judicial.</p>
+            <ul>
+              <li>Expediente con primera instancia, segunda instancia y casación</li>
+              <li>Un solo formulario para crear y editar</li>
+              <li>Extracción automática con Power Automate Desktop</li>
+            </ul>
+          </div>
+          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate Desktop</span><span class="chip">SharePoint</span></div>
+        </article>
+
+        <article class="proj">
+          <div class="proj-meta">
+            <span class="ctx">Consultora TI · área comercial</span>
+            <span>2026</span>
+          </div>
+          <div>
+            <h3>Suscripciones y renovaciones de clientes</h3>
+            <p class="desc">Un dashboard que junta los Excel mensuales de licencias en un solo historial de gasto por cliente y muestra qué renovaciones vienen.</p>
+            <ul>
+              <li>Consolidación automática de archivos desde una carpeta de SharePoint</li>
+              <li>Modelo con calendario, clientes y medidas por carpetas</li>
+            </ul>
+          </div>
+          <div class="chips"><span class="chip">Power BI</span><span class="chip">Power Query</span><span class="chip">SharePoint</span></div>
+        </article>
+
+        <article class="proj">
+          <div class="proj-meta">
+            <span class="ctx">Compras y proveedores</span>
+            <span>2026</span>
+          </div>
+          <div>
+            <h3>Actas de conformidad y CRM comercial</h3>
+            <p class="desc">Flujos para emitir y aprobar actas de conformidad de proveedores, y una app CRM para registrar actividades comerciales con disparadores condicionales.</p>
+          </div>
+          <div class="chips"><span class="chip">Power Automate</span><span class="chip">Power Apps</span></div>
+        </article>
+
+        <article class="proj featured">
+          <div class="proj-meta">
+            <span class="status">En desarrollo</span>
+            <span class="ctx">Proyecto de portafolio</span>
+          </div>
+          <div>
+            <h3>Andina Pedidos</h3>
+            <p class="desc">Toma de pedidos con flujo de aprobación para una distribuidora ficticia. Lo construyo de punta a punta en mi propio entorno para mostrar el proceso completo, desde el modelo de datos hasta el reporte de ventas.</p>
+          </div>
+          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">Power BI</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="trayectoria">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Trayectoria</h2>
+        <p>Empecé en desarrollo móvil, pasé por el análisis de datos y hoy me dedico a Power Platform.</p>
+      </div>
+      <ol class="timeline">
+        <li class="tl now">
+          <span class="when">2024 – hoy</span>
+          <div class="what">
+            <h3>Power Platform Developer <span class="org">· CXMart SAC</span></h3>
+            <p>Apps, flujos y reportes para clientes de minería, pesca y servicios, además de herramientas internas. Bases en SharePoint, SQL Server y PostgreSQL.</p>
+          </div>
+        </li>
+        <li class="tl">
+          <span class="when">2023 – 2024</span>
+          <div class="what">
+            <h3>Analista de Datos <span class="org">· GAC</span></h3>
+            <p>Análisis y reportes con MySQL y Excel como fuentes principales.</p>
+          </div>
+        </li>
+        <li class="tl">
+          <span class="when">2022</span>
+          <div class="what">
+            <h3>Practicante de desarrollo móvil <span class="org">· Geosatelital SAC</span></h3>
+          </div>
+        </li>
+        <li class="tl">
+          <span class="when">2016 – 2022</span>
+          <div class="what">
+            <h3>Computación e Informática <span class="org">· Cibertec</span></h3>
+            <p>Formación técnica en informática y tecnologías de la información.</p>
+          </div>
+        </li>
+      </ol>
+      <p class="note">Formación continua en 2026: curso de Power Apps y Power Automate (IDAT) y Especialización en Análisis de Datos + IA Generativa (Summa Center Latam, en curso). Siguiente meta: certificación PL-300.</p>
+    </div>
+  </section>
+
+  <section id="herramientas">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Herramientas</h2>
+        <p>Lo que uso a diario y lo que sigo aprendiendo.</p>
+      </div>
+      <div class="stack">
+        <div>
+          <h3>Power Platform</h3>
+          <ul>
+            <li><b>Power Apps</b>, canvas y model-driven</li>
+            <li><b>Power Automate</b>, nube y Desktop</li>
+            <li><b>Power Fx</b></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Datos y BI</h3>
+          <ul>
+            <li><b>Power BI</b>, DAX y Power Query</li>
+            <li><b>Microsoft Fabric</b> y dataflows</li>
+            <li><b>Deneb</b> para visuales a medida</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Bases de datos</h3>
+          <ul>
+            <li><b>SharePoint</b> y Dataverse</li>
+            <li><b>SQL Server</b> y PostgreSQL</li>
+            <li><b>MySQL</b></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Idiomas</h3>
+          <ul>
+            <li><b>Español</b>, nativo</li>
+            <li><b>Inglés</b>, básico</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto" class="contact">
+    <div class="wrap">
+      <div>
+        <h2>¿Tienes un proceso que se puede ordenar?</h2>
+        <p>Cuéntame qué hace hoy tu equipo a mano y te propongo cómo resolverlo con Power Platform.</p>
+      </div>
+      <div class="contact-list">
+        <div class="contact-row">
+          <div>
+            <div class="k">Correo</div>
+            <div class="v" id="mail">leonardo@ldtdata.dev</div>
+          </div>
+          <button class="copy" id="copy-mail" type="button">Copiar correo</button>
+        </div>
+        <div class="contact-row">
+          <div>
+            <div class="k">LinkedIn</div>
+            <div class="v"><a href="https://www.linkedin.com/in/bleonardoe" target="_blank" rel="noopener">linkedin.com/in/bleonardoe</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Leonardo Bazán · LDT Data</span>
+    <span>ldtdata.dev</span>
+  </div>
+</footer>
+
+<script>
+document.getElementById('copy-mail').addEventListener('click', async function(){
+  var btn = this;
+  try{
+    await navigator.clipboard.writeText(document.getElementById('mail').textContent.trim());
+    btn.textContent = 'Correo copiado';
+  }catch(e){
+    btn.textContent = 'Selecciona y copia el correo';
+  }
+  setTimeout(function(){ btn.textContent = 'Copiar correo'; }, 2200);
+});
+</script>
+</body>
+</html>
