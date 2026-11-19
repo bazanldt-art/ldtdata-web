@@ -99,11 +99,10 @@ section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
 .sec-head p{color:var(--muted);max-width:60ch;align-self:end}
 
 /* Services */
-.services{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);background:var(--surface);border-radius:6px}
-@media (max-width:860px){.services{grid-template-columns:1fr}}
-.svc{padding:28px;display:flex;flex-direction:column;gap:12px}
-.svc + .svc{border-left:1px solid var(--line)}
-@media (max-width:860px){.svc + .svc{border-left:0;border-top:1px solid var(--line)}}
+.services{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border:1px solid var(--line);background:var(--line);border-radius:6px;overflow:hidden}
+@media (max-width:1040px){.services{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:600px){.services{grid-template-columns:1fr}}
+.svc{padding:28px;display:flex;flex-direction:column;gap:12px;background:var(--surface)}
 .svc h3{font-size:var(--step-1);font-weight:700;font-variation-settings:"wdth" 100;display:flex;align-items:center;gap:10px}
 .svc h3 svg{flex:none}
 .svc p{color:var(--muted)}
@@ -125,6 +124,10 @@ section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
 .chip{font-size:.8rem;padding:3px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface);white-space:nowrap}
 .status{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:999px;background:color-mix(in srgb, var(--accent) 22%, transparent);color:var(--accent-ink);width:fit-content}
 .proj.featured{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);padding:30px clamp(18px,3vw,32px);margin:22px 0;border-radius:4px}
+.proj-link{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:12px 20px;background:var(--accent);color:#1B1B12;border:0;border-radius:6px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 0 color-mix(in srgb, var(--accent) 60%, #000)}
+.proj-link:hover{filter:brightness(1.08)}
+.proj-link:active{transform:translateY(1px);box-shadow:none}
+.proj-link svg{flex:none}
 .note{font-size:var(--step--1);color:var(--muted);margin-top:18px;max-width:70ch}
 
 /* Timeline */
@@ -298,7 +301,7 @@ footer span{opacity:.65}
     <div class="wrap">
       <div class="sec-head">
         <h2>Lo que hago</h2>
-        <p>Tomo un proceso que hoy vive en hojas de cálculo, correos y aprobaciones a mano, y lo convierto en una app, un flujo y un reporte que el equipo usa a diario.</p>
+        <p>Tomo un proceso que hoy vive en hojas de cálculo, correos y aprobaciones a mano, y lo convierto en una app, un flujo, un reporte o una web que el equipo usa a diario.</p>
       </div>
       <div class="services">
         <div class="svc">
@@ -335,6 +338,18 @@ footer span{opacity:.65}
             <li>Modelado estrella y medidas DAX</li>
             <li>Dataflows y Power Query</li>
             <li>Indicadores operativos y financieros</li>
+          </ul>
+        </div>
+        <div class="svc">
+          <h3>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 8.5h19" stroke="currentColor" stroke-width="1.8"/><rect x="6" y="11.5" width="6" height="5" fill="var(--accent)"/></svg>
+            Webs informativas
+          </h3>
+          <p>Sitios rápidos y fáciles de mantener para presentar tu empresa y recibir pedidos de cotización.</p>
+          <ul>
+            <li>Diseño adaptado a celular</li>
+            <li>Catálogos, galerías y formularios</li>
+            <li>Publicación con tu propio dominio</li>
           </ul>
         </div>
       </div>
@@ -415,6 +430,25 @@ footer span{opacity:.65}
             </ul>
           </div>
           <div class="chips"><span class="chip">Power BI</span><span class="chip">Power Query</span><span class="chip">SharePoint</span></div>
+        </article>
+
+        <article class="proj">
+          <div class="proj-meta">
+            <span class="ctx">Empresa de servicios mineros</span>
+            <span>2026</span>
+          </div>
+          <div>
+            <h3>Web para un taller de equipos mineros</h3>
+            <p class="desc">Sitio informativo de ocho páginas para una empresa que repara y remanufactura equipos de minería subterránea. Pensado para que un jefe de mantenimiento encuentre el servicio o repuesto y pida una cotización desde el celular.</p>
+            <ul>
+              <li>Catálogo de repuestos con filtro por varias categorías</li>
+              <li>Casos de antes y después, y ficha técnica de maquinaria</li>
+              <li>Formulario de cotización guiado por tipo de equipo y falla</li>
+            </ul>
+            <a class="proj-link" href="demos/taller-minero/">Ver demo en vivo<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            <p class="note" style="margin-top:10px">La demo usa una marca, datos y clientes ficticios.</p>
+          </div>
+          <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Diseño responsive</span></div>
         </article>
 
         <article class="proj">
@@ -512,6 +546,14 @@ footer span{opacity:.65}
             <li><b>SharePoint</b> y Dataverse</li>
             <li><b>SQL Server</b> y PostgreSQL</li>
             <li><b>MySQL</b></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Desarrollo web</h3>
+          <ul>
+            <li><b>HTML</b> y <b>CSS</b></li>
+            <li><b>JavaScript</b></li>
+            <li><b>Git</b> y GitHub Pages</li>
           </ul>
         </div>
         <div>

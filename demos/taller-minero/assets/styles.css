@@ -1,0 +1,32 @@
+/* Andesita (demo) — estilos base
+   Colores: verde malaquita #3FBFA3 · azul petróleo #0F2433 · gris claro #EEF2F2 */
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body { margin: 0; background: #EEF2F2; }
+a { color: #17725F; }
+a:hover { color: #0F5747; }
+input, select, textarea, button { font: inherit; }
+img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #3FBFA3; outline-offset: 2px; }
+
+/* Recuadros de imagen pendiente (reemplazar por fotos reales) */
+.ph { background: radial-gradient(120% 90% at 20% 10%, #24445A 0%, #12293A 55%, #0B1D2A 100%); color: #A3B3BE; }
+.phl { background: linear-gradient(135deg, #E6EDEF 0%, #D6E1E4 100%); color: #556672; }
+
+/* Repuestos: combo de selección múltiple */
+.combo-opcion { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 0 10px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+.combo-opcion input { width: 20px; height: 20px; flex: none; accent-color: #0F2433; }
+.combo-opcion.sel { background: #D9F2EC; }
+.combo-flecha { transition: transform .15s; }
+.combo-boton[aria-expanded="true"] .combo-flecha { transform: rotate(180deg); }
+.chip { min-height: 44px; padding: 0 12px 0 16px; border: none; border-radius: 999px; background: #0F2433; color: #EEF2F2; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+
+/* Clientes: botones Antes / Después */
+.caso-btn { background: transparent; color: #EEF2F2; border: 2px solid #3F5568; }
+.caso-btn.activo { background: #3FBFA3; color: #0F2433; border-color: #3FBFA3; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
