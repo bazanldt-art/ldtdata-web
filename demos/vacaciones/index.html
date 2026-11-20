@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Altamar Vacaciones · Demo</title>
+<meta name="description" content="Demo de una app de gestión de vacaciones: solicitudes por bloques, aprobación del supervisor, calendario del equipo y avisos automáticos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: marco de app (riel de navegación + contenido + panel de actividad de Power Automate).
+   Un solo tema claro: papel verdoso, tinta azul noche, mar como acción principal y sol como acento de "vacaciones". */
+:root{
+  --paper:#F4F5F0;
+  --surface:#FFFFFF;
+  --ink:#1D2430;
+  --muted:#5B6371;
+  --line:#DDE0D8;
+  --sea:#1F6BC9;
+  --sea-dark:#174F96;
+  --sea-soft:#E4EEFA;
+  --sun:#F2B33D;
+  --sun-soft:#FDF2DA;
+  --ok:#1C7D46; --ok-soft:#E1F2E7;
+  --warn:#9A5B00; --warn-soft:#FDF0D6;
+  --bad:#B8352A; --bad-soft:#FAE5E2;
+  --off:#6E7684; --off-soft:#ECEEF0;
+  --font-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.5}
+h1,h2,h3{font-family:var(--font-display);margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* Demo banner */
+.demo-bar{background:var(--ink);color:#C9D0DA;font-size:13.5px;padding:7px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:center}
+.demo-bar a{display:inline-flex;align-items:center;gap:6px;background:var(--sun);color:#1D2430;font-weight:700;text-decoration:none;padding:5px 12px;border-radius:6px}
+
+/* Shell */
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr) 320px;min-height:calc(100% - 40px)}
+@media (max-width:1180px){.shell{grid-template-columns:216px minmax(0,1fr)}.activity{grid-column:1 / -1;border-left:0;border-top:1px solid var(--line)}}
+@media (max-width:760px){.shell{grid-template-columns:minmax(0,1fr)}}
+.shell > *{min-width:0}
+
+.rail{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:20px}
+@media (max-width:760px){.rail{border-right:0;border-bottom:1px solid var(--line);padding:14px 16px;gap:12px}}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:var(--sea);display:grid;place-items:center;flex:none}
+.brand b{font-family:var(--font-display);font-size:18px;font-weight:800;letter-spacing:-.01em;display:block;line-height:1.1}
+.brand small{color:var(--muted);font-size:12.5px}
+
+.sess{display:grid;gap:5px}
+.sess label{font-size:12.5px;font-weight:700;color:var(--muted)}
+.sess select{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--surface);font-weight:600;min-height:40px;width:100%}
+.sess small{font-size:12px;color:var(--muted)}
+@media (max-width:760px){.sess small{display:none}}
+
+.nav{display:flex;flex-direction:column;gap:2px;min-width:0}
+@media (max-width:760px){.nav{flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:2px}}
+.nav button{display:flex;align-items:center;gap:10px;border:0;background:transparent;text-align:left;padding:10px 10px;border-radius:8px;font-weight:600;color:var(--muted);white-space:nowrap}
+.nav button svg{flex:none}
+.nav button:hover{background:var(--paper);color:var(--ink)}
+.nav button[aria-current="page"]{background:var(--sea-soft);color:var(--sea-dark)}
+.count{margin-left:auto;background:var(--sun);color:#1D2430;font-size:12px;font-weight:700;min-width:22px;height:22px;border-radius:11px;display:inline-grid;place-items:center;padding:0 6px}
+
+.me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px 6px 0;border-top:1px solid var(--line)}
+@media (max-width:760px){.me{display:none}}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:#fff;flex:none}
+.me b{display:block;font-size:14px;line-height:1.2}
+.me small{color:var(--muted);font-size:12.5px}
+
+/* Main */
+.main{padding:28px clamp(16px,3vw,36px) 48px;min-width:0}
+.view-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:22px}
+.view-head h1{font-size:clamp(1.6rem,2.6vw,2.1rem);font-weight:800;letter-spacing:-.015em}
+.view-head p{color:var(--muted);margin-top:4px;max-width:60ch}
+
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:8px;padding:10px 16px;font-weight:700;border:1.5px solid transparent;background:var(--sea);color:#fff;text-decoration:none;font-size:14.5px}
+.btn:hover{background:var(--sea-dark)}
+.btn:disabled{background:#AFC4DD;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--paper)}
+.btn.ok{background:var(--ok)} .btn.ok:hover{background:#155F35}
+.btn.bad{background:transparent;color:var(--bad);border-color:#E9B9B3} .btn.bad:hover{background:var(--bad-soft)}
+.btn.sm{padding:7px 12px;font-size:13.5px}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+.stack{display:grid;gap:16px}
+
+.alert{display:flex;gap:14px;align-items:flex-start;border-radius:12px;padding:16px 18px;background:var(--sun-soft);border:1px solid #F1D79C;margin-bottom:18px}
+.alert svg{flex:none;margin-top:2px}
+.alert b{display:block}
+.alert p{color:#5E4A18}
+
+/* Period card */
+.period h3{font-size:1.15rem;font-weight:700}
+.period .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+.big{font-family:var(--font-display);font-size:3rem;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.big small{font-family:var(--font-body);font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:6px}
+.meter{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--off-soft);margin:16px 0 10px}
+.meter span{display:block;height:100%}
+.bi-note{display:flex;align-items:flex-start;gap:10px;margin-top:18px;padding:12px 14px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:14px;color:var(--muted);max-width:640px}
+.bi-note b{color:var(--ink)}
+.bi-ic{flex:none;width:22px;height:22px;border-radius:5px;background:#F2C811;color:#1B1B12;font-size:10px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.period-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.pill.pendiente{background:var(--warn-soft);color:var(--warn)}
+.pill.aprobada{background:var(--ok-soft);color:var(--ok)}
+.pill.rechazada{background:var(--bad-soft);color:var(--bad)}
+.pill.cancelada{background:var(--off-soft);color:var(--off)}
+.pill.encurso{background:var(--sea-soft);color:var(--sea-dark)}
+.pill.porvencer{background:var(--sun-soft);color:var(--warn)}
+
+/* Lists */
+.list{display:grid}
+.row{display:grid;grid-template-columns:1fr auto;gap:8px 16px;padding:14px 0;border-top:1px solid var(--line);align-items:center}
+.row:first-child{border-top:0;padding-top:0}
+.row .t{font-weight:700}
+.row .s{color:var(--muted);font-size:13.5px}
+.empty{color:var(--muted);padding:8px 0}
+
+.req{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:12px 20px}
+@media (max-width:640px){.req{grid-template-columns:1fr}}
+.req-head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.req-head h3{font-size:1.05rem;font-weight:700}
+.req-id{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.blocks{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.block{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13.5px;background:var(--paper)}
+.block b{font-variant-numeric:tabular-nums}
+.req-actions{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:640px){.req-actions{justify-content:flex-start}}
+.req .note{grid-column:1 / -1;font-size:13.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px}
+
+/* Form */
+.field{display:grid;gap:6px}
+.field label,.lbl{font-weight:700;font-size:13.5px}
+.field .hint{color:var(--muted);font-size:13px}
+select,input[type="date"],input[type="number"],textarea{border:1.5px solid var(--line);border-radius:8px;background:var(--surface);padding:9px 11px;min-height:42px;width:100%}
+select:focus,input:focus,textarea:focus{border-color:var(--sea);outline:none;box-shadow:0 0 0 3px var(--sea-soft)}
+textarea{min-height:80px;resize:vertical}
+.brow{display:grid;grid-template-columns:28px minmax(150px,1.2fr) 110px minmax(160px,1.4fr) 40px;gap:10px;align-items:start;padding:14px 0;border-top:1px solid var(--line)}
+.brow:first-of-type{border-top:0}
+@media (max-width:700px){.brow{grid-template-columns:28px 1fr 96px 40px}.brow .calc{grid-column:2 / -1}}
+.bnum{width:28px;height:28px;border-radius:50%;background:var(--sea-soft);color:var(--sea-dark);display:grid;place-items:center;font-weight:700;font-size:13px;margin-top:8px}
+.calc{font-size:13.5px;color:var(--muted);padding-top:10px}
+.calc b{color:var(--ink)}
+.err{color:var(--bad);font-size:13px;font-weight:600;margin-top:4px}
+.icon-btn{width:40px;height:42px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);display:grid;place-items:center;color:var(--muted)}
+.icon-btn:hover{color:var(--ink);background:var(--paper)}
+.icon-btn.bdel:hover{color:var(--bad);border-color:#E9B9B3;background:var(--surface)}
+.icon-btn:disabled{opacity:.4;cursor:not-allowed}
+.summary{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;justify-content:space-between;background:var(--paper);border-radius:10px;padding:14px 16px;margin-top:6px}
+.summary .k{font-variant-numeric:tabular-nums}
+.summary .k b{font-family:var(--font-display);font-size:1.4rem}
+.rules{font-size:13.5px;color:var(--muted);display:grid;gap:4px;padding-left:18px;margin:0}
+
+/* KPIs supervisor */
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:16px}
+@media (max-width:760px){.kpis{grid-template-columns:1fr}}
+.kpi .lbl{color:var(--muted);font-weight:600}
+.kpi .big{font-size:2.4rem;margin-top:6px}
+.faces{display:flex;margin-top:10px}
+.faces .avatar{width:30px;height:30px;font-size:12px;border:2px solid var(--surface);margin-left:-6px}
+.faces .avatar:first-child{margin-left:0}
+
+/* Calendar */
+.tfilter{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tfilter button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-weight:600;font-size:13.5px}
+.tfilter button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.emp{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.emp-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.emp-head .who{display:flex;gap:10px;align-items:center}
+.emp-head b{display:block;line-height:1.2}
+.emp-head small{color:var(--muted);font-size:13px}
+.emp-tot{display:flex;gap:18px;font-size:13.5px;color:var(--muted)}
+.emp-tot b{display:inline;font-family:var(--font-display);font-size:1.2rem;color:var(--ink);margin-right:4px}
+.ptable{width:100%;border-collapse:collapse;font-size:14px;table-layout:fixed;min-width:760px}
+.ptable th:nth-child(1){width:15%}.ptable th:nth-child(2){width:15%}.ptable th:nth-child(3){width:10%}.ptable th:nth-child(4){width:13%}.ptable th:nth-child(5){width:13%}.ptable th:nth-child(6){width:14%}.ptable th:nth-child(7){width:20%}
+.ptable th{text-align:left;font-size:12.5px;color:var(--muted);font-weight:700;padding:10px 14px;background:#FAFBF8;white-space:nowrap}
+.ptable td{padding:11px 14px;border-top:1px solid #EEF0EB;vertical-align:middle;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ptable td.r,.ptable th.r{text-align:right}
+.ptable .mini{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--off-soft);min-width:90px}
+.ptable .mini span{display:block;height:100%}
+.ptable-wrap{overflow-x:auto}
+.lost{color:var(--bad);font-weight:700}
+.cal-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.cal-head h2{font-size:1.3rem;font-weight:700;min-width:190px}
+.cal-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.cal{display:grid;min-width:max-content}
+.cal .c{height:44px;border-right:1px solid #EEF0EB;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;position:relative}
+.cal .name{position:sticky;left:0;z-index:2;background:var(--surface);justify-content:flex-start;gap:8px;padding:0 12px;font-weight:600;font-size:13.5px;border-right:1px solid var(--line);white-space:nowrap}
+.cal .name .avatar{width:26px;height:26px;font-size:11px}
+.cal .dh{flex-direction:column;line-height:1.1;color:var(--muted);font-variant-numeric:tabular-nums;height:52px}
+.cal .dh b{color:var(--ink);font-size:13px}
+.cal .we{background:#F7F8F4}
+.cal .hol{background:var(--sun-soft)}
+.cal .today{box-shadow:inset 0 3px 0 var(--sea)}
+.cal .dh.today b{color:var(--sea-dark)}
+.bar{position:absolute;inset:9px 0;background:var(--sea)}
+.bar.pend{background:repeating-linear-gradient(135deg,#F6CF7C 0 6px,#FBE3AE 6px 12px)}
+.bar.start{left:3px;border-top-left-radius:7px;border-bottom-left-radius:7px}
+.bar.end{right:3px;border-top-right-radius:7px;border-bottom-right-radius:7px}
+.cal-legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin-top:12px}
+.cal-legend i{display:inline-block;width:18px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* Activity */
+.activity{background:var(--surface);border-left:1px solid var(--line);padding:22px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.activity h2{font-size:1.05rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.activity > p{color:var(--muted);font-size:13px}
+.log{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.log li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:grid;gap:3px;background:var(--surface)}
+.log li.new{animation:flash 1.6s ease-out}
+@keyframes flash{from{background:var(--sun-soft)}to{background:var(--surface)}}
+.log .flow{font-size:12px;font-weight:700;color:var(--sea-dark);word-break:break-word}
+.log .msg{font-size:13.5px}
+.log .when{font-size:12px;color:var(--muted)}
+.reset{align-self:flex-start}
+.impl{border-top:1px solid var(--line);padding-top:16px;margin-top:4px;display:grid;gap:10px}
+.impl h3{font-size:1rem;font-weight:700}
+.impl > p{color:var(--muted);font-size:13px}
+.opt{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start;background:var(--paper);border-radius:10px;padding:12px}
+.opt .ic{width:34px;height:34px;border-radius:8px;display:grid;place-items:center}
+.opt b{display:block;font-size:14px}
+.opt span{font-size:13px;color:var(--muted)}
+
+/* Modal + toast */
+.scrim{position:fixed;inset:0;background:rgba(29,36,48,.45);display:grid;place-items:center;padding:16px;z-index:50}
+.modal{background:var(--surface);border-radius:14px;max-width:440px;width:100%;padding:22px;display:grid;gap:14px;box-shadow:0 20px 50px rgba(29,36,48,.25)}
+.modal h2{font-size:1.25rem;font-weight:700}
+.modal p{color:var(--muted)}
+.modal .acts{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.modal.wide{max-width:560px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.fgrid{grid-template-columns:1fr}}
+.fgrid .full{grid-column:1 / -1}
+.fgrid input,.fgrid select{border:1.5px solid var(--line);border-radius:8px;background:var(--surface);padding:9px 11px;min-height:42px;width:100%}
+.fgrid input:focus,.fgrid select:focus{border-color:var(--sea);outline:none;box-shadow:0 0 0 3px var(--sea-soft)}
+.preview{background:var(--paper);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--muted)}
+.preview b{color:var(--ink)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 14px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--sea-dark);border-bottom-color:var(--sea)}
+.note-box{background:var(--sea-soft);color:var(--sea-dark);border-radius:12px;padding:12px 14px;font-size:13.5px;margin-bottom:16px}
+.twrap{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.atable{width:100%;border-collapse:collapse;font-size:14px}
+.atable th{text-align:left;font-size:12.5px;color:var(--muted);font-weight:700;padding:11px 14px;background:#FAFBF8;white-space:nowrap;border-bottom:1px solid var(--line)}
+.atable td{padding:10px 14px;border-top:1px solid #EEF0EB;vertical-align:middle;white-space:nowrap}
+.atable .cell-sel{min-width:180px}
+.who2 small{display:block}
+.atable tr:first-child td{border-top:0}
+.who2{display:flex;align-items:center;gap:10px}
+.who2 b{display:block;line-height:1.2}
+.who2 small{color:var(--muted);font-size:12.5px}
+.cell-sel{border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);font-weight:600}
+.cell-num{width:80px;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;text-align:right;background:var(--surface)}
+.toggle{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-weight:700;font-size:12.5px}
+.toggle[aria-pressed="true"]{background:var(--ok-soft);color:var(--ok);border-color:#BFE2CC}
+.toggle[aria-pressed="false"]{background:var(--off-soft);color:var(--off)}
+.del{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);display:inline-grid;place-items:center;color:var(--muted);vertical-align:middle}
+.del:hover{color:var(--bad);border-color:#E9B9B3;background:var(--bad-soft)}
+.btn.danger{background:var(--bad)} .btn.danger:hover{background:#972B22}
+.why{background:var(--bad-soft);color:#7A1F17;border-radius:10px;padding:12px 14px;font-size:14px}
+.why ul{margin:6px 0 0;padding-left:18px}
+.rolelay{display:grid;grid-template-columns:290px minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.rolelay{grid-template-columns:1fr}}
+.rolelay > *{min-width:0}
+.rl{display:grid;gap:4px;margin-top:10px;max-height:420px;overflow:auto}
+.ri{display:grid;text-align:left;border:1.5px solid transparent;background:transparent;border-radius:10px;padding:10px 12px}
+.ri:hover{background:var(--paper)}
+.ri[aria-selected="true"]{background:var(--sea-soft);border-color:#C3D7F1}
+.ri small{color:var(--muted);font-size:12.5px}
+.inline-add{display:flex;gap:8px;margin-top:12px}
+.inline-add input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:9px;padding:8px 11px;min-height:40px}
+.search2{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:8px 11px;min-height:40px}
+.rn{display:flex;gap:8px;align-items:center;flex:1;min-width:220px}
+.rn input{font-family:var(--font-display);font-weight:700;font-size:1.15rem;border:1.5px solid var(--line);border-radius:9px;padding:6px 10px;flex:1;min-width:0}
+.rd-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.pg{font-size:.85rem;color:var(--muted);font-weight:700;margin:18px 0 8px;font-family:var(--font-body)}
+.plist{display:grid;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 14px;border-top:1px solid var(--line);cursor:pointer}
+.prow:first-child{border-top:0}
+.prow.locked{cursor:not-allowed;opacity:.75}
+.prow b{display:block;font-size:14.5px}
+.prow small{color:var(--muted);font-size:12.5px}
+.sw{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:13px;background:#C5CAD3;position:relative;flex:none;cursor:pointer;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s}
+.sw:checked{background:var(--sea)} .sw:checked::after{transform:translateX(18px)} .sw:disabled{cursor:not-allowed}
+.uchips{display:flex;flex-wrap:wrap;gap:8px}
+.uchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;font-weight:600;font-size:13.5px}
+.mgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+@media (max-width:1000px){.mgrid{grid-template-columns:minmax(0,1fr)}}
+.mgrid > *{min-width:0}
+.mlist{display:grid;max-height:360px;overflow:auto}
+.mlist .it{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.mlist .it:first-child{border-top:0}
+.mlist .it small{color:var(--muted);font-size:12.5px;display:block}
+.it-acts{display:flex;gap:8px;align-items:center;flex:none}
+.it-acts .cell-num{width:72px;flex:none}
+.rgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:end}
+@media (max-width:700px){.rgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.rgrid input,.fadd input{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px;width:100%;background:var(--surface)}
+.fadd{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:8px;margin-top:12px;align-items:end}
+@media (max-width:520px){.fadd{grid-template-columns:1fr}}
+.ychips{display:flex;gap:6px;margin-bottom:8px}
+.ychips button{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-weight:600;font-size:13px}
+.ychips button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-weight:600;font-size:14px;z-index:60;box-shadow:0 10px 30px rgba(29,36,48,.3);max-width:calc(100% - 32px)}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.fscrim{position:fixed;inset:0;background:rgba(15,20,30,.48);display:grid;place-items:center;padding:16px;z-index:55;overflow:auto}
+.fmodal{max-width:520px;width:100%}
+.fintro{color:var(--muted);font-size:14px;margin-top:-6px}
+.fform{display:grid;gap:12px}
+.fform .field{display:grid;gap:6px}
+.fform .field label{font-weight:700;font-size:13.5px}
+.fform .field input,.fform .field select{border:1.5px solid var(--line);border-radius:9px;padding:9px 11px;min-height:42px;width:100%;background:var(--surface);font:inherit}
+.fform .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){.fform .two{grid-template-columns:1fr}}
+.fform .macts{display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;margin-top:6px}
+.sec-head2{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.sec-acts{display:flex;justify-content:flex-end;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <a href="../../index.html#proyectos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Volver al portafolio</a>
+  <span>Demo de una app de vacaciones que se puede implementar en Power Apps o como aplicación web. Empresa, personas y datos ficticios. Leonardo Bazán</span>
+</div>
+
+<div class="shell">
+  <aside class="rail">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="10" r="4.2" fill="#F2B33D"/><path d="M2 17c2.5 0 2.5-1.6 5-1.6S9.5 17 12 17s2.5-1.6 5-1.6 2.5 1.6 5 1.6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </span>
+      <span><b>Altamar</b><small>Vacaciones del equipo</small></span>
+    </div>
+
+    <div class="sess"><label for="sess">Sesión</label><select id="sess"></select><small>Cambia de usuario para ver qué puede hacer cada rol.</small></div>
+
+    <nav class="nav" id="nav" aria-label="Secciones de la app"></nav>
+
+    <div class="me" id="me"></div>
+  </aside>
+
+  <main class="main" id="main" tabindex="-1"></main>
+
+  <aside class="activity" aria-labelledby="act-t">
+    <h2 id="act-t"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="6" r="2.4" fill="none" stroke="#1F6BC9" stroke-width="2"/><circle cx="19" cy="18" r="2.4" fill="#F2B33D" stroke="#1F6BC9" stroke-width="2"/><path d="M7.4 6H14a3 3 0 0 1 3 3v6.6" fill="none" stroke="#1F6BC9" stroke-width="2"/></svg>Actividad de Power Automate</h2>
+    <p>Así se verían los correos y avisos que disparan los flujos. En la app real llegan por Outlook.</p>
+    <ul class="log" id="log" aria-live="polite"></ul>
+    <button type="button" class="btn ghost sm reset" id="reset">Reiniciar demo</button>
+    <section class="impl" aria-labelledby="impl-t">
+      <h3 id="impl-t">Dos formas de implementarla</h3>
+      <p>La misma solución se adapta a cómo trabaja tu empresa.</p>
+      <div class="opt"><span class="ic" style="background:var(--sea-soft);color:var(--sea-dark)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span>
+        <div><b>En Power Apps</b><span>Dentro de Microsoft 365: app en Power Apps, flujos de aprobación y correos con Power Automate, datos en SharePoint o Dataverse y reportes en Power BI. Se usa también desde Teams y el celular.</span></div></div>
+      <div class="opt"><span class="ic" style="background:var(--sun-soft);color:var(--warn)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M2.5 8.5h19"/></svg></span>
+        <div><b>Como aplicación web</b><span>Se abre desde cualquier navegador con el dominio de tu empresa, para equipos que no trabajan con Microsoft 365.</span></div></div>
+    </section>
+  </aside>
+</div>
+
+<div class="scrim" id="scrim" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-t">
+    <h2 id="m-t"></h2>
+    <p id="m-p"></p>
+    <div class="field" id="m-field" hidden>
+      <label for="m-text" id="m-label">Motivo</label>
+      <textarea id="m-text"></textarea>
+      <div class="err" id="m-err" hidden>Escribe el motivo para continuar.</div>
+    </div>
+    <div class="acts">
+      <button type="button" class="btn ghost" id="m-cancel">Volver</button>
+      <button type="button" class="btn" id="m-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+<div class="scrim" id="e-scrim" hidden>
+  <form class="modal wide" id="e-form" role="dialog" aria-modal="true" aria-labelledby="e-t" novalidate>
+    <h2 id="e-t">Agregar persona</h2>
+    <p>Se registra en la lista de empleados con su rol en el sistema, y la app calcula sus periodos vacacionales desde la fecha de ingreso.</p>
+    <div class="fgrid">
+      <div class="field full"><label for="e-nombre">Nombre completo</label><input id="e-nombre" autocomplete="off" placeholder="Ej. Valeria Rojas"><div class="err" data-err="nombre" hidden>Escribe el nombre completo (nombre y apellido).</div></div>
+      <div class="field full"><label for="e-correo">Correo corporativo</label><input id="e-correo" type="email" autocomplete="off" placeholder="nombre.apellido@altamar.example"><div class="err" data-err="correo" hidden>Escribe un correo válido.</div></div>
+      <div class="field"><label for="e-puesto">Puesto</label><input id="e-puesto" autocomplete="off" placeholder="Ej. Analista de datos"><div class="err" data-err="puesto" hidden>Indica el puesto.</div></div>
+      <div class="field"><label for="e-area">Área</label><select id="e-area"></select></div>
+      <div class="field"><label for="e-ingreso">Fecha de inicio laboral</label><input id="e-ingreso" type="date"><div class="err" data-err="ingreso" hidden>Elige una fecha que no sea futura.</div></div>
+      <div class="field"><label for="e-reg">Régimen laboral</label><select id="e-reg"></select></div>
+      <div class="field full"><label for="e-rol">Rol en el sistema</label><select id="e-rol"></select></div>
+      <div class="preview full" id="e-prev" aria-live="polite"></div>
+    </div>
+    <div class="acts"><button type="button" class="btn ghost" id="e-cancel">Cancelar</button><button type="submit" class="btn">Agregar persona</button></div>
+  </form>
+</div>
+<div class="scrim" id="c-scrim" hidden>
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="c-t">
+    <h2 id="c-t"></h2>
+    <div id="c-body"></div>
+    <div class="acts"><button type="button" class="btn ghost" id="c-cancel">Cancelar</button><button type="button" class="btn" id="c-ok">Eliminar</button></div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Fechas ---------- */
+const T = new Date(); T.setHours(0,0,0,0);
+const day = 864e5;
+const add = (dt, n) => { const x = new Date(dt); x.setDate(x.getDate() + n); return x; };
+const iso = dt => dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const off = n => iso(add(T, n));
+const fmt = s => parse(s).toLocaleDateString('es-PE', {weekday:'short', day:'numeric', month:'short'}).replace('.', '');
+const fmtLong = s => parse(s).toLocaleDateString('es-PE', {day:'numeric', month:'long', year:'numeric'});
+const diffDays = (a, b) => Math.round((parse(b) - parse(a)) / day);
+const endOf = b => off(diffDays(iso(T), b.ini) + b.dias - 1);
+
+/* Feriados nacionales del Perú 2026–2027 (referenciales) */
+const FERIADOS_BASE = (['2026-01-01','2026-04-02','2026-04-03','2026-05-01','2026-06-07','2026-06-29','2026-07-23','2026-07-28','2026-07-29','2026-08-06','2026-08-30','2026-10-08','2026-11-01','2026-12-08','2026-12-09','2026-12-25',
+'2027-01-01','2027-03-25','2027-03-26','2027-05-01','2027-06-07','2027-06-29','2027-07-23','2027-07-28','2027-07-29','2027-08-06','2027-08-30','2027-10-08','2027-11-01','2027-12-08','2027-12-09','2027-12-25']);
+const FER_NOMBRE = {'01-01':'Año Nuevo','05-01':'Día del Trabajo','06-07':'Batalla de Arica y Día de la Bandera','06-29':'San Pedro y San Pablo','07-23':'Día de la Fuerza Aérea','07-28':'Fiestas Patrias','07-29':'Fiestas Patrias','08-06':'Batalla de Junín','08-30':'Santa Rosa de Lima','10-08':'Combate de Angamos','11-01':'Todos los Santos','12-08':'Inmaculada Concepción','12-09':'Batalla de Ayacucho','12-25':'Navidad','04-02':'Jueves Santo','04-03':'Viernes Santo','03-25':'Jueves Santo','03-26':'Viernes Santo'};
+const isFer = k => S.feriados.some(f => f.fecha === k);
+
+/* ---------- Datos ficticios ---------- */
+const EMP = {
+  ana:   {nombre:'Ana Torres',    cargo:'Analista de datos',   area:'Datos y BI',  ini:'AT', color:'#1F6BC9'},
+  lucia: {nombre:'Lucía Vega',    cargo:'Consultora funcional',area:'Consultoría', ini:'LV', color:'#8A4FBF'},
+  diego: {nombre:'Diego Paredes', cargo:'Desarrollador',       area:'Desarrollo',  ini:'DP', color:'#1C7D46'},
+  sofia: {nombre:'Sofía Quispe',  cargo:'Analista de soporte', area:'Soporte',     ini:'SQ', color:'#C2572B'},
+  mateo: {nombre:'Mateo Huamán',  cargo:'Desarrollador',       area:'Desarrollo',  ini:'MH', color:'#2B7F8F'},
+  carlos:{nombre:'Carlos Ríos',   cargo:'Jefe de proyectos',   area:'Proyectos',   ini:'CR', color:'#1D2430'},
+  patricia:{nombre:'Patricia Gómez', cargo:'Jefa de RR.HH.',   area:'Administración', ini:'PG', color:'#9A4E1C'}
+};
+const BASE_USERS = ['ana','lucia','diego','sofia','mateo','carlos','patricia'];
+const BASE_TEAM = ['ana','lucia','diego','sofia','mateo'];
+const TEAM = BASE_TEAM.slice();
+const PALETTE = ['#9A4E1C','#5D4BB8','#2F7A5B','#B03A62','#3D6F9E','#7A6A12'];
+const addY = (dt, n) => { const x = new Date(dt); x.setFullYear(x.getFullYear() + n); return x; };
+const slug = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z ]/g, '').trim().split(/\s+/);
+function antiguedad(desde){
+  let m = (T.getFullYear() - desde.getFullYear()) * 12 + (T.getMonth() - desde.getMonth()); if (T.getDate() < desde.getDate()) m--;
+  const a = Math.floor(m / 12), r = m % 12;
+  if (m < 1) return 'menos de un mes';
+  return [a ? a + (a === 1 ? ' año' : ' años') : '', r ? r + (r === 1 ? ' mes' : ' meses') : ''].filter(Boolean).join(' y ');
+}
+/* Perú: se ganan los días al cumplir cada año de servicio y se deben gozar dentro del año siguiente. */
+function periodosDesde(empId, ingresoIso, dias){
+  const ing = parse(ingresoIso), out = [];
+  for (let k = 1; addY(ing, k) <= T; k++) {
+    const vence = iso(addY(ing, k + 1));
+    if (parse(vence) < T) continue;
+    out.push({id:'P' + (S.nextP++), emp:empId, label: addY(ing, k - 1).getFullYear() + ' – ' + addY(ing, k).getFullYear(), ganados:dias, vence});
+  }
+  return out;
+}
+
+function seed(){
+  Object.keys(EMP).forEach(k => { if (!BASE_USERS.includes(k)) delete EMP[k]; });
+  TEAM.length = 0; BASE_TEAM.forEach(k => TEAM.push(k));
+  const st = {
+    user:'ana', view:'inicio', teamFilter:'todos', adminTab:'usuarios', selRole:'admin', roleQ:'',
+    roles: [
+      {id:'admin',       nombre:'Administrador RR.HH.', fijo:true, perms:{solicitar:true,  calendario:true, aprobar:true,  equipo:true,  config:true}},
+      {id:'supervisor',  nombre:'Supervisor',           perms:{solicitar:false, calendario:true, aprobar:true,  equipo:true,  config:false}},
+      {id:'colaborador', nombre:'Colaborador',          perms:{solicitar:true,  calendario:true, aprobar:false, equipo:false, config:false}}
+    ],
+    areas: ['Datos y BI','Desarrollo','Consultoría','Soporte','Proyectos','Administración','Comercial'].map((n, i) => ({id:'a' + i, nombre:n})),
+    regimenes: [{id:'general', nombre:'General', dias:30}, {id:'pequena', nombre:'Pequeña empresa', dias:15}, {id:'micro', nombre:'Microempresa', dias:15}],
+    feriados: FERIADOS_BASE.map(f => ({fecha:f, nombre:FER_NOMBRE[f.slice(5)] || 'Feriado'})),
+    reglas: {minDias:4, maxDias:15, maxBloques:3, alertaDias:30}, calMonth: new Date(T.getFullYear(), T.getMonth(), 1),
+    periodos: [
+      {id:'P1', emp:'ana',   label:'2024 – 2025', ganados:30, vence: off(20)},
+      {id:'P2', emp:'ana',   label:'2025 – 2026', ganados:30, vence: off(385)},
+      {id:'P3', emp:'lucia', label:'2024 – 2025', ganados:30, vence: off(140)},
+      {id:'P4', emp:'lucia', label:'2025 – 2026', ganados:30, vence: off(505)},
+      {id:'P5', emp:'diego', label:'2024 – 2025', ganados:30, vence: off(8)},
+      {id:'P6', emp:'diego', label:'2025 – 2026', ganados:30, vence: off(373)},
+      {id:'P7', emp:'sofia', label:'2025 – 2026', ganados:30, vence: off(210)},
+      {id:'P8', emp:'mateo', label:'2024 – 2025', ganados:30, vence: off(-25)},
+      {id:'P9', emp:'mateo', label:'2025 – 2026', ganados:30, vence: off(300)}
+    ],
+    sol: [
+      {id:'SOL-024', emp:'ana',   per:'P1', estado:'aprobada',  creada:off(-170), bloques:[{ini:off(-150), dias:7}]},
+      {id:'SOL-029', emp:'ana',   per:'P1', estado:'aprobada',  creada:off(-95),  bloques:[{ini:off(-70),  dias:15}]},
+      {id:'SOL-017', emp:'mateo', per:'P8', estado:'aprobada',  creada:off(-260), bloques:[{ini:off(-240), dias:15}]},
+      {id:'SOL-019', emp:'diego', per:'P5', estado:'aprobada',  creada:off(-230), bloques:[{ini:off(-210), dias:15}]},
+      {id:'SOL-020', emp:'lucia', per:'P3', estado:'aprobada',  creada:off(-200), bloques:[{ini:off(-180), dias:10}]},
+      {id:'SOL-022', emp:'mateo', per:'P8', estado:'aprobada',  creada:off(-140), bloques:[{ini:off(-120), dias:15}]},
+      {id:'SOL-026', emp:'diego', per:'P5', estado:'aprobada',  creada:off(-110), bloques:[{ini:off(-90),  dias:10}]},
+      {id:'SOL-031', emp:'lucia', per:'P3', estado:'aprobada',  creada:off(-30),  bloques:[{ini:off(-3),   dias:7}]},
+      {id:'SOL-032', emp:'mateo', per:'P9', estado:'aprobada',  creada:off(-12),  bloques:[{ini:off(12),   dias:10}]},
+      {id:'SOL-033', emp:'diego', per:'P6', estado:'pendiente', creada:off(-2),   bloques:[{ini:off(20),   dias:5}], comentario:'Viaje familiar a Cusco.'},
+      {id:'SOL-034', emp:'sofia', per:'P7', estado:'pendiente', creada:off(-1),   bloques:[{ini:off(33),   dias:4},{ini:off(60), dias:6}]},
+      {id:'SOL-035', emp:'ana',   per:'P2', estado:'pendiente', creada:off(-4),   bloques:[{ini:off(41),   dias:5}]}
+    ],
+    log: [
+      {flow:'AppVacaciones_NotificarVencimientoPeriodo', msg:'Aviso a Diego Paredes y a Carlos Ríos: el periodo 2024 – 2025 vence en 8 días y quedan 5 días por programar.', when: stamp(0, 7, 0)},
+      {flow:'AppVacaciones_NotificarVencimientoPeriodo', msg:'Aviso a Ana Torres y a Carlos Ríos: el periodo 2024 – 2025 vence en 20 días y quedan 8 días por programar.', when: stamp(0, 7, 0)},
+      {flow:'AppVacaciones_NuevaSolicitud', msg:'Correo a Carlos Ríos: Sofía Quispe pidió 10 días en 2 bloques.', when: stamp(-1, 16, 42)},
+      {flow:'AppVacaciones_NuevaSolicitud', msg:'Correo a Carlos Ríos: Diego Paredes pidió 5 días.', when: stamp(-2, 10, 15)}
+    ],
+    next: 36, nextP: 20, nextE: 1,
+    draft: null
+  };
+  BASE_TEAM.forEach(k => {
+    const first = st.periodos.filter(p => p.emp === k).map(p => p.vence).sort()[0];
+    EMP[k].ingreso = iso(addY(parse(first), -2));
+    EMP[k].regimen = 'general';
+    EMP[k].correo = slug(EMP[k].nombre).join('.') + '@altamar.example';
+  });
+  BASE_USERS.forEach(k => { EMP[k].activo = true; EMP[k].rol = BASE_TEAM.includes(k) ? 'colaborador' : k === 'carlos' ? 'supervisor' : 'admin';
+    if (!BASE_TEAM.includes(k)) { EMP[k].ingreso = iso(addY(T, k === 'carlos' ? -6 : -4)); EMP[k].regimen = 'general'; EMP[k].correo = slug(EMP[k].nombre).join('.') + '@altamar.example'; } });
+  return st;
+}
+function stamp(dOff, h, m){ const x = add(T, dOff); x.setHours(h, m, 0, 0); return x.getTime(); }
+
+let S = seed();
+const PERMS = [
+  ['solicitar','Solicitar vacaciones','Ver su saldo, pedir y cancelar sus vacaciones.','Colaborador'],
+  ['calendario','Ver calendario del equipo','Quién sale y cuándo.','Colaborador'],
+  ['aprobar','Aprobar solicitudes','Aprobar o rechazar las solicitudes del equipo.','Supervisión'],
+  ['equipo','Gestionar el equipo','Ver los saldos de todos, enviar recordatorios y agregar personas.','Supervisión'],
+  ['config','Administrar el sistema','Usuarios, roles y datos maestros.','Administración']
+];
+const roleOf = id => S.roles.find(r => r.id === (EMP[id] || {}).rol);
+const can = perm => { const r = roleOf(S.user); return !!(r && r.perms[perm]); };
+const REG = id => S.regimenes.find(r => r.id === id) || {nombre:'—', dias:0};
+const supervisorName = () => { const s = Object.keys(EMP).find(k => EMP[k].activo && k !== S.user && (roleOf(k) || {perms:{}}).perms.aprobar); return s ? EMP[s].nombre : 'tu supervisor'; };
+const firstName = id => EMP[id].nombre.split(' ')[0];
+
+/* ---------- Cálculos ---------- */
+const totalDias = s => s.bloques.reduce((a, b) => a + b.dias, 0);
+const activa = s => s.estado === 'pendiente' || s.estado === 'aprobada';
+function saldo(p){
+  let gozados = 0, programados = 0;
+  S.sol.filter(s => s.per === p.id).forEach(s => {
+    s.bloques.forEach(b => {
+      if (s.estado === 'aprobada' && parse(endOf(b)) < T) gozados += b.dias;
+      else if (activa(s)) programados += b.dias;
+    });
+  });
+  const disponibles = p.ganados - gozados - programados;
+  const dv = diffDays(iso(T), p.vence);
+  const estado = dv < 0 ? 'Vencido' : dv <= S.reglas.alertaDias ? 'Por vencer' : 'En curso';
+  return {gozados, programados, disponibles, dv, estado};
+}
+function ausenteEn(empId, dIso){
+  for (const s of S.sol) {
+    if (s.emp !== empId || !activa(s)) continue;
+    for (const b of s.bloques) {
+      if (dIso >= b.ini && dIso <= endOf(b)) return {s, b};
+    }
+  }
+  return null;
+}
+function feriadosEntre(a, b){ let n = 0; for (let d = parse(a); d <= parse(b); d = add(d, 1)) if (isFer(iso(d))) n++; return n; }
+
+/* ---------- Utilidades UI ---------- */
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const avatar = id => `<span class="avatar" style="background:${EMP[id].color}" aria-hidden="true">${EMP[id].ini}</span>`;
+const pill = e => `<span class="pill ${e}">${e[0].toUpperCase() + e.slice(1)}</span>`;
+const ICON = {
+  home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/>',
+  check:'<path d="M20 6L9 17l-5-5"/>',
+  cal:'<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  team:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2 .8 3.5 2.8 3.5 5.7"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+};
+const ico = (k, s=18) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+
+let toastTimer;
+function toast(t){ const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.hidden = true, 2800); }
+function addLog(flow, msg){ S.log.unshift({flow, msg, when: Date.now(), fresh:true}); }
+
+/* Modal */
+let modalCb = null, needText = false;
+function modal({title, text, field, label, okText, okClass}, cb){
+  $('#m-t').textContent = title; $('#m-p').textContent = text || '';
+  needText = !!field; $('#m-field').hidden = !field; $('#m-text').value = ''; $('#m-err').hidden = true;
+  if (label) $('#m-label').textContent = label;
+  const ok = $('#m-ok'); ok.textContent = okText || 'Confirmar'; ok.className = 'btn ' + (okClass || '');
+  modalCb = cb; $('#scrim').hidden = false; (field ? $('#m-text') : ok).focus();
+}
+function closeModal(){ $('#scrim').hidden = true; modalCb = null; }
+$('#m-cancel').addEventListener('click', closeModal);
+$('#scrim').addEventListener('click', e => { if (e.target.id === 'scrim') closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#scrim').hidden) closeModal(); });
+$('#m-ok').addEventListener('click', () => {
+  const v = $('#m-text').value.trim();
+  if (needText && !v) { $('#m-err').hidden = false; $('#m-text').focus(); return; }
+  const cb = modalCb; closeModal(); if (cb) cb(v);
+});
+
+/* ---------- Navegación ---------- */
+const NAV = [['inicio','Inicio','home',null],['nueva','Nueva solicitud','plus','solicitar'],['mis','Mis solicitudes','list','solicitar'],['aprobar','Aprobaciones','check','aprobar'],['equipo','Mi equipo','team','equipo'],['calendario','Calendario del equipo','cal','calendario'],['admin','Administración','gear','config']];
+const VIEW_PERM = Object.fromEntries(NAV.map(n => [n[0], n[3]]));
+function renderNav(){
+  const pend = S.sol.filter(s => s.estado === 'pendiente').length;
+  $('#nav').innerHTML = NAV.filter(n => !n[3] || can(n[3])).map(([id, t, i]) =>
+    `<button type="button" data-view="${id}" ${S.view === id ? 'aria-current="page"' : ''}>${ico(i)}<span>${t}</span>${id === 'aprobar' && pend ? `<span class="count">${pend}</span>` : ''}</button>`).join('');
+  $('#me').innerHTML = `${avatar(S.user)}<span><b>${esc(EMP[S.user].nombre)}</b><small>${esc((roleOf(S.user) || {}).nombre || '')}</small></span>`;
+  $('#sess').innerHTML = Object.keys(EMP).filter(k => EMP[k].activo).map(k => `<option value="${k}" ${k === S.user ? 'selected' : ''}>${esc(EMP[k].nombre)} · ${esc((roleOf(k) || {}).nombre || 'Sin rol')}</option>`).join('');
+}
+$('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
+$('#sess').addEventListener('change', e => { S.user = e.target.value; S.draft = null; go('inicio'); toast('Sesión de ' + EMP[S.user].nombre + ' · ' + ((roleOf(S.user) || {}).nombre || '')); });
+$('#reset').addEventListener('click', () => { S = seed(); render(); toast('La demo volvió a su estado inicial'); });
+
+function go(v){ S.view = v; render(); $('#main').focus({preventScroll:true}); window.scrollTo({top:0}); }
+
+/* ---------- Vistas ---------- */
+function head(t, p, extra=''){ return `<div class="view-head"><div><h1>${t}</h1>${p ? `<p>${p}</p>` : ''}</div>${extra}</div>`; }
+
+function vInicioCol(){
+  const ps = S.periodos.filter(p => p.emp === S.user);
+  const urgent = ps.map(p => ({p, s: saldo(p)})).find(x => x.s.estado === 'Por vencer' && x.s.disponibles > 0);
+  const prox = S.sol.filter(s => s.emp === S.user && activa(s)).flatMap(s => s.bloques.map(b => ({s, b}))).filter(x => parse(endOf(x.b)) >= T).sort((a, b) => a.b.ini < b.b.ini ? -1 : 1);
+  return head('Hola, ' + firstName(S.user), ps.length ? 'Revisa tus días disponibles y programa tus vacaciones.' : 'Todavía no tienes periodos vacacionales.', `<button class="btn" data-go="nueva">${ico('plus')}Nueva solicitud</button>`) +
+  (urgent ? `<div class="alert" role="note">${ico('sun', 22)}<div><b>Tu periodo ${urgent.p.label} vence en ${urgent.s.dv} días</b><p>Aún tienes ${urgent.s.disponibles} días sin programar. Si no los usas antes del ${fmtLong(urgent.p.vence)}, se pierden.</p></div></div>` : '') +
+  `<div class="grid2">${ps.map(p => {
+      const s = saldo(p);
+      const st = s.estado === 'Por vencer' ? 'porvencer' : s.estado === 'Vencido' ? 'cancelada' : 'encurso';
+      const w = n => (n / p.ganados * 100).toFixed(1) + '%';
+      return `<section class="card period" aria-label="Periodo ${p.label}">
+        <div class="period-top"><div><h3>Periodo ${p.label}</h3><div class="sub">Vence el ${fmtLong(p.vence)}</div></div><span class="pill ${st}">${s.estado}</span></div>
+        <div class="big" style="margin-top:18px">${s.disponibles}<small>días disponibles de ${p.ganados}</small></div>
+        <div class="meter" role="img" aria-label="${s.gozados} gozados, ${s.programados} programados, ${s.disponibles} disponibles"><span style="width:${w(s.gozados)};background:#9AA3B0"></span><span style="width:${w(s.programados)};background:var(--sun)"></span><span style="width:${w(s.disponibles)};background:var(--sea)"></span></div>
+        <div class="legend"><span><i style="background:#9AA3B0"></i>Gozados ${s.gozados}</span><span><i style="background:var(--sun)"></i>Programados ${s.programados}</span><span><i style="background:var(--sea)"></i>Disponibles ${s.disponibles}</span></div>
+      </section>`; }).join('')}</div>
+  <section class="card" style="margin-top:16px"><h3 style="font-size:1.1rem;margin-bottom:14px">Tus próximas vacaciones</h3>
+    <div class="list">${prox.length ? prox.map(x => `<div class="row"><div><div class="t">${fmt(x.b.ini)} al ${fmt(endOf(x.b))}</div><div class="s">${x.b.dias} días · ${x.s.id}</div></div>${pill(x.s.estado)}</div>`).join('') : '<p class="empty">Todavía no tienes vacaciones programadas.</p>'}</div>
+  </section>`;
+}
+
+function vInicioSup(){
+  const pend = S.sol.filter(s => s.estado === 'pendiente');
+  const hoy = TEAM.filter(id => { const a = ausenteEn(id, iso(T)); return a && a.s.estado === 'aprobada'; });
+  const proximas = S.sol.filter(s => s.estado === 'aprobada').flatMap(s => s.bloques.map(b => ({s, b}))).filter(x => diffDays(iso(T), x.b.ini) > 0 && diffDays(iso(T), x.b.ini) <= 30);
+  const venc = S.periodos.map(p => ({p, s: saldo(p)})).filter(x => x.s.estado === 'Por vencer' && x.s.disponibles > 0);
+  return head('Hola, ' + firstName(S.user), 'Así está tu equipo hoy.', (can('aprobar') ? `<button class="btn" data-go="aprobar">${ico('check')}Revisar solicitudes</button>` : '')) +
+  `<div class="kpis">
+    <div class="card kpi"><div class="lbl">Pendientes de aprobar</div><div class="big">${pend.length}</div></div>
+    <div class="card kpi"><div class="lbl">De vacaciones hoy</div><div class="big">${hoy.length}</div><div class="faces">${hoy.map(avatar).join('')}</div></div>
+    <div class="card kpi"><div class="lbl">Salidas en los próximos 30 días</div><div class="big">${proximas.length}</div></div>
+  </div>
+  <div class="grid2">
+    <section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px"><h3 style="font-size:1.1rem">Periodos por vencer</h3><button class="btn ghost sm" data-go="equipo">Ver equipo</button></div><div class="list">${venc.length ? venc.map(x => `<div class="row"><div style="display:flex;gap:10px;align-items:center">${avatar(x.p.emp)}<div><div class="t">${esc(EMP[x.p.emp].nombre)}</div><div class="s">${x.p.label} · vence en ${x.s.dv} días</div></div></div><span class="pill porvencer">${x.s.disponibles} días</span></div>`).join('') : '<p class="empty">Nadie tiene periodos por vencer.</p>'}</div></section>
+    <section class="card"><h3 style="font-size:1.1rem;margin-bottom:14px">Próximas salidas aprobadas</h3><div class="list">${proximas.length ? proximas.map(x => `<div class="row"><div style="display:flex;gap:10px;align-items:center">${avatar(x.s.emp)}<div><div class="t">${EMP[x.s.emp].nombre}</div><div class="s">${fmt(x.b.ini)} al ${fmt(endOf(x.b))}</div></div></div><span class="s">${x.b.dias} días</span></div>`).join('') : '<p class="empty">No hay salidas aprobadas en los próximos 30 días.</p>'}</div></section>
+  </div>`;
+}
+
+function blocksHtml(s){ return `<div class="blocks">${s.bloques.map(b => `<span class="block">${fmt(b.ini)} al ${fmt(endOf(b))} · <b>${b.dias} días</b></span>`).join('')}</div>`; }
+
+function vMis(){
+  const mine = S.sol.filter(s => s.emp === S.user).sort((a, b) => a.creada < b.creada ? 1 : -1);
+  return head('Mis solicitudes', 'Puedes cancelar una solicitud pendiente o una aprobada que aún no empieza.', `<button class="btn" data-go="nueva">${ico('plus')}Nueva solicitud</button>`) +
+  `<div class="stack">${mine.map(s => {
+    const p = S.periodos.find(x => x.id === s.per);
+    const puede = s.estado === 'pendiente' || (s.estado === 'aprobada' && parse(s.bloques[0].ini) > T);
+    return `<article class="req"><div><div class="req-head"><h3>${totalDias(s)} días de vacaciones</h3>${pill(s.estado)}<span class="req-id">${s.id} · periodo ${p ? p.label : ''} · enviada ${fmt(s.creada)}</span></div>${blocksHtml(s)}</div>
+      <div class="req-actions">${puede ? `<button class="btn bad sm" data-cancel="${s.id}">Cancelar</button>` : ''}</div>
+      ${s.motivo ? `<div class="note"><b>Motivo del supervisor:</b> ${esc(s.motivo)}</div>` : ''}</article>`; }).join('')}</div>`;
+}
+
+function vAprobar(){
+  const pend = S.sol.filter(s => s.estado === 'pendiente').sort((a, b) => a.creada < b.creada ? -1 : 1);
+  const hechas = S.sol.filter(s => s.decidida).slice(-4).reverse();
+  return head('Aprobaciones', 'Revisa los cruces con el resto del equipo antes de aprobar.') +
+  `<div class="stack">${pend.length ? pend.map(s => {
+    const cruces = new Set();
+    s.bloques.forEach(b => { for (let d = parse(b.ini); d <= parse(endOf(b)); d = add(d, 1)) TEAM.forEach(id => { if (id !== s.emp) { const a = ausenteEn(id, iso(d)); if (a && a.s.estado === 'aprobada') cruces.add(id); } }); });
+    return `<article class="req"><div><div class="req-head">${avatar(s.emp)}<h3>${EMP[s.emp].nombre}</h3><span class="req-id">${s.id} · ${totalDias(s)} días · enviada ${fmt(s.creada)}</span></div>${blocksHtml(s)}
+      ${s.comentario ? `<p class="s" style="margin-top:10px;color:var(--muted)">“${esc(s.comentario)}”</p>` : ''}
+      <p style="margin-top:10px;font-size:13.5px;color:${cruces.size ? 'var(--warn)' : 'var(--ok)'};font-weight:600">${cruces.size ? 'Se cruza con: ' + [...cruces].map(id => EMP[id].nombre).join(', ') : 'Sin cruces con el equipo'}</p></div>
+      <div class="req-actions"><button class="btn bad sm" data-reject="${s.id}">Rechazar</button><button class="btn ok sm" data-approve="${s.id}">${ico('check', 16)}Aprobar</button></div></article>`; }).join('')
+  : `<div class="card"><p class="empty">No tienes solicitudes pendientes. Cambia a <b>Colaboradora</b> y envía una para probar el flujo completo.</p></div>`}</div>` +
+  (hechas.length ? `<section class="card" style="margin-top:16px"><h3 style="font-size:1.05rem;margin-bottom:12px">Resueltas en esta sesión</h3><div class="list">${hechas.map(s => `<div class="row"><div><div class="t">${EMP[s.emp].nombre}</div><div class="s">${s.id} · ${totalDias(s)} días</div></div>${pill(s.estado)}</div>`).join('')}</div></section>` : '');
+}
+
+/* Mi equipo: monitoreo de periodos */
+function vEquipo(){
+  const rows = TEAM.map(id => ({id, ps: S.periodos.filter(p => p.emp === id).map(p => ({p, s: saldo(p)})).sort((a, b) => a.p.vence < b.p.vence ? -1 : 1)}));
+  const all = rows.flatMap(r => r.ps);
+  const porVencer = all.filter(x => x.s.estado === 'Por vencer' && x.s.disponibles > 0);
+  const vencidos = all.filter(x => x.s.estado === 'Vencido' && x.s.disponibles > 0);
+  const totalDisp = all.filter(x => x.s.estado !== 'Vencido').reduce((a, x) => a + x.s.disponibles, 0);
+  const F = S.teamFilter;
+  const keep = r => F === 'todos' ? true : F === 'porvencer' ? r.ps.some(x => x.s.estado === 'Por vencer' && x.s.disponibles > 0) : r.ps.some(x => x.s.estado !== 'Vencido' && x.s.disponibles > 0);
+  const list = rows.filter(keep);
+  const stCls = e => e === 'Por vencer' ? 'porvencer' : e === 'Vencido' ? 'cancelada' : 'encurso';
+  return head('Mi equipo', `Saldo de vacaciones de cada colaborador por periodo. Los periodos que vencen en ${S.reglas.alertaDias} días o menos aparecen como “Por vencer”.`, `<button class="btn" data-addemp="1">${ico('plus')}Agregar persona</button>`) +
+  `<div class="kpis">
+    <div class="card kpi"><div class="lbl">Días disponibles del equipo</div><div class="big">${totalDisp}</div></div>
+    <div class="card kpi"><div class="lbl">Periodos por vencer con saldo</div><div class="big" style="color:${porVencer.length ? 'var(--warn)' : 'inherit'}">${porVencer.length}</div></div>
+    <div class="card kpi"><div class="lbl">Periodos vencidos con saldo</div><div class="big" style="color:${vencidos.length ? 'var(--bad)' : 'inherit'}">${vencidos.length}</div></div>
+  </div>
+  <div class="tfilter" role="group" aria-label="Filtrar colaboradores">${[['todos','Todos'],['porvencer','Con periodos por vencer'],['saldo','Con días pendientes']].map(([k, t]) => `<button type="button" data-tf="${k}" aria-pressed="${F === k}">${t}</button>`).join('')}</div>
+  <div class="stack">${list.length ? list.map(r => {
+    const vig = r.ps.filter(x => x.s.estado !== 'Vencido');
+    const disp = vig.reduce((a, x) => a + x.s.disponibles, 0), prog = vig.reduce((a, x) => a + x.s.programados, 0);
+    const urg = r.ps.find(x => x.s.estado === 'Por vencer' && x.s.disponibles > 0);
+    const ahora = ausenteEn(r.id, iso(T));
+    const E = EMP[r.id];
+    return `<article class="emp" id="emp-${r.id}" tabindex="-1">
+      <div class="emp-head"><div class="who">${avatar(r.id)}<div><b>${esc(E.nombre)}</b><small>${esc(E.cargo)} · ${esc(E.area)}${ahora && ahora.s.estado === 'aprobada' ? ' · de vacaciones hoy' : ''}${E.activo ? '' : ' · <span class="pill cancelada" style="padding:1px 8px">Inactivo</span>'}</small><small style="display:block">Ingresó el ${fmtLong(E.ingreso)} (${antiguedad(parse(E.ingreso))}) · ${esc(E.correo)}</small></div></div>
+        <div class="emp-tot"><span><b>${disp}</b>disponibles</span><span><b>${prog}</b>programados</span>${urg ? `<button class="btn ghost sm" data-remind="${urg.p.id}">Enviar recordatorio</button>` : ''}</div></div>
+      ${!r.ps.length ? `<p class="empty" style="padding:14px 18px">Aún no tiene periodos. Ganará sus primeros ${REG(E.regimen).dias} días el <b>${fmtLong(iso(addY(parse(E.ingreso), 1)))}</b>.</p>` : `<div class="ptable-wrap"><table class="ptable"><thead><tr><th>Periodo</th><th>Vence</th><th class="r">Gozados</th><th class="r">Programados</th><th class="r">Disponibles</th><th>Uso</th><th>Estado</th></tr></thead><tbody>
+      ${r.ps.map(({p, s}) => { const w = n => (n / p.ganados * 100).toFixed(1) + '%'; return `<tr><td><b>${p.label}</b></td><td>${parse(p.vence).toLocaleDateString('es-PE', {day:'numeric', month:'short', year:'numeric'}).replace('.', '')}</td><td class="r">${s.gozados}</td><td class="r">${s.programados}</td><td class="r ${s.estado === 'Vencido' && s.disponibles > 0 ? 'lost' : ''}"><b>${s.disponibles}</b> <span style="color:var(--muted)">/ ${p.ganados}</span></td>
+        <td><div class="mini" role="img" aria-label="${s.gozados} gozados, ${s.programados} programados, ${s.disponibles} disponibles"><span style="width:${w(s.gozados)};background:#9AA3B0"></span><span style="width:${w(s.programados)};background:var(--sun)"></span><span style="width:${w(s.disponibles)};background:${s.estado === 'Vencido' ? 'var(--bad)' : 'var(--sea)'}"></span></div></td>
+        <td><span class="pill ${stCls(s.estado)}">${s.estado === 'Vencido' && s.disponibles === 0 ? 'Completado' : s.estado === 'Por vencer' ? 'Vence en ' + s.dv + ' días' : s.estado}</span></td></tr>`; }).join('')}
+      </tbody></table></div>`}</article>`; }).join('')
+  : '<div class="card"><p class="empty">Nadie cumple ese filtro.</p></div>'}</div>
+  <div class="cal-legend" style="margin-top:14px"><span><i style="background:#9AA3B0"></i>Gozados</span><span><i style="background:var(--sun)"></i>Programados (aprobados o pendientes)</span><span><i style="background:var(--sea)"></i>Disponibles</span></div>`;
+}
+
+/* Nueva solicitud */
+function newDraft(){
+  const p = S.periodos.filter(p => p.emp === S.user).map(p => ({p, s: saldo(p)})).filter(x => x.s.estado !== 'Vencido' && x.s.disponibles > 0).sort((a, b) => a.s.dv - b.s.dv)[0];
+  return {per: p ? p.p.id : '', bloques:[{ini: off(7), dias: S.reglas.minDias}], comentario:''};
+}
+function validate(d){
+  const p = S.periodos.find(x => x.id === d.per);
+  const s = p ? saldo(p) : null;
+  const errs = d.bloques.map(() => []);
+  const otros = S.sol.filter(x => x.emp === S.user && activa(x)).flatMap(x => x.bloques.map(b => ({id:x.id, b})));
+  d.bloques.forEach((b, i) => {
+    if (!b.ini) { errs[i].push('Elige la fecha de inicio.'); return; }
+    if (!Number.isFinite(b.dias) || b.dias < S.reglas.minDias) errs[i].push(`Cada bloque debe tener mínimo ${S.reglas.minDias} días.`);
+    if (b.dias > S.reglas.maxDias) errs[i].push(`Cada bloque puede tener máximo ${S.reglas.maxDias} días.`);
+    if (parse(b.ini) <= T) errs[i].push('La fecha de inicio debe ser posterior a hoy.');
+    if (p && b.ini > p.vence) errs[i].push('El periodo vence el ' + fmtLong(p.vence) + '; el bloque debe empezar antes.');
+    if (b.dias >= 1) {
+      const e = endOf(b);
+      otros.forEach(o => { if (b.ini <= endOf(o.b) && e >= o.b.ini) errs[i].push('Se cruza con tu solicitud ' + o.id + '.'); });
+      d.bloques.forEach((c, j) => { if (j < i && c.ini && c.dias >= 1 && b.ini <= endOf(c) && e >= c.ini) errs[i].push('Se cruza con el bloque ' + (j + 1) + '.'); });
+    }
+  });
+  const total = d.bloques.reduce((a, b) => a + (Number.isFinite(b.dias) ? b.dias : 0), 0);
+  const general = [];
+  if (!p) general.push('No tienes periodos con días disponibles.');
+  else if (total > s.disponibles) general.push(`Pides ${total} días y el periodo tiene ${s.disponibles} disponibles.`);
+  const ok = p && !general.length && errs.every(e => !e.length);
+  return {errs, general, total, s, ok};
+}
+function vNueva(){
+  if (!S.draft) S.draft = newDraft();
+  const d = S.draft, v = validate(d);
+  const ps = S.periodos.filter(p => p.emp === S.user);
+  return head('Nueva solicitud', 'Puedes dividir tus días en varios bloques. Tu supervisor recibe un correo para aprobarla.') +
+  `<form class="card" id="f" novalidate>
+    <div class="grid2" style="margin-bottom:8px">
+      <div class="field"><label for="f-per">Periodo vacacional</label>
+        <select id="f-per">${ps.map(p => { const s = saldo(p); return `<option value="${p.id}" ${p.id === d.per ? 'selected' : ''} ${s.estado === 'Vencido' ? 'disabled' : ''}>${p.label} · ${s.disponibles} días disponibles${s.estado === 'Por vencer' ? ' · vence en ' + s.dv + ' días' : ''}</option>`; }).join('')}</select>
+      </div>
+      <div class="field"><span class="lbl">Reglas</span><ul class="rules"><li>Cada bloque: de ${S.reglas.minDias} a ${S.reglas.maxDias} días calendario, hasta ${S.reglas.maxBloques} bloques.</li><li>El bloque debe empezar antes de que venza el periodo.</li></ul></div>
+    </div>
+    <div style="margin-top:14px"><span class="lbl">Bloques</span>
+      <div id="f-blocks">${d.bloques.map((b, i) => {
+        const fin = b.ini && b.dias >= 1 ? endOf(b) : '';
+        const fer = fin ? feriadosEntre(b.ini, fin) : 0;
+        return `<div class="brow">
+          <span class="bnum" aria-hidden="true">${i + 1}</span>
+          <div class="field"><label class="sr" for="ini-${i}">Inicio del bloque ${i + 1}</label><input type="date" id="ini-${i}" data-i="${i}" data-k="ini" value="${b.ini}" min="${off(1)}">${v.errs[i].map(e => `<div class="err">${e}</div>`).join('')}</div>
+          <div class="field"><label class="sr" for="dias-${i}">Días del bloque ${i + 1}</label><input type="number" id="dias-${i}" data-i="${i}" data-k="dias" min="${S.reglas.minDias}" max="${S.reglas.maxDias}" value="${Number.isFinite(b.dias) ? b.dias : ''}" inputmode="numeric"></div>
+          <div class="calc">${fin ? `Hasta el <b>${fmt(fin)}</b>, regresas el ${fmt(off(diffDays(iso(T), fin) + 1))}${fer ? ` · incluye ${fer} feriado${fer > 1 ? 's' : ''}` : ''}` : 'Indica inicio y días'}</div>
+          <button type="button" class="icon-btn bdel" data-bdel="${i}" aria-label="Quitar bloque ${i + 1}" ${d.bloques.length === 1 ? 'disabled' : ''}>${ico('trash')}</button>
+        </div>`; }).join('')}</div>
+      <button type="button" class="btn ghost sm" id="f-add" ${d.bloques.length >= S.reglas.maxBloques ? 'disabled' : ''}>${ico('plus', 16)}Agregar otro bloque</button>
+    </div>
+    <div class="field" style="margin-top:18px"><label for="f-com">Comentario para tu supervisor <span style="font-weight:400;color:var(--muted)">(opcional)</span></label><textarea id="f-com" placeholder="Ej. viaje familiar">${esc(d.comentario)}</textarea></div>
+    <div class="summary" style="margin-top:18px">
+      <div class="k">Total pedido <b>${v.total}</b> días${v.s ? ` · te quedarían <b>${Math.max(v.s.disponibles - v.total, 0)}</b> en el periodo` : ''}</div>
+      <button type="submit" class="btn" ${v.ok ? '' : 'disabled'}>Enviar solicitud</button>
+    </div>
+    ${v.general.map(e => `<div class="err" style="margin-top:8px">${e}</div>`).join('')}
+  </form>`;
+}
+
+/* Calendario */
+function vCal(){
+  const m = S.calMonth, y = m.getFullYear(), mo = m.getMonth();
+  const n = new Date(y, mo + 1, 0).getDate();
+  const days = Array.from({length:n}, (_, i) => new Date(y, mo, i + 1));
+  const cls = dt => { const k = iso(dt); return [dt.getDay() % 6 === 0 ? 'we' : '', isFer(k) ? 'hol' : '', k === iso(T) ? 'today' : ''].join(' '); };
+  let html = `<div class="cal" style="grid-template-columns:190px repeat(${n}, 34px)"><div class="c name" style="height:52px;color:var(--muted);font-weight:600">Equipo</div>`;
+  html += days.map(dt => `<div class="c dh ${cls(dt)}" title="${isFer(iso(dt)) ? 'Feriado' : ''}"><span>${'DLMXJVS'[dt.getDay()]}</span><b>${dt.getDate()}</b></div>`).join('');
+  TEAM.forEach(id => {
+    html += `<div class="c name">${avatar(id)}${esc(EMP[id].nombre)}</div>`;
+    html += days.map(dt => {
+      const a = ausenteEn(id, iso(dt));
+      let bar = '';
+      if (a) { const k = iso(dt); bar = `<span class="bar ${a.s.estado === 'pendiente' ? 'pend' : ''} ${k === a.b.ini ? 'start' : ''} ${k === endOf(a.b) ? 'end' : ''}" title="${esc(EMP[id].nombre)}: ${a.s.estado} (${a.s.id})"></span>`; }
+      return `<div class="c ${cls(dt)}">${bar}</div>`;
+    }).join('');
+  });
+  html += '</div>';
+  let label = m.toLocaleDateString('es-PE', {month:'long', year:'numeric'}); label = label[0].toUpperCase() + label.slice(1);
+  return head('Calendario del equipo', 'Quién sale y cuándo. Las solicitudes pendientes aparecen rayadas.') +
+  `<div class="cal-head"><button class="icon-btn" data-month="-1" aria-label="Mes anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+   <h2 aria-live="polite">${label}</h2>
+   <button class="icon-btn" data-month="1" aria-label="Mes siguiente"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+   <button class="btn ghost sm" data-month="0">Hoy</button></div>
+  <div class="cal-wrap">${html}</div>
+  <div class="cal-legend"><span><i style="background:var(--sea)"></i>Aprobada</span><span><i style="background:repeating-linear-gradient(135deg,#F6CF7C 0 4px,#FBE3AE 4px 8px)"></i>Pendiente</span><span><i style="background:var(--sun-soft);border:1px solid #F1D79C"></i>Feriado</span><span><i style="background:#F7F8F4;border:1px solid var(--line)"></i>Fin de semana</span></div>
+  <p class="bi-note"><span class="bi-ic" aria-hidden="true">BI</span><span>En la versión con Power Platform, este calendario es un reporte de <b>Power BI</b> con un visual <b>Deneb</b> a medida, que también se ve desde Teams.</span></p>`;
+}
+
+/* ---------- Alta de colaborador ---------- */
+const eF = id => document.getElementById(id);
+function openEmp(){
+  eF('e-area').innerHTML = S.areas.map(a => `<option>${esc(a.nombre)}</option>`).join('');
+  eF('e-rol').innerHTML = S.roles.map(r => `<option value="${r.id}" ${r.id === 'colaborador' ? 'selected' : ''}>${esc(r.nombre)}</option>`).join('');
+  eF('e-reg').innerHTML = S.regimenes.map(r => `<option value="${r.id}">${esc(r.nombre)} · ${r.dias} días</option>`).join('');
+  ['e-nombre','e-correo','e-puesto'].forEach(id => eF(id).value = '');
+  eF('e-ingreso').value = iso(add(addY(T, -1), -40)); eF('e-ingreso').max = iso(T);
+  document.querySelectorAll('#e-form [data-err]').forEach(e => e.hidden = true);
+  empPreview(); eF('e-scrim').hidden = false; eF('e-nombre').focus();
+}
+function closeEmp(){ eF('e-scrim').hidden = true; const b = document.querySelector('[data-addemp]'); if (b) b.focus(); }
+function empPreview(){
+  const v = eF('e-ingreso').value, reg = REG(eF('e-reg').value);
+  if (!v || parse(v) > T) { eF('e-prev').innerHTML = 'Elige la fecha de ingreso para ver sus periodos.'; return; }
+  const ing = parse(v); const gana = addY(ing, 1);
+  if (gana > T) { eF('e-prev').innerHTML = `Antigüedad: <b>${antiguedad(ing)}</b>. Ganará sus primeros <b>${reg.dias} días</b> el <b>${fmtLong(iso(gana))}</b>.`; return; }
+  let n = 0; for (let k = 1; addY(ing, k) <= T; k++) if (addY(ing, k + 1) >= T) n++;
+  eF('e-prev').innerHTML = `Antigüedad: <b>${antiguedad(ing)}</b>. ${n === 1 ? 'Se creará <b>1 periodo vigente</b>' : `Se crearán <b>${n} periodos vigentes</b>`} de ${reg.dias} días.`;
+}
+['e-ingreso','e-reg'].forEach(id => eF(id).addEventListener('change', empPreview));
+eF('e-ingreso').addEventListener('input', empPreview);
+eF('e-cancel').addEventListener('click', closeEmp);
+eF('e-form').addEventListener('input', e => { const k = e.target.id.replace('e-', ''); const m = document.querySelector(`#e-form [data-err="${k}"]`); if (m) m.hidden = true; });
+eF('e-scrim').addEventListener('click', e => { if (e.target.id === 'e-scrim') closeEmp(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !eF('e-scrim').hidden) closeEmp(); });
+eF('e-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const nombre = eF('e-nombre').value.trim().replace(/\s+/g, ' '), correo = eF('e-correo').value.trim(), puesto = eF('e-puesto').value.trim(), ingreso = eF('e-ingreso').value, reg = eF('e-reg').value;
+  const bad = {nombre: nombre.split(' ').length < 2, correo: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo), puesto: !puesto, ingreso: !ingreso || parse(ingreso) > T};
+  let first = null;
+  Object.entries(bad).forEach(([k, b]) => { document.querySelector(`#e-form [data-err="${k}"]`).hidden = !b; if (b && !first) first = k; });
+  if (first) { eF('e-' + first).focus(); return; }
+  const id = 'e' + (S.nextE++);
+  const parts = nombre.split(' ');
+  if (Object.values(EMP).some(x => x.correo && x.correo.toLowerCase() === correo.toLowerCase())) { const m = document.querySelector('#e-form [data-err="correo"]'); m.textContent = 'Ya existe una persona con ese correo.'; m.hidden = false; eF('e-correo').focus(); return; }
+  EMP[id] = {activo:true, rol:eF('e-rol').value, nombre, cargo:puesto, area:eF('e-area').value, ini:(parts[0][0] + parts[parts.length - 1][0]).toUpperCase(), color:PALETTE[(S.nextE - 2) % PALETTE.length], ingreso, regimen:reg, correo};
+  if ((roleOf(id) || {perms:{}}).perms.solicitar) TEAM.push(id);
+  const ps = periodosDesde(id, ingreso, REG(reg).dias); S.periodos.push(...ps);
+  addLog('AppVacaciones_AltaColaborador', `${nombre} se agregó a la lista EmpleadosRRHH con ${ps.length} periodo${ps.length === 1 ? '' : 's'} vacacional${ps.length === 1 ? '' : 'es'}. Correo de bienvenida enviado a ${correo}.`);
+  eF('e-scrim').hidden = true; S.teamFilter = 'todos'; render(); toast(nombre + ' se agregó al equipo');
+  if (S.view === 'equipo') { const card = document.getElementById('emp-' + id); if (card) { card.scrollIntoView({block:'center'}); card.focus({preventScroll:true}); } }
+});
+
+/* ---------- Administración ---------- */
+function audit(lista, msg){ addLog('Auditoria_Configuracion', `${msg} Lista ${lista} en SharePoint. Cambio hecho por ${EMP[S.user].nombre}.`); }
+const isAdminRole = id => (S.roles.find(r => r.id === id) || {perms:{}}).perms.config;
+const adminsActivos = () => Object.keys(EMP).filter(k => EMP[k].activo && isAdminRole(EMP[k].rol)).length;
+function showErr(id, msg){ const el = document.getElementById(id); if (el) { el.textContent = msg; el.hidden = !msg; } }
+function vAdmin(){
+  const tab = S.adminTab, TR = '@@T@@';
+  let body = '';
+  if (tab === 'usuarios') {
+    body = `<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><button class="btn" data-addemp="1">${ico('plus')}Agregar persona</button></div>
+    <div class="twrap"><table class="atable"><thead><tr><th>Persona</th><th>Área</th><th>Rol</th><th>Estado</th><th><span class="sr">Acciones</span></th></tr></thead><tbody>
+    ${Object.keys(EMP).map(k => { const E = EMP[k]; return `<tr><td><div class="who2">${avatar(k)}<span><b>${esc(E.nombre)}</b><small>${esc(E.cargo)}${k === S.user ? ' · sesión actual' : ''}</small><small>${esc(E.correo || '')}</small></span></div></td><td>${esc(E.area)}</td>
+      <td><label class="sr" for="urol-${k}">Rol de ${esc(E.nombre)}</label><select class="cell-sel" id="urol-${k}" data-urol="${k}">${S.roles.map(r => `<option value="${r.id}" ${r.id === E.rol ? 'selected' : ''}>${esc(r.nombre)}</option>`).join('')}</select></td>
+      <td><button type="button" class="toggle" data-uact="${k}" aria-pressed="${E.activo}">${E.activo ? 'Activo' : 'Inactivo'}</button></td>
+      <td><button type="button" class="del" data-del="usuario" data-id="${k}" aria-label="Eliminar a ${esc(E.nombre)}" title="Eliminar">${TR}</button></td></tr>`; }).join('')}
+    </tbody></table></div>`;
+  } else if (tab === 'roles') {
+    if (!S.roles.some(r => r.id === S.selRole)) S.selRole = S.roles[0].id;
+    const q = S.roleQ.trim().toLowerCase(), r = S.roles.find(x => x.id === S.selRole);
+    const us = Object.keys(EMP).filter(k => EMP[k].rol === r.id);
+    const nPerm = x => PERMS.filter(pp => x.perms[pp[0]]).length;
+    body = `<div class="rolelay">
+      <aside class="card" style="padding:14px"><button type="button" class="btn sm" style="width:100%;margin-bottom:10px" data-add="r-form">${ico('plus', 16)}Nuevo rol</button><label class="sr" for="role-q">Buscar rol</label><input id="role-q" class="search2" type="search" placeholder="Buscar rol" value="${esc(S.roleQ)}">
+        <div class="rl" role="listbox" aria-label="Roles">${S.roles.filter(x => !q || x.nombre.toLowerCase().includes(q)).map(x => `<button type="button" role="option" class="ri" data-rsel="${x.id}" aria-selected="${x.id === r.id}"><b>${esc(x.nombre)}</b><small>${Object.keys(EMP).filter(k => EMP[k].rol === x.id).length} persona(s) · ${nPerm(x)} de ${PERMS.length} permisos</small></button>`).join('') || '<p class="empty">Ningún rol coincide.</p>'}</div>
+        
+      </aside>
+      <section class="card">
+        <div class="rd-head"><form id="rn-form" class="rn" novalidate>${r.fijo ? `<h2 style="font-size:1.2rem">${esc(r.nombre)}</h2>` : `<label class="sr" for="rn-nombre">Nombre del rol</label><input id="rn-nombre" value="${esc(r.nombre)}"><button type="submit" class="btn ghost sm">Renombrar</button>`}</form>
+          ${r.fijo ? '<span class="pill cancelada">Rol del sistema</span>' : `<button type="button" class="btn ghost sm" style="color:var(--bad)" data-del="rol" data-id="${r.id}">Eliminar rol</button>`}</div>
+        <span class="err" id="rn-err" hidden></span>
+        ${[...new Set(PERMS.map(pp => pp[3]))].map(g => `<h3 class="pg">${g}</h3><div class="plist">${PERMS.filter(pp => pp[3] === g).map(([k, t, d]) => { const lock = r.fijo && k === 'config'; return `<label class="prow ${lock ? 'locked' : ''}"><span><b>${t}</b><small>${d}${lock ? ' Siempre activo para este rol.' : ''}</small></span><input type="checkbox" class="sw" data-perm="${k}" data-role="${r.id}" ${r.perms[k] ? 'checked' : ''} ${lock ? 'disabled' : ''}></label>`; }).join('')}</div>`).join('')}
+        <h3 class="pg">Personas con este rol (${us.length})</h3>
+        <div class="uchips">${us.length ? us.map(k => `<span class="uchip">${avatar(k).replace('class="avatar"', 'class="avatar" style="width:24px;height:24px;font-size:10px;background:' + EMP[k].color + '"')}${esc(EMP[k].nombre)}${EMP[k].activo ? '' : ' <small>(inactivo)</small>'}</span>`).join('') : '<span class="empty">Nadie tiene este rol todavía.</span>'}</div>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">Para asignar o cambiar el rol de una persona, usa la pestaña Usuarios.</p>
+      </section></div>`;
+  } else {
+    const R = S.reglas, years = [...new Set(S.feriados.map(f => f.fecha.slice(0, 4)))].sort();
+    if (!S.ferYear || !years.includes(S.ferYear)) S.ferYear = String(T.getFullYear());
+    const fer = S.feriados.filter(f => f.fecha.startsWith(S.ferYear)).sort((a, b) => a.fecha < b.fecha ? -1 : 1);
+    body = `<div class="mgrid">
+      <section class="card" style="grid-column:1 / -1"><h3 style="font-size:1.1rem">Reglas de las solicitudes</h3><p style="color:var(--muted);font-size:13.5px;margin:4px 0 12px">Las valida el formulario de nueva solicitud y el aviso de vencimiento.</p>
+        <form id="rg-form" novalidate><div class="rgrid">
+          <div class="field"><label for="rg-minDias">Mínimo de días por bloque</label><input id="rg-minDias" type="number" value="${R.minDias}"></div>
+          <div class="field"><label for="rg-maxDias">Máximo de días por bloque</label><input id="rg-maxDias" type="number" value="${R.maxDias}"></div>
+          <div class="field"><label for="rg-maxBloques">Bloques por solicitud</label><input id="rg-maxBloques" type="number" value="${R.maxBloques}"></div>
+          <div class="field"><label for="rg-alertaDias">Avisar “por vencer” con (días)</label><input id="rg-alertaDias" type="number" value="${R.alertaDias}"></div>
+        </div><div style="display:flex;gap:12px;align-items:center;margin-top:12px;flex-wrap:wrap"><button type="submit" class="btn">Guardar reglas</button><span class="err" id="rg-err" hidden></span></div></form></section>
+      <section class="card"><div class="sec-head2"><h3 style="font-size:1.1rem">Áreas</h3><button type="button" class="btn sm" data-add="ar-form">${ico('plus', 16)}Agregar</button></div><p style="color:var(--muted);font-size:13.5px;margin:4px 0 8px">Se eligen al registrar a una persona.</p>
+        <div class="mlist">${S.areas.map(a => { const n = Object.values(EMP).filter(E => E.area === a.nombre).length; return `<div class="it"><span><b>${esc(a.nombre)}</b><small>${n} persona(s)</small></span><button type="button" class="del" data-del="area" data-id="${a.id}" aria-label="Eliminar el área ${esc(a.nombre)}" title="Eliminar">${TR}</button></div>`; }).join('')}</div>
+        </section>
+      <section class="card"><div class="sec-head2"><h3 style="font-size:1.1rem">Regímenes laborales</h3><button type="button" class="btn sm" data-add="re-form">${ico('plus', 16)}Agregar</button></div><p style="color:var(--muted);font-size:13.5px;margin:4px 0 8px">Días de vacaciones que gana cada persona por año de servicio. Un cambio aplica a los periodos que se generen desde ahora.</p>
+        <div class="mlist">${S.regimenes.map(r => { const n = Object.values(EMP).filter(E => E.regimen === r.id).length; return `<div class="it"><span><b>${esc(r.nombre)}</b><small>${n} persona(s)</small></span><span class="it-acts"><label class="sr" for="rd-${r.id}">Días al año de ${esc(r.nombre)}</label><input class="cell-num" id="rd-${r.id}" type="number" min="1" value="${r.dias}"><button type="button" class="btn ghost sm" data-rsave="${r.id}">Guardar</button><button type="button" class="del" data-del="regimen" data-id="${r.id}" aria-label="Eliminar el régimen ${esc(r.nombre)}" title="Eliminar">${TR}</button></span></div>`; }).join('')}</div>
+        </section>
+      <section class="card" style="grid-column:1 / -1"><div class="sec-head2"><h3 style="font-size:1.1rem">Feriados</h3><button type="button" class="btn sm" data-add="fe-form">${ico('plus', 16)}Agregar feriado</button></div><p style="color:var(--muted);font-size:13.5px;margin:4px 0 10px">Se muestran en el calendario y en el cálculo de cada bloque.</p>
+        <div class="ychips" role="group" aria-label="Año">${years.map(y => `<button type="button" data-fy="${y}" aria-pressed="${y === S.ferYear}">${y}</button>`).join('')}</div>
+        <div class="mlist">${fer.map(f => `<div class="it"><span><b>${esc(f.nombre)}</b><small>${parse(f.fecha).toLocaleDateString('es-PE', {weekday:'long', day:'numeric', month:'long', year:'numeric'})}</small></span><button type="button" class="del" data-del="feriado" data-id="${f.fecha}" aria-label="Eliminar el feriado ${esc(f.nombre)}" title="Eliminar">${TR}</button></div>`).join('') || '<p class="empty">No hay feriados registrados para este año.</p>'}</div>
+        </section>
+    </div>`;
+  }
+  return head('Administración', 'Usuarios, roles y datos maestros que usa todo el sistema. Los cambia el administrador de RR.HH., sin tocar la app.') +
+    `<div class="note-box">En la versión de Power Apps, estos datos viven en listas de SharePoint (EmpleadosRRHH, Roles, Areas, Regimenes, Feriados, Reglas) y la app los lee al iniciar sesión. Cambiarlos no requiere publicar una nueva versión.</div>
+    <div class="tabs" role="tablist">${[['usuarios','Usuarios'],['roles','Roles y permisos'],['maestros','Datos maestros']].map(([k, t]) => `<button type="button" role="tab" data-tab="${k}" aria-selected="${tab === k}">${t}</button>`).join('')}</div>${body.split(TR).join('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>')}`;
+}
+
+/* Eliminación controlada */
+let cCb = null, cBack = null;
+function dialog({title, body, ok, okClass, cancel}, cb){
+  cBack = document.activeElement; $('#c-t').textContent = title; $('#c-body').innerHTML = body;
+  const b = $('#c-ok'); b.textContent = ok; b.className = 'btn ' + (okClass || ''); $('#c-cancel').hidden = !cancel; cCb = cb || null;
+  $('#c-scrim').hidden = false; (cancel ? $('#c-cancel') : b).focus();
+}
+function closeDialog(){ $('#c-scrim').hidden = true; cCb = null; if (cBack && document.body.contains(cBack)) cBack.focus(); }
+$('#c-cancel').addEventListener('click', closeDialog);
+$('#c-ok').addEventListener('click', () => { const cb = cCb; closeDialog(); if (cb) cb(); });
+$('#c-scrim').addEventListener('click', e => { if (e.target.id === 'c-scrim') closeDialog(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#c-scrim').hidden) closeDialog(); });
+const plural = (n, a, b) => n + ' ' + (n === 1 ? a : b);
+const lista = (items, max = 4) => items.slice(0, max).join(', ') + (items.length > max ? ` y ${items.length - max} más` : '');
+function asociados(tipo, id){
+  const why = [];
+  if (tipo === 'usuario') {
+    if (id === S.user) why.push('Es el usuario de la sesión actual.');
+    const sols = S.sol.filter(x => x.emp === id).map(x => x.id), pers = S.periodos.filter(x => x.emp === id).length;
+    if (sols.length) why.push(`Tiene ${plural(sols.length, 'solicitud', 'solicitudes')} de vacaciones: ${lista(sols)}.`);
+    if (pers) why.push(`Tiene ${plural(pers, 'periodo vacacional', 'periodos vacacionales')} registrados.`);
+    if (EMP[id].activo && isAdminRole(EMP[id].rol) && adminsActivos() <= 1) why.push('Es el único administrador activo.');
+  } else if (tipo === 'rol') {
+    const r = S.roles.find(x => x.id === id);
+    if (r.fijo) why.push('Es el rol de administrador del sistema.');
+    const us = Object.keys(EMP).filter(k => EMP[k].rol === id).map(k => EMP[k].nombre);
+    if (us.length) why.push(`Lo ${us.length === 1 ? 'tiene' : 'tienen'} ${plural(us.length, 'persona', 'personas')}: ${lista(us)}.`);
+  } else if (tipo === 'area') {
+    const a = S.areas.find(x => x.id === id), us = Object.values(EMP).filter(E => E.area === a.nombre).map(E => E.nombre);
+    if (us.length) why.push(`A esta área ${us.length === 1 ? 'pertenece' : 'pertenecen'} ${plural(us.length, 'persona', 'personas')}: ${lista(us)}.`);
+  } else if (tipo === 'regimen') {
+    const us = Object.values(EMP).filter(E => E.regimen === id).map(E => E.nombre);
+    if (us.length) why.push(`Lo ${us.length === 1 ? 'usa' : 'usan'} ${plural(us.length, 'persona', 'personas')}: ${lista(us)}.`);
+  }
+  return why;
+}
+const ALT = {usuario:'Si ya no debe ingresar al sistema, desactívalo: se conserva su historial de vacaciones.', rol:'Primero cambia el rol de esas personas y vuelve a intentarlo.', area:'Primero cambia el área de esas personas.', regimen:'Primero cambia el régimen de esas personas.'};
+function eliminar(tipo, id){
+  const nombre = tipo === 'usuario' ? EMP[id].nombre : tipo === 'rol' ? S.roles.find(r => r.id === id).nombre : tipo === 'area' ? S.areas.find(a => a.id === id).nombre : tipo === 'regimen' ? REG(id).nombre : (S.feriados.find(f => f.fecha === id) || {}).nombre + ' (' + fmtLong(id) + ')';
+  const et = {usuario:'a', rol:'el rol', area:'el área', regimen:'el régimen', feriado:'el feriado'}[tipo];
+  const why = tipo === 'feriado' ? [] : asociados(tipo, id);
+  if (why.length) return dialog({title:`No se puede eliminar ${et} ${nombre}`, body:`<div class="why"><b>Tiene registros asociados:</b><ul>${why.map(w => `<li>${esc(w)}</li>`).join('')}</ul></div><p style="margin-top:10px;color:var(--muted)">${ALT[tipo]}</p>`, ok:'Entendido'});
+  dialog({title:`¿Eliminar ${et} ${nombre}?`, body:`<p style="color:var(--muted)">${tipo === 'feriado' ? 'Dejará de aparecer en el calendario y en el cálculo de los bloques.' : 'No tiene registros asociados.'} Esta acción no se puede deshacer.</p>`, ok:'Eliminar', okClass:'danger', cancel:true}, () => {
+    const L = {usuario:'EmpleadosRRHH', rol:'Roles', area:'Areas', regimen:'Regimenes', feriado:'Feriados'}[tipo];
+    if (tipo === 'usuario') { delete EMP[id]; const i = TEAM.indexOf(id); if (i >= 0) TEAM.splice(i, 1); }
+    if (tipo === 'rol') S.roles = S.roles.filter(r => r.id !== id);
+    if (tipo === 'area') S.areas = S.areas.filter(a => a.id !== id);
+    if (tipo === 'regimen') S.regimenes = S.regimenes.filter(r => r.id !== id);
+    if (tipo === 'feriado') S.feriados = S.feriados.filter(f => f.fecha !== id);
+    audit(L, `Se eliminó ${et} ${nombre}.`); render(); toast(nombre + ' eliminado');
+  });
+}
+
+/* ---------- Formularios de alta en ventana emergente ---------- */
+let fBack = null;
+function openForm(id){
+  const F = FORMS[id]; if (!F) return;
+  fBack = document.activeElement; closeForm(true);
+  main.insertAdjacentHTML('beforeend', `<div class="fscrim" id="f-scrim"><div class="modal fmodal" role="dialog" aria-modal="true" aria-labelledby="f-t"><h2 id="f-t">${F.title}</h2>${F.intro ? `<p class="fintro">${F.intro}</p>` : ''}<form id="${id}" class="fform" novalidate>${F.fields()}<span class="err" id="${F.err}" hidden></span><div class="macts"><button type="button" class="btn ghost" data-fclose="1">Cancelar</button><button type="submit" class="btn">${F.submit}</button></div></form></div></div>`);
+  const first = document.querySelector('#f-scrim input, #f-scrim select'); if (first) first.focus();
+}
+function closeForm(silent){ const sc = document.getElementById('f-scrim'); if (!sc) return; sc.remove(); if (!silent && fBack && document.body.contains(fBack)) fBack.focus(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('f-scrim')) closeForm(); });
+const FORMS = {
+  'r-form': {title:'Nuevo rol', intro:'Se crea con los permisos de colaborador. Después ajustas sus permisos en el detalle del rol.', submit:'Crear rol', err:'r-err', fields:() => `<div class="field"><label for="r-nombre">Nombre del rol</label><input id="r-nombre" placeholder="Ej. Jefe de área"></div>`},
+  'ar-form': {title:'Nueva área', submit:'Agregar área', err:'ar-err', fields:() => `<div class="field"><label for="ar-nombre">Nombre del área</label><input id="ar-nombre" placeholder="Ej. Marketing"></div>`},
+  're-form': {title:'Nuevo régimen laboral', intro:'Indica cuántos días de vacaciones gana una persona por cada año de servicio.', submit:'Agregar régimen', err:'re-err', fields:() => `<div class="field"><label for="re-nombre">Nombre</label><input id="re-nombre" placeholder="Ej. Régimen agrario"></div><div class="field"><label for="re-dias">Días al año</label><input id="re-dias" type="number" min="1" max="60" value="30"></div>`},
+  'fe-form': {title:'Nuevo feriado', submit:'Agregar feriado', err:'fe-err', fields:() => `<div class="field"><label for="fe-fecha">Fecha</label><input id="fe-fecha" type="date"></div><div class="field"><label for="fe-nombre">Nombre</label><input id="fe-nombre" placeholder="Ej. Día no laborable"></div>`}
+};
+
+/* ---------- Render ---------- */
+function renderLog(){
+  const now = Date.now();
+  $('#log').innerHTML = S.log.slice(0, 12).map(l => {
+    const dt = new Date(l.when), dd = Math.floor((new Date(dt).setHours(0,0,0,0) - T) / day);
+    const w = (dd === 0 ? 'Hoy' : dd === -1 ? 'Ayer' : fmt(iso(dt))) + ', ' + dt.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'});
+    const li = `<li class="${l.fresh ? 'new' : ''}"><span class="flow">${l.flow.replace(/_/g, '_<wbr>')}</span><span class="msg">${esc(l.msg)}</span><span class="when">${now - l.when < 60000 ? 'Hace un momento' : w}</span></li>`;
+    l.fresh = false; return li;
+  }).join('');
+}
+function render(){
+  if (!EMP[S.user] || !EMP[S.user].activo) S.user = Object.keys(EMP).find(k => EMP[k].activo);
+  if (VIEW_PERM[S.view] && !can(VIEW_PERM[S.view])) S.view = 'inicio';
+  renderNav();
+  const V = {inicio: (can('aprobar') || can('equipo')) ? vInicioSup : vInicioCol, nueva: vNueva, mis: vMis, aprobar: vAprobar, equipo: vEquipo, calendario: vCal, admin: vAdmin};
+  $('#main').innerHTML = V[S.view]();
+  if (!can('config')) $('#main').querySelectorAll('[data-del]').forEach(b => b.remove());
+  if (!can('equipo') && !can('config')) $('#main').querySelectorAll('[data-addemp]').forEach(b => b.remove());
+  renderLog();
+}
+
+/* ---------- Eventos del contenido ---------- */
+const main = $('#main');
+main.addEventListener('click', e => { if (e.target.id === 'f-scrim') return closeForm(); const b = e.target.closest('[data-add],[data-fclose]'); if (!b) return; if (b.dataset.add) openForm(b.dataset.add); else closeForm(); });
+main.addEventListener('click', e => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.dataset.go) return go(t.dataset.go);
+  if (t.dataset.tab) { S.adminTab = t.dataset.tab; render(); const b = main.querySelector(`[data-tab="${t.dataset.tab}"]`); if (b) b.focus(); return; }
+  if (t.dataset.rsel) { S.selRole = t.dataset.rsel; render(); const b = main.querySelector(`[data-rsel="${t.dataset.rsel}"]`); if (b) b.focus(); return; }
+  if (t.dataset.fy) { S.ferYear = t.dataset.fy; return render(); }
+  if (t.dataset.del) return eliminar(t.dataset.del, t.dataset.id);
+  if (t.dataset.uact) {
+    const k = t.dataset.uact, E = EMP[k];
+    if (k === S.user && E.activo) return toast('No puedes desactivar tu propio usuario');
+    if (E.activo && isAdminRole(E.rol) && adminsActivos() <= 1) return toast('Debe quedar al menos un administrador activo');
+    E.activo = !E.activo; audit('EmpleadosRRHH', `${E.nombre} quedó ${E.activo ? 'activo' : 'inactivo'}${E.activo ? '' : ' y ya no puede iniciar sesión'}.`); render(); return;
+  }
+  if (t.dataset.rsave) {
+    const r = REG(t.dataset.rsave), v = parseInt(document.getElementById('rd-' + r.id).value, 10);
+    if (!(v >= 1 && v <= 60)) return toast('Los días al año deben estar entre 1 y 60');
+    if (v === r.dias) return;
+    audit('Regimenes', `El régimen ${r.nombre} ahora otorga ${v} días al año (antes ${r.dias}).`); r.dias = v; render(); toast('Régimen ' + r.nombre + ' actualizado'); return;
+  }
+  if (t.dataset.tf) { S.teamFilter = t.dataset.tf; return render(); }
+  if (t.dataset.addemp) return openEmp();
+  if (t.dataset.remind) {
+    const p = S.periodos.find(x => x.id === t.dataset.remind), sd = saldo(p);
+    addLog('AppVacaciones_RecordatorioManual', `Correo a ${EMP[p.emp].nombre} enviado por ${EMP[S.user].nombre}: tu periodo ${p.label} vence en ${sd.dv} días y aún tienes ${sd.disponibles} días por programar.`);
+    render(); toast('Recordatorio enviado a ' + EMP[p.emp].nombre);
+    return;
+  }
+  if (t.dataset.month !== undefined) {
+    const k = Number(t.dataset.month);
+    S.calMonth = k === 0 ? new Date(T.getFullYear(), T.getMonth(), 1) : new Date(S.calMonth.getFullYear(), S.calMonth.getMonth() + k, 1);
+    return render();
+  }
+  if (t.id === 'f-add') { S.draft.bloques.push({ini:'', dias:S.reglas.minDias}); render(); const el = $('#ini-' + (S.draft.bloques.length - 1)); if (el) el.focus(); return; }
+  if (t.dataset.bdel !== undefined) { S.draft.bloques.splice(Number(t.dataset.bdel), 1); return render(); }
+  if (t.dataset.cancel) {
+    const s = S.sol.find(x => x.id === t.dataset.cancel);
+    return modal({title:'¿Cancelar la solicitud ' + s.id + '?', text:'Los ' + totalDias(s) + ' días vuelven a quedar disponibles y se avisa a tu supervisor.', okText:'Cancelar solicitud', okClass:'bad'}, () => {
+      s.estado = 'cancelada';
+      addLog('AppVacaciones_Cancelacion', `Correo a ${supervisorName()}: ${EMP[S.user].nombre} canceló ${s.id} (${totalDias(s)} días).`);
+      render(); toast('Solicitud cancelada');
+    });
+  }
+  if (t.dataset.approve) {
+    const s = S.sol.find(x => x.id === t.dataset.approve);
+    s.estado = 'aprobada'; s.decidida = true;
+    addLog('AppVacaciones_Aprobacion', `Correo a ${EMP[s.emp].nombre}: tu solicitud ${s.id} fue aprobada. Se agregó al calendario del equipo.`);
+    render(); toast('Solicitud aprobada');
+    return;
+  }
+  if (t.dataset.reject) {
+    const s = S.sol.find(x => x.id === t.dataset.reject);
+    return modal({title:'Rechazar ' + s.id, text:'El motivo le llegará por correo a ' + EMP[s.emp].nombre + '.', field:true, label:'Motivo del rechazo', okText:'Rechazar', okClass:'bad'}, motivo => {
+      s.estado = 'rechazada'; s.motivo = motivo; s.decidida = true;
+      addLog('AppVacaciones_Rechazo', `Correo a ${EMP[s.emp].nombre}: ${s.id} fue rechazada. Motivo: ${motivo}`);
+      render(); toast('Solicitud rechazada');
+    });
+  }
+});
+main.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset.urol) {
+    const k = el.dataset.urol, E = EMP[k], prev = E.rol;
+    if (isAdminRole(prev) && !isAdminRole(el.value) && E.activo && adminsActivos() <= 1) { el.value = prev; return toast('Debe quedar al menos un administrador activo'); }
+    E.rol = el.value;
+    const i = TEAM.indexOf(k), sol = (roleOf(k) || {perms:{}}).perms.solicitar; if (sol && i < 0 && k !== 'carlos') TEAM.push(k); if (!sol && i >= 0) TEAM.splice(i, 1);
+    audit('EmpleadosRRHH', `${E.nombre} ahora tiene el rol ${roleOf(k).nombre}.`); render(); const again = document.getElementById(el.id); if (again) again.focus(); return;
+  }
+  if (el.dataset.perm) {
+    const r = S.roles.find(x => x.id === el.dataset.role), k = el.dataset.perm;
+    if (k === 'config' && r.perms.config && !el.checked) {
+      const afect = Object.keys(EMP).filter(u => EMP[u].activo && EMP[u].rol === r.id).length;
+      if (adminsActivos() - afect < 1) { el.checked = true; return toast('Debe quedar al menos un administrador activo'); }
+    }
+    r.perms[k] = el.checked; audit('Roles', `Rol ${r.nombre}: permiso "${PERMS.find(pp => pp[0] === k)[1]}" ${el.checked ? 'otorgado' : 'retirado'}.`);
+    const sel = `[data-perm="${k}"][data-role="${r.id}"]`; render(); const again = main.querySelector(sel); if (again) again.focus(); return;
+  }
+  if (el.id === 'f-per') { S.draft.per = el.value; render(); const f = document.getElementById('f-per'); if (f) f.focus(); return; }
+  if (el.dataset.k) {
+    const b = S.draft.bloques[Number(el.dataset.i)];
+    b[el.dataset.k] = el.dataset.k === 'dias' ? parseInt(el.value, 10) : el.value;
+    setTimeout(() => { const f = document.activeElement, id = f && f.id; render(); const again = id && document.getElementById(id); if (again) again.focus(); }, 0);
+  }
+});
+main.addEventListener('input', e => {
+  const id = e.target.id;
+  if (id === 'f-com') { S.draft.comentario = e.target.value; return; }
+  if (id === 'role-q') { S.roleQ = e.target.value; const pos = e.target.selectionStart; render(); const q = $('#role-q'); q.focus(); q.setSelectionRange(pos, pos); return; }
+  const errMap = {'r-nombre':'r-err', 'rn-nombre':'rn-err', 'ar-nombre':'ar-err', 're-nombre':'re-err', 're-dias':'re-err', 'fe-fecha':'fe-err', 'fe-nombre':'fe-err'};
+  if (errMap[id]) showErr(errMap[id], '');
+});
+main.addEventListener('submit', e => {
+  e.preventDefault();
+  const fid = e.target.id, g = x => document.getElementById(x);
+  if (fid === 'r-form') {
+    const n = g('r-nombre').value.trim();
+    if (!n) { showErr('r-err', 'Escribe el nombre del rol.'); return g('r-nombre').focus(); }
+    if (S.roles.some(r => r.nombre.toLowerCase() === n.toLowerCase())) { showErr('r-err', 'Ya existe un rol con ese nombre.'); return g('r-nombre').focus(); }
+    const nid = 'r' + Date.now(); S.roles.push({id:nid, nombre:n, perms:{solicitar:true, calendario:true, aprobar:false, equipo:false, config:false}}); S.selRole = nid; S.roleQ = '';
+    audit('Roles', `Se creó el rol ${n} con los permisos de colaborador. Ajusta sus permisos en el detalle.`); render(); toast('Rol ' + n + ' creado'); return;
+  }
+  if (fid === 'rn-form') {
+    const r = S.roles.find(x => x.id === S.selRole), n = g('rn-nombre').value.trim();
+    if (!n) { showErr('rn-err', 'El rol necesita un nombre.'); return g('rn-nombre').focus(); }
+    if (S.roles.some(x => x.id !== r.id && x.nombre.toLowerCase() === n.toLowerCase())) { showErr('rn-err', 'Ya existe un rol con ese nombre.'); return g('rn-nombre').focus(); }
+    if (n === r.nombre) return;
+    audit('Roles', `El rol ${r.nombre} ahora se llama ${n}.`); r.nombre = n; render(); toast('Rol renombrado'); return;
+  }
+  if (fid === 'rg-form') {
+    const v = k => parseInt(g('rg-' + k).value, 10);
+    const R = {minDias:v('minDias'), maxDias:v('maxDias'), maxBloques:v('maxBloques'), alertaDias:v('alertaDias')};
+    if (Object.values(R).some(x => !Number.isInteger(x) || x < 1)) return showErr('rg-err', 'Todos los valores deben ser números enteros mayores que cero.');
+    if (R.minDias > R.maxDias) return showErr('rg-err', 'El mínimo de días por bloque no puede ser mayor que el máximo.');
+    if (R.maxDias > 30 || R.maxBloques > 10 || R.alertaDias > 120) return showErr('rg-err', 'Revisa los valores: hasta 30 días por bloque, 10 bloques y 120 días de aviso.');
+    S.reglas = R; S.draft = null; audit('Reglas', `Nuevas reglas: bloques de ${R.minDias} a ${R.maxDias} días, hasta ${R.maxBloques} bloques, aviso ${R.alertaDias} días antes del vencimiento.`); render(); toast('Reglas guardadas'); return;
+  }
+  if (fid === 'ar-form') {
+    const n = g('ar-nombre').value.trim();
+    if (!n) { showErr('ar-err', 'Escribe el nombre del área.'); return g('ar-nombre').focus(); }
+    if (S.areas.some(a => a.nombre.toLowerCase() === n.toLowerCase())) { showErr('ar-err', 'Esa área ya existe.'); return g('ar-nombre').focus(); }
+    S.areas.push({id:'a' + Date.now(), nombre:n}); audit('Areas', `Nueva área ${n}.`); render(); toast('Área agregada'); return;
+  }
+  if (fid === 're-form') {
+    const n = g('re-nombre').value.trim(), d = parseInt(g('re-dias').value, 10);
+    if (!n) { showErr('re-err', 'Escribe el nombre del régimen.'); return g('re-nombre').focus(); }
+    if (S.regimenes.some(r => r.nombre.toLowerCase() === n.toLowerCase())) { showErr('re-err', 'Ese régimen ya existe.'); return g('re-nombre').focus(); }
+    if (!(d >= 1 && d <= 60)) { showErr('re-err', 'Indica los días al año (de 1 a 60).'); return g('re-dias').focus(); }
+    S.regimenes.push({id:'g' + Date.now(), nombre:n, dias:d}); audit('Regimenes', `Nuevo régimen ${n} con ${d} días al año.`); render(); toast('Régimen agregado'); return;
+  }
+  if (fid === 'fe-form') {
+    const f = g('fe-fecha').value, n = g('fe-nombre').value.trim();
+    if (!f) { showErr('fe-err', 'Elige la fecha del feriado.'); return g('fe-fecha').focus(); }
+    if (!n) { showErr('fe-err', 'Escribe el nombre del feriado.'); return g('fe-nombre').focus(); }
+    if (S.feriados.some(x => x.fecha === f)) { showErr('fe-err', 'Ya hay un feriado registrado en esa fecha.'); return g('fe-fecha').focus(); }
+    S.feriados.push({fecha:f, nombre:n}); S.ferYear = f.slice(0, 4); audit('Feriados', `Nuevo feriado ${n} el ${fmtLong(f)}.`); render(); toast('Feriado agregado'); return;
+  }
+  if (fid !== 'f') return;
+  const d = S.draft, v = validate(d);
+  if (!v.ok) return;
+  const id = 'SOL-0' + S.next++;
+  const p = S.periodos.find(x => x.id === d.per);
+  S.sol.push({id, emp:S.user, per:d.per, estado:'pendiente', creada:iso(T), bloques:d.bloques.map(b => ({ini:b.ini, dias:b.dias})).sort((a, b) => a.ini < b.ini ? -1 : 1), comentario:d.comentario.trim()});
+  addLog('AppVacaciones_NuevaSolicitud', `Correo a ${supervisorName()}: ${EMP[S.user].nombre} pidió ${v.total} días del periodo ${p.label}${d.bloques.length > 1 ? ' en ' + d.bloques.length + ' bloques' : ''}.`);
+  S.draft = null; go('mis'); toast('Solicitud ' + id + ' enviada a tu supervisor');
+});
+
+render();
+})();
+</script>
+</body>
+</html>

@@ -3,8 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leonardo Bazán · Portafolio</title>
-<meta name="description" content="Leonardo Bazán, desarrollador Power Platform en Lima: apps en Power Apps, Automatizaciones con Power Automate y reportes en Power BI.">
+<title>Leonardo Bazán · Desarrollador Power Platform y Analista de datos</title>
+<meta name="description" content="Leonardo Bazán, desarrollador Power Platform y analista de datos en Lima: apps en Power Apps, automatizaciones con Power Automate, reportes en Power BI y webs informativas.">
+<link rel="canonical" href="https://ldtdata.dev/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<meta name="theme-color" content="#0F161D">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_PE">
+<meta property="og:site_name" content="LDT Data">
+<meta property="og:url" content="https://ldtdata.dev/">
+<meta property="og:title" content="Leonardo Bazán · Power Platform y análisis de datos">
+<meta property="og:description" content="Apps en Power Apps, automatizaciones con Power Automate, reportes en Power BI y webs. Mira los proyectos y prueba las demos en vivo.">
+<meta property="og:image" content="https://ldtdata.dev/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Leonardo Bazán Levano, desarrollador Power Platform y analista de datos, con un modelo estrella de sus herramientas.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -48,7 +63,7 @@ p{margin:0}
 
 /* Nav */
 .top{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
-.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:60px}
+.top .wrap{display:flex;align-items:center;justify-content:flex-end;gap:16px;height:60px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-variation-settings:"wdth" 112;letter-spacing:.01em}
 .brand-mark{width:26px;height:26px;display:grid;grid-template-columns:repeat(3,1fr);align-items:end;gap:2px}
 .brand-mark i{display:block;background:var(--ink);border-radius:1px}
@@ -63,8 +78,12 @@ p{margin:0}
 .hero{padding:clamp(40px,7vw,88px) 0 clamp(40px,6vw,72px)}
 .hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(24px,5vw,64px);align-items:center}
 @media (max-width:860px){.hero .wrap{grid-template-columns:1fr}}
-.hero h1{font-size:var(--step-4);font-weight:800;font-variation-settings:"wdth" 75;letter-spacing:-.01em;line-height:.98}
+.id{display:flex;align-items:center;gap:clamp(16px,2.2vw,26px)}
+.avatar{display:block;flex:none;width:clamp(76px,9vw,120px);aspect-ratio:1}
+.avatar img{display:block;width:100%;height:100%;object-fit:cover;border-radius:22px;border:3px solid var(--surface);box-shadow:0 0 0 2px var(--accent)}
+.hero h1{font-size:clamp(2.3rem,4.6vw,3.9rem);font-weight:800;font-variation-settings:"wdth" 75;letter-spacing:-.01em;line-height:.98}
 .hero .role{font-family:var(--font-display);font-size:var(--step-2);font-variation-settings:"wdth" 100;font-weight:500;color:var(--model);margin-top:14px}
+.role .nw{white-space:nowrap}
 .hero .lede{margin-top:20px;max-width:52ch;color:var(--muted);font-size:1.075rem}
 .hero .lede strong{color:var(--ink);font-weight:600}
 .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
@@ -72,6 +91,9 @@ p{margin:0}
 .btn-primary{background:var(--ink);color:var(--bg)}
 .btn-primary:hover{background:var(--model);border-color:var(--model)}
 .btn:not(.btn-primary):hover{background:var(--surface)}
+.cvs{margin-top:14px;font-size:.9rem;color:var(--muted)}
+.cvs a{color:var(--ink);font-weight:600;text-decoration:none;border-bottom:1.5px solid var(--accent)}
+.cvs a:hover{color:var(--model)}
 .where{margin-top:22px;font-size:var(--step--1);color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
 .where span{display:inline-flex;align-items:center;gap:6px}
 .dot{width:8px;height:8px;border-radius:50%;background:#2F9E5B;display:inline-block}
@@ -89,7 +111,16 @@ p{margin:0}
 .schema .card{font-size:12px;font-weight:700;fill:var(--ink)}
 .schema a .tbl{transition:transform .2s}
 .schema a:hover rect.body,.schema a:focus rect.body{stroke:var(--model);stroke-width:2}
-.schema-cap{font-size:var(--step--1);color:var(--muted);margin-top:10px}
+.schema .tbl{cursor:grab;touch-action:none}
+.schema-reset{font:inherit;font-size:.85rem;font-weight:600;padding:6px 12px;border-radius:6px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.schema-reset:hover{border-color:var(--model)}
+.schema-reset[hidden]{display:none}
+.schema .tbl.drag{cursor:grabbing}
+.schema .tbl.drag rect.body{stroke:var(--accent);stroke-width:2}
+.schema .rel line{stroke:var(--muted);stroke-width:1.2;transition:stroke .15s}
+.schema .rel line.on{stroke:var(--accent);stroke-width:2.2}
+.schema .card text.on{fill:var(--accent-ink)}
+.schema-cap{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:var(--step--1);color:var(--muted);margin-top:10px}
 
 /* Sections */
 section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
@@ -110,24 +141,57 @@ section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
 .svc li{padding-left:16px;position:relative}
 .svc li::before{content:"";position:absolute;left:0;top:.7em;width:7px;height:2px;background:var(--accent)}
 
-/* Projects */
-.projects{display:grid;gap:0;border-top:2px solid var(--ink)}
-.proj{display:grid;grid-template-columns:220px 1fr 220px;gap:clamp(16px,3vw,40px);padding:30px 0;border-bottom:1px solid var(--line)}
-@media (max-width:900px){.proj{grid-template-columns:1fr}}
-.proj-meta{font-size:var(--step--1);color:var(--muted);display:flex;flex-direction:column;gap:6px}
-.proj-meta .ctx{color:var(--ink);font-weight:600;font-size:.95rem}
-.proj h3{font-size:var(--step-2);font-weight:700;font-variation-settings:"wdth" 88;margin-bottom:10px}
-.proj .desc{color:var(--muted);max-width:62ch}
-.proj ul{margin:14px 0 0;padding:0 0 0 18px;max-width:62ch;display:grid;gap:4px;font-size:.95rem}
-.proj ul li::marker{color:var(--accent-ink)}
+/* Projects: grilla compacta; cada tarjeta lleva arriba la identidad de su demo */
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:980px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.pgrid{grid-template-columns:1fr}}
+.pcard{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.pcard.wide{grid-column:span 2}
+@media (max-width:640px){.pcard.wide{grid-column:auto}}
+.pband{position:relative;height:118px;padding:16px 18px;display:flex;flex-direction:column;justify-content:flex-end;background:var(--b1);color:#fff;overflow:hidden;isolation:isolate}
+.pband::before{content:"";position:absolute;z-index:-1;right:-36px;top:-48px;width:170px;height:170px;border-radius:50%;background:var(--b2);opacity:.9}
+.pband::after{content:"";position:absolute;z-index:-1;right:110px;top:-70px;width:110px;height:110px;border-radius:50%;border:14px solid color-mix(in srgb, var(--b2) 55%, transparent)}
+.pband .bn{font-family:var(--font-display);font-weight:800;font-size:1.9rem;font-variation-settings:"wdth" 78;line-height:1;letter-spacing:-.01em}
+.pband .bs{font-size:.82rem;opacity:.85;margin-top:4px}
+.pill{position:absolute;top:14px;left:18px;display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.16);backdrop-filter:blur(2px)}
+.pill i{width:7px;height:7px;border-radius:50%;background:#5BE38F;display:block}
+.pbody{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.pctx{font-size:var(--step--1);color:var(--muted)}
+.pcard h3{font-size:var(--step-1);font-weight:700;font-variation-settings:"wdth" 92;line-height:1.15}
+.pcard .desc{color:var(--muted);font-size:.95rem;line-height:1.5}
+.pcard details{font-size:.9rem}
+.pcard summary{cursor:pointer;color:var(--model);font-weight:600;width:fit-content}
+.pcard summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+.pcard details ul{margin:8px 0 0;padding:0 0 0 18px;display:grid;gap:3px;color:var(--ink)}
+.pcard details li::marker{color:var(--accent-ink)}
+.pfoot{margin-top:auto;padding-top:6px;display:flex;flex-direction:column;gap:12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
-.chip{font-size:.8rem;padding:3px 9px;border:1px solid var(--line);border-radius:999px;background:var(--surface);white-space:nowrap}
-.status{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;padding:3px 10px;border-radius:999px;background:color-mix(in srgb, var(--accent) 22%, transparent);color:var(--accent-ink);width:fit-content}
-.proj.featured{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);padding:30px clamp(18px,3vw,32px);margin:22px 0;border-radius:4px}
-.proj-link{display:inline-flex;align-items:center;gap:10px;margin-top:20px;padding:12px 20px;background:var(--accent);color:#1B1B12;border:0;border-radius:6px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 2px 0 color-mix(in srgb, var(--accent) 60%, #000)}
+.chip{font-size:.76rem;padding:2px 8px;border:1px solid var(--line);border-radius:999px;background:var(--bg);white-space:nowrap}
+.proj-link{display:inline-flex;align-items:center;gap:8px;width:fit-content;padding:9px 16px;background:var(--accent);color:#1B1B12;border:0;border-radius:6px;font-weight:700;font-size:.92rem;text-decoration:none;box-shadow:0 2px 0 color-mix(in srgb, var(--accent) 60%, #000)}
 .proj-link:hover{filter:brightness(1.08)}
 .proj-link:active{transform:translateY(1px);box-shadow:none}
 .proj-link svg{flex:none}
+.no-demo{font-size:.85rem;color:var(--muted)}
+@media (min-width:981px){
+  .pcard.wide{flex-direction:row}
+  .pcard.wide .pband{height:auto;width:42%;flex:none;justify-content:flex-end}
+  .pcard.wide .pband .bn{font-size:2.6rem}
+  .pcard.wide .pband::before{width:240px;height:240px;right:-60px;top:-70px}
+}
+.pfilter{display:flex;flex-wrap:wrap;gap:8px;margin:-12px 0 22px}
+.pfilter button{font:inherit;font-size:.9rem;font-weight:600;padding:7px 14px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.pfilter button span{font-size:.75rem;font-weight:700;min-width:20px;padding:1px 6px;border-radius:999px;background:var(--surface);color:var(--muted)}
+.pfilter button:hover{color:var(--ink);border-color:var(--muted)}
+.pfilter button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.pfilter button[aria-pressed="true"] span{background:var(--accent);color:#1B1B12}
+.pfilter button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.pcard[hidden]{display:none}
+.pgrid.filtered .pcard.wide{grid-column:auto;flex-direction:column}
+.pgrid.filtered .pcard.wide .pband{width:auto;height:118px}
+.pgrid.filtered .pcard.wide .pband .bn{font-size:1.9rem}
+.addon{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.addon i{width:16px;height:16px;flex:none;border-radius:4px;background:#F2C811;display:grid;place-items:center;font-style:normal;font-size:.6rem;font-weight:800;color:#1B1B12}
+.ptype{font-size:.75rem;font-weight:700;color:var(--model);text-transform:none}
 .note{font-size:var(--step--1);color:var(--muted);margin-top:18px;max-width:70ch}
 
 /* Timeline */
@@ -149,17 +213,34 @@ section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
   .tl .what{padding:0}
 }
 
-/* Stack */
-.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:28px 40px}
-.stack h3{font-size:var(--step-0);font-weight:700;font-variation-settings:"wdth" 100;padding-bottom:8px;border-bottom:2px solid var(--model);margin-bottom:10px}
-.stack ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;color:var(--muted)}
-.stack li b{color:var(--ink);font-weight:600}
+/* Herramientas: paneles por grupo con el ícono de cada herramienta */
+.tgroups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:1040px){.tgroups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.tgroups{grid-template-columns:1fr}}
+.tgroup{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 18px 10px;border-top:3px solid var(--g,var(--model))}
+.tgroup h3{font-size:var(--step-0);font-weight:700;font-variation-settings:"wdth" 100;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.tag-learn{font-family:var(--font-body);font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:color-mix(in srgb, var(--accent) 22%, transparent);color:var(--accent-ink);white-space:nowrap}
+.tools{list-style:none;margin:0;padding:0;display:grid}
+.tool{display:flex;align-items:center;gap:12px;padding:9px 0;border-top:1px solid var(--line)}
+.tool:first-child{border-top:0}
+.ico{position:relative;flex:none;width:42px;height:42px;border-radius:10px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;overflow:hidden}
+.ico img{width:26px;height:26px;display:block}
+.ico.mono{background:var(--c);border-color:transparent;color:#fff;font-family:var(--font-display);font-weight:800;font-size:1rem;font-variation-settings:"wdth" 90}
+.ico.mono.dark-ink{color:#1B1B12}
+.ico.mono img{position:absolute;inset:7px;width:auto;height:auto;max-width:28px;max-height:28px;margin:auto}
+.ico.mono.img{background:#fff;border-color:var(--line);color:transparent}
+.tool b{display:block;font-weight:600;line-height:1.25}
+.tool b .tag-learn{margin-left:6px;vertical-align:1px}
+.ico.mono.sm{font-size:.78rem}
+.tool small{display:block;color:var(--muted);font-size:.84rem;line-height:1.3}
+.langs{margin-top:20px;font-size:.95rem;color:var(--muted)}
+.langs b{color:var(--ink);font-weight:600}
 
 /* Contact */
 .contact{background:var(--ink);color:var(--bg);border-top:0}
 .contact .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,5vw,64px);align-items:end}
 @media (max-width:820px){.contact .wrap{grid-template-columns:1fr}}
-.contact h2{font-size:var(--step-4);font-weight:800;font-variation-settings:"wdth" 75;line-height:1}
+.contact h2{font-size:clamp(2.2rem,4.8vw,3.6rem);font-weight:800;font-variation-settings:"wdth" 75;line-height:1.02}
 .contact p{opacity:.8;margin-top:16px;max-width:48ch}
 .contact-list{display:grid;gap:14px}
 .contact-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-bottom:1px solid color-mix(in srgb, var(--bg) 25%, transparent);flex-wrap:wrap}
@@ -168,25 +249,28 @@ section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line)}
 .contact-row a{text-decoration:none;border-bottom:2px solid var(--accent)}
 .copy{font:inherit;font-size:.85rem;font-weight:600;padding:7px 12px;border-radius:4px;border:1.5px solid var(--accent);background:transparent;color:var(--bg);cursor:pointer}
 .copy:hover{background:var(--accent);color:#1B1B12}
-footer{background:var(--ink);color:var(--bg);opacity:1;font-size:var(--step--1)}
+.row-acts{display:flex;gap:8px;flex-wrap:wrap}
+a.copy{text-decoration:none;border-bottom:1.5px solid var(--accent);display:inline-block}
+footer{background:#15212C;color:#E4EAF0;border-top:1px solid #2B3946;opacity:1;font-size:var(--step--1)}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:20px;padding-bottom:28px;border-top:1px solid color-mix(in srgb, var(--bg) 18%, transparent)}
-footer span{opacity:.65}
+footer > .wrap > span:first-child{opacity:.65}
+.socials{display:flex;gap:10px;flex-wrap:wrap}
+.soc{display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border-radius:50%;background:#fff;color:#15212C;text-decoration:none;font-weight:600;font-size:.9rem;border:1px solid rgba(0,0,0,.08)}
+.soc:hover{box-shadow:0 0 0 2px var(--accent)}
+.soc img{display:block}
+footer .wrap{align-items:center}
+footer .wrap{border-top:0;padding-top:24px}
 </style>
 </head>
 <body>
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#inicio" aria-label="LDT Data, inicio">
-      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-      LDT Data
-    </a>
     <nav class="nav" aria-label="Secciones">
-      <a href="#servicios">Servicios</a>
-      <a href="#proyectos">Proyectos</a>
-      <a href="#trayectoria">Trayectoria</a>
+      <a href="#servicios">Lo que hago</a>
+            <a href="#trayectoria">Trayectoria</a>
       <a href="#herramientas">Herramientas</a>
-      <a class="nav-cta" href="#contacto">Contacto</a>
+      <a class="nav-cta" href="#proyectos">Proyectos</a>
     </nav>
   </div>
 </header>
@@ -195,22 +279,28 @@ footer span{opacity:.65}
   <div class="hero">
     <div class="wrap">
       <div>
-        <h1>Leonardo Bazán Levano</h1>
-        <p class="role">Desarrollador Power Platform y Analista de datos</p>
-        <p class="lede">Construyo <strong>apps en Power Apps</strong>, <strong>Automatizaciones con Power Automate</strong> y <strong>reportes en Power BI</strong> que reemplazan Excel sueltos y correos por procesos ordenados, con datos en SharePoint, SQL Server o Fabric.</p>
+        <div class="id">
+          <picture class="avatar">
+            <source srcset="assets/foto-leonardo.webp" type="image/webp">
+            <img src="assets/foto-leonardo.jpg" alt="Leonardo Bazán Levano en su escritorio de trabajo" width="120" height="120">
+          </picture>
+          <h1>Leonardo Bazán Levano</h1>
+        </div>
+        <p class="role">Desarrollador <span class="nw">Power Platform</span> <span class="nw">y Analista de datos</span></p>
+        <p class="lede">Construyo <strong>apps en Power Apps</strong>, <strong>automatizaciones con Power Automate</strong> y <strong>reportes en Power BI</strong> que reemplazan Excel sueltos y correos por procesos ordenados, con datos en SharePoint, SQL Server o Fabric.</p>
         <div class="actions">
           <a class="btn btn-primary" href="#proyectos">Ver proyectos</a>
-          <a class="btn" href="#contacto">Escríbeme</a>
+          <a class="btn" href="assets/cv/CV_Leonardo_Bazan_Power_Platform.pdf" download><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>Descargar CV</a>
         </div>
+        <p class="cvs">¿Buscas un perfil de datos? <a href="assets/cv/CV_Leonardo_Bazan_Datos.pdf" download>Descarga la versión de datos</a></p>
         <div class="where">
-          <span><span class="dot" aria-hidden="true"></span>Disponible para proyectos freelance</span>
-          <span>Lima, Perú · remoto</span>
+                    <span>Lima, Perú</span>
         </div>
       </div>
 
       <figure style="margin:0">
         <svg class="schema" viewBox="0 0 540 400" role="img" aria-labelledby="schema-t">
-          <title id="schema-t">Mi perfil como un modelo estrella: una tabla central de proyectos relacionada con Power Apps, Power Automate, Power BI, Fabric y bases SQL.</title>
+          <title id="schema-t">Mi perfil como un modelo estrella: una tabla central de proyectos relacionada con Power Apps, Power Automate, Power BI, Fabric, bases SQL y desarrollo web.</title>
           <!-- relaciones -->
           <g class="rel">
             <path d="M200 175 L120 92"/>
@@ -218,6 +308,7 @@ footer span{opacity:.65}
             <path d="M340 215 L410 215"/>
             <path d="M340 250 L420 318"/>
             <path d="M200 250 L120 318"/>
+            <path d="M200 215 L146 215"/>
           </g>
           <!-- cardinalidad -->
           <g class="card">
@@ -226,6 +317,7 @@ footer span{opacity:.65}
             <text x="398" y="208">1</text><text x="346" y="208">*</text>
             <text x="408" y="306">1</text><text x="346" y="268">*</text>
             <text x="126" y="306">1</text><text x="186" y="268">*</text>
+            <text x="150" y="208">1</text><text x="188" y="208">*</text>
           </g>
 
           <!-- tabla de hechos -->
@@ -281,6 +373,17 @@ footer span{opacity:.65}
               <text x="382" y="364">Modelos semánticos</text>
             </g>
           </a>
+          <a href="#herramientas" aria-label="Desarrollo web">
+            <g class="tbl">
+              <rect class="body" x="8" y="172" width="138" height="102" rx="5"/>
+              <rect class="head" x="8" y="172" width="138" height="26" rx="5"/>
+              <rect x="8" y="188" width="138" height="10" style="fill:var(--model)"/>
+              <text class="h" x="18" y="190">dim_DesarrolloWeb</text>
+              <text x="18" y="218">HTML · CSS</text>
+              <text x="18" y="236">JavaScript</text>
+              <text x="18" y="254">GitHub Pages</text>
+            </g>
+          </a>
           <a href="#herramientas" aria-label="Bases de datos">
             <g class="tbl">
               <rect class="body" x="20" y="300" width="150" height="84" rx="5"/>
@@ -292,7 +395,7 @@ footer span{opacity:.65}
             </g>
           </a>
         </svg>
-        <figcaption class="schema-cap">Mi trabajo, en el formato que mejor conozco: un Modelo Estrella.</figcaption>
+        <figcaption class="schema-cap"><span>Mi trabajo, en el formato que mejor conozco: un Modelo Estrella. Arrastra las tablas para reorganizarlo.</span><button type="button" class="schema-reset" id="schema-reset" hidden>Reordenar</button></figcaption>
       </figure>
     </div>
   </div>
@@ -301,7 +404,7 @@ footer span{opacity:.65}
     <div class="wrap">
       <div class="sec-head">
         <h2>Lo que hago</h2>
-        <p>Tomo un proceso que hoy vive en hojas de cálculo, correos y aprobaciones a mano, y lo convierto en una app, un flujo, un reporte o una web que el equipo usa a diario.</p>
+        <p>Convierto procesos que viven en hojas de cálculo, correos y aprobaciones a mano en apps, flujos, reportes y webs que un equipo usa a diario.</p>
       </div>
       <div class="services">
         <div class="svc">
@@ -345,11 +448,11 @@ footer span{opacity:.65}
             <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2.5 8.5h19" stroke="currentColor" stroke-width="1.8"/><rect x="6" y="11.5" width="6" height="5" fill="var(--accent)"/></svg>
             Webs informativas
           </h3>
-          <p>Sitios rápidos y fáciles de mantener para presentar tu empresa y recibir pedidos de cotización.</p>
+          <p>Sitios rápidos y fáciles de mantener para presentar una empresa y recibir pedidos de cotización.</p>
           <ul>
             <li>Diseño adaptado a celular</li>
             <li>Catálogos, galerías y formularios</li>
-            <li>Publicación con tu propio dominio</li>
+            <li>Publicación con dominio propio</li>
           </ul>
         </div>
       </div>
@@ -360,121 +463,90 @@ footer span{opacity:.65}
     <div class="wrap">
       <div class="sec-head">
         <h2>Proyectos</h2>
-        <p>Una selección de trabajos reales. Por confidencialidad describo el problema y la solución sin datos de los clientes.</p>
+        <p>Demos que construí para mostrar cómo resuelvo procesos de negocio típicos. Todas se pueden probar.</p>
       </div>
 
-      <div class="projects">
-        <article class="proj">
-          <div class="proj-meta">
-            <span class="ctx">Consultora TI · uso interno</span>
-            <span>2026</span>
+      <div class="pfilter" role="group" aria-label="Filtrar proyectos por tipo">
+        <button type="button" aria-pressed="true" data-f="all">Todos <span>5</span></button>
+        <button type="button" aria-pressed="false" data-f="pp">Power Platform <span>3</span></button>
+        <button type="button" aria-pressed="false" data-f="bi">Power BI <span>1</span></button>
+        <button type="button" aria-pressed="false" data-f="web">Desarrollo web <span>1</span></button>
+      </div>
+      <div class="pgrid">
+        <article class="pcard wide" data-type="pp">
+          <div class="pband" style="--b1:#0F4C5C;--b2:#E36414" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Andina Pedidos</span><span class="bs">Distribuidora ficticia</span></div>
+          <div class="pbody">
+            <span class="ptype">Power Platform</span>
+            <span class="pctx">Proyecto propio · 2026</span>
+            <h3>Toma de pedidos con aprobación</h3>
+            <p class="desc">Del pedido en el celular a la aprobación del supervisor, el despacho y el reporte de ventas, con usuarios, roles y datos maestros que administra el propio cliente.</p>
+            <p class="addon"><i aria-hidden="true">BI</i>Incluye un reporte en <span style="white-space:nowrap">Power BI</span>.</p>
+            <details open><summary>Qué incluye</summary><ul><li>Validación de descuento, monto y crédito del cliente</li><li>Aprobación del supervisor en Teams y despacho desde el almacén</li><li>Reporte de ventas por sede, vendedor y producto</li><li>Roles de vendedor, supervisor, almacén y administrador</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span></div>
+              <a class="proj-link" href="demos/andina-pedidos/" aria-label="Ver demo de Andina Pedidos">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
           </div>
-          <div>
+        </article>
+        <article class="pcard" data-type="pp">
+          <div class="pband" style="--b1:#1F6BC9;--b2:#174F96" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Altamar</span><span class="bs">Gestión de vacaciones</span></div>
+          <div class="pbody">
+            <span class="ptype">Power Platform</span>
+            <span class="pctx">Demo propia · recursos humanos · 2026</span>
             <h3>Sistema de gestión de vacaciones</h3>
-            <p class="desc">Las solicitudes se manejaban por correo y nadie tenía claro cuántos días le quedaban a cada persona. Ahora todo pasa por una app con aprobación del supervisor y un calendario del equipo.</p>
-            <ul>
-              <li>Solicitudes por bloques, con validación de 4 a 15 días por bloque y feriados</li>
-              <li>Correos HTML de aprobación, rechazo y cancelación</li>
-              <li>Aviso diario al colaborador y su jefe cuando un periodo está por vencer</li>
-              <li>Calendario del equipo en Power BI con un visual Deneb a medida</li>
-            </ul>
+            <p class="desc">Solicitudes con aprobación del supervisor, saldo de días claro para cada persona y calendario del equipo.</p>
+            <p class="addon"><i aria-hidden="true">BI</i>Incluye un reporte en <span style="white-space:nowrap">Power BI</span>.</p>
+            <details><summary>Qué incluye</summary><ul><li>Bloques de 4 a 15 días con validación de feriados</li><li>Correos de aprobación, rechazo y cancelación</li><li>Aviso cuando un periodo está por vencer</li><li>Calendario del equipo en Power BI con Deneb</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">SharePoint</span></div>
+              <a class="proj-link" href="demos/vacaciones/" aria-label="Ver demo de gestión de vacaciones">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
           </div>
-          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">Power BI</span><span class="chip">Deneb</span><span class="chip">SharePoint</span></div>
         </article>
-
-        <article class="proj">
-          <div class="proj-meta">
-            <span class="ctx">Empresa de servicios mineros</span>
-            <span>2026</span>
+        <article class="pcard" data-type="pp">
+          <div class="pband" style="--b1:#1B1A33;--b2:#4B3FB5" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Caudal</span><span class="bs">Gestión de préstamos</span></div>
+          <div class="pbody">
+            <span class="ptype">Power Platform</span>
+            <span class="pctx">Demo propia · microfinanzas · 2026</span>
+            <h3>Sistema de gestión de préstamos</h3>
+            <p class="desc">Reemplaza el cuaderno y el Excel del gestor: cada préstamo con su tasa, su cronograma descargable y alertas de cobro.</p>
+            <details><summary>Qué incluye</summary><ul><li>Frecuencias de pago con tasas y plazos propios</li><li>Cronograma en PDF y Excel al generar el préstamo</li><li>Registro de pagos y control de mora</li><li>Recordatorios de cuotas con Power Automate</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">SharePoint</span></div>
+              <a class="proj-link" href="demos/prestamos/" aria-label="Ver demo de gestión de préstamos">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
           </div>
-          <div>
-            <h3>Indicadores de mantenimiento de flota</h3>
-            <p class="desc">Reportes sobre la base de datos del sistema de gestión de activos para seguir la confiabilidad de cientos de equipos en mina subterránea.</p>
-            <ul>
-              <li>MTBF, MTTR, disponibilidad y utilización con ventanas móviles</li>
-              <li>Estado y vida útil de componentes mayores por tipo de tarea</li>
-              <li>Reporte diario de equipos y migración de fuentes SharePoint a SQL</li>
-            </ul>
-          </div>
-          <div class="chips"><span class="chip">Power BI</span><span class="chip">DAX</span><span class="chip">Dataflows</span><span class="chip">SQL Server</span></div>
         </article>
-
-        <article class="proj">
-          <div class="proj-meta">
-            <span class="ctx">Área legal</span>
-            <span>2026</span>
-          </div>
-          <div>
-            <h3>Expedientes judiciales</h3>
-            <p class="desc">App para registrar cada proceso y su avance por instancia, con un robot que trae los datos desde la web del Poder Judicial.</p>
-            <ul>
-              <li>Expediente con primera instancia, segunda instancia y casación</li>
-              <li>Un solo formulario para crear y editar</li>
-              <li>Extracción automática con Power Automate Desktop</li>
-            </ul>
-          </div>
-          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate Desktop</span><span class="chip">SharePoint</span></div>
-        </article>
-
-        <article class="proj">
-          <div class="proj-meta">
-            <span class="ctx">Consultora TI · área comercial</span>
-            <span>2026</span>
-          </div>
-          <div>
-            <h3>Suscripciones y renovaciones de clientes</h3>
-            <p class="desc">Un dashboard que junta los Excel mensuales de licencias en un solo historial de gasto por cliente y muestra qué renovaciones vienen.</p>
-            <ul>
-              <li>Consolidación automática de archivos desde una carpeta de SharePoint</li>
-              <li>Modelo con calendario, clientes y medidas por carpetas</li>
-            </ul>
-          </div>
-          <div class="chips"><span class="chip">Power BI</span><span class="chip">Power Query</span><span class="chip">SharePoint</span></div>
-        </article>
-
-        <article class="proj">
-          <div class="proj-meta">
-            <span class="ctx">Empresa de servicios mineros</span>
-            <span>2026</span>
-          </div>
-          <div>
+        <article class="pcard" data-type="web">
+          <div class="pband" style="--b1:#0F2433;--b2:#3FBFA3" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Andesita</span><span class="bs">Web informativa</span></div>
+          <div class="pbody">
+            <span class="ptype">Desarrollo web</span>
+            <span class="pctx">Demo propia · sector minero · 2026</span>
             <h3>Web para un taller de equipos mineros</h3>
-            <p class="desc">Sitio informativo de ocho páginas para una empresa que repara y remanufactura equipos de minería subterránea. Pensado para que un jefe de mantenimiento encuentre el servicio o repuesto y pida una cotización desde el celular.</p>
-            <ul>
-              <li>Catálogo de repuestos con filtro por varias categorías</li>
-              <li>Casos de antes y después, y ficha técnica de maquinaria</li>
-              <li>Formulario de cotización guiado por tipo de equipo y falla</li>
-            </ul>
-            <a class="proj-link" href="demos/taller-minero/">Ver demo en vivo<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
-            <p class="note" style="margin-top:10px">La demo usa una marca, datos y clientes ficticios.</p>
+            <p class="desc">Sitio de ocho páginas para que un jefe de mantenimiento encuentre el servicio o repuesto y cotice desde el celular.</p>
+            <details><summary>Qué incluye</summary><ul><li>Catálogo de repuestos con filtros</li><li>Casos de antes y después y fichas técnicas</li><li>Formulario de cotización guiado por equipo y falla</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span></div>
+              <a class="proj-link" href="demos/taller-minero/" aria-label="Ver demo de la web del taller minero">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
           </div>
-          <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Diseño responsive</span></div>
         </article>
-
-        <article class="proj">
-          <div class="proj-meta">
-            <span class="ctx">Compras y proveedores</span>
-            <span>2026</span>
+        <article class="pcard" data-type="bi">
+          <div class="pband" style="--b1:#2E5E8E;--b2:#E2A900" aria-hidden="true"><span class="pill"><i style="background:#F2C230"></i>En desarrollo</span><span class="bn">Renovaciones</span><span class="bs">Dashboard comercial</span></div>
+          <div class="pbody">
+            <span class="ptype">Power BI</span>
+            <span class="pctx">Demo propia · área comercial · 2026</span>
+            <h3>Suscripciones y renovaciones de clientes</h3>
+            <p class="desc">Junta los Excel mensuales de licencias en un solo historial de gasto por cliente y muestra qué renovaciones vienen.</p>
+            <details><summary>Qué incluye</summary><ul><li>Consolidación automática desde una carpeta de SharePoint</li><li>Modelo con calendario, clientes y medidas por carpetas</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">Power BI</span><span class="chip">Power Query</span><span class="chip">SharePoint</span></div>
+              <span class="no-demo">Demo en Power BI con datos ficticios, en preparación.</span>
+            </div>
           </div>
-          <div>
-            <h3>Actas de conformidad y CRM comercial</h3>
-            <p class="desc">Flujos para emitir y aprobar actas de conformidad de proveedores, y una app CRM para registrar actividades comerciales con disparadores condicionales.</p>
-          </div>
-          <div class="chips"><span class="chip">Power Automate</span><span class="chip">Power Apps</span></div>
-        </article>
-
-        <article class="proj featured">
-          <div class="proj-meta">
-            <span class="status">En desarrollo</span>
-            <span class="ctx">Proyecto de portafolio</span>
-          </div>
-          <div>
-            <h3>Andina Pedidos</h3>
-            <p class="desc">Toma de pedidos con flujo de aprobación para una distribuidora ficticia. Lo construyo de punta a punta en mi propio entorno para mostrar el proceso completo, desde el modelo de datos hasta el reporte de ventas.</p>
-          </div>
-          <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span><span class="chip">Power BI</span></div>
         </article>
       </div>
+      <p class="note">Las demos usan marcas, datos y personas ficticias. Las apps de gestión están pensadas para Power Apps (con Power Automate y SharePoint) y también funcionan como aplicación web.</p>
     </div>
   </section>
 
@@ -482,27 +554,35 @@ footer span{opacity:.65}
     <div class="wrap">
       <div class="sec-head">
         <h2>Trayectoria</h2>
-        <p>Empecé en desarrollo móvil, pasé por el análisis de datos y hoy me dedico a Power Platform.</p>
+        <p>Empecé en desarrollo móvil, pasé por el análisis de datos y hoy me dedico a Power Platform. Ahora también estoy aprendiendo desarrollo web.</p>
       </div>
       <ol class="timeline">
+        <li class="tl now">
+          <span class="when">2026 – hoy</span>
+          <div class="what">
+            <h3>Desarrollo web <span class="org">· en aprendizaje</span></h3>
+            <p>HTML, CSS y JavaScript con proyectos propios: este portafolio y las demos que puedes probar arriba, publicados con Git y GitHub Pages.</p>
+          </div>
+        </li>
         <li class="tl now">
           <span class="when">2024 – hoy</span>
           <div class="what">
             <h3>Power Platform Developer <span class="org">· CXMart SAC</span></h3>
-            <p>Apps, flujos y reportes para clientes de minería, pesca y servicios, además de herramientas internas. Bases en SharePoint, SQL Server y PostgreSQL.</p>
+            <p>Apps, flujos y reportes para clientes de minería, pesca y servicios, además de herramientas internas. Integraciones con APIs REST y SAP OData, despliegues entre ambientes con soluciones y pipelines, y capacitación a usuarios. Bases en SharePoint, SQL Server y PostgreSQL.</p>
           </div>
         </li>
         <li class="tl">
           <span class="when">2023 – 2024</span>
           <div class="what">
             <h3>Analista de Datos <span class="org">· GAC</span></h3>
-            <p>Análisis y reportes con MySQL y Excel como fuentes principales.</p>
+            <p>Cargas, limpieza y validación de datos; consultas, vistas y procedimientos en MySQL para una plataforma web, y dashboards en Power BI.</p>
           </div>
         </li>
         <li class="tl">
           <span class="when">2022</span>
           <div class="what">
             <h3>Practicante de desarrollo móvil <span class="org">· Geosatelital SAC</span></h3>
+            <p>Apps móviles de seguimiento vehicular con APIs de geolocalización.</p>
           </div>
         </li>
         <li class="tl">
@@ -513,7 +593,7 @@ footer span{opacity:.65}
           </div>
         </li>
       </ol>
-      <p class="note">Formación continua en 2026: curso de Power Apps y Power Automate (IDAT) y Especialización en Análisis de Datos + IA Generativa (Summa Center Latam, en curso). Siguiente meta: certificación PL-300.</p>
+      <p class="note">Formación continua en 2026: curso de Power Apps y Power Automate (IDAT) y Especialización en Análisis de Datos + IA Generativa en Summa Center Latam, en curso, con los programas Fundamentos de Data, Análisis de Datos con SQL + IA y Análisis de Datos con Python + IA. Certificaciones: PL-900 en curso y PL-300 prevista para diciembre de 2026 o enero de 2027.</p>
     </div>
   </section>
 
@@ -523,93 +603,173 @@ footer span{opacity:.65}
         <h2>Herramientas</h2>
         <p>Lo que uso a diario y lo que sigo aprendiendo.</p>
       </div>
-      <div class="stack">
-        <div>
+      <div class="tgroups">
+        <div class="tgroup" style="--g:#742774">
           <h3>Power Platform</h3>
-          <ul>
-            <li><b>Power Apps</b>, canvas y model-driven</li>
-            <li><b>Power Automate</b>, nube y Desktop</li>
-            <li><b>Power Fx</b></li>
+          <ul class="tools">
+            <li class="tool"><span class="ico mono" style="--c:#742774">Pa<img src="assets/icons/power-apps.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>Power Apps</b><small>Canvas, Power Fx y model-driven</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#0F6CBD">Au<img src="assets/icons/power-automate.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>Power Automate</b><small>Flujos en la nube y Desktop (RPA)</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#088142">Dv<img src="assets/icons/dataverse.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>Dataverse</b><small>Tablas y soluciones</small></span></li>
           </ul>
         </div>
-        <div>
+        <div class="tgroup" style="--g:#E2A900">
           <h3>Datos y BI</h3>
-          <ul>
-            <li><b>Power BI</b>, DAX y Power Query</li>
-            <li><b>Microsoft Fabric</b> y dataflows</li>
-            <li><b>Deneb</b> para visuales a medida</li>
+          <ul class="tools">
+            <li class="tool"><span class="ico mono dark-ink" style="--c:#F2C811">BI<img src="assets/icons/power-bi.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>Power BI</b><small>DAX, Power Query y modelado</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#117865">F<img src="assets/icons/fabric.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>Microsoft Fabric</b><small>Dataflows y modelos semánticos</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#2E5E8E">Dn<img src="assets/icons/deneb.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>Deneb</b><small>Visuales a medida con Vega-Lite</small></span></li>
+            <li class="tool"><span class="ico"><img src="assets/icons/python.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>Python<span class="tag-learn">Aprendiendo</span></b><small>Análisis de datos</small></span></li>
           </ul>
         </div>
-        <div>
+        <div class="tgroup" style="--g:#2E5E8E">
           <h3>Bases de datos</h3>
-          <ul>
-            <li><b>SharePoint</b> y Dataverse</li>
-            <li><b>SQL Server</b> y PostgreSQL</li>
-            <li><b>MySQL</b></li>
+          <ul class="tools">
+            <li class="tool"><span class="ico"><img src="assets/icons/microsoftsqlserver.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>SQL Server</b><small>Vistas, procedimientos y disparadores</small></span></li>
+            <li class="tool"><span class="ico"><img src="assets/icons/postgresql.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>PostgreSQL</b><small>Modelos para apps de negocio</small></span></li>
+            <li class="tool"><span class="ico"><img src="assets/icons/mysql.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>MySQL</b><small>Optimización de consultas</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#038387">S<img src="assets/icons/sharepoint.svg" alt="" onload="this.parentNode.classList.add('img')" onerror="this.remove()"></span><span><b>SharePoint Online</b><small>Listas, bibliotecas y permisos</small></span></li>
           </ul>
         </div>
-        <div>
-          <h3>Desarrollo web</h3>
-          <ul>
-            <li><b>HTML</b> y <b>CSS</b></li>
-            <li><b>JavaScript</b></li>
-            <li><b>Git</b> y GitHub Pages</li>
+        <div class="tgroup" style="--g:#0F6CBD">
+          <h3>Integración y despliegue</h3>
+          <ul class="tools">
+            <li class="tool"><span class="ico mono sm" style="--c:#334155">API</span><span><b>APIs REST y JSON</b><small>Conectores estándar y personalizados</small></span></li>
+            <li class="tool"><span class="ico mono sm" style="--c:#1E5AA8">OD</span><span><b>OData y SAP OData</b><small>Integración con sistemas existentes</small></span></li>
+            <li class="tool"><span class="ico mono sm" style="--c:#5B4BA8">ALM</span><span><b>Soluciones y pipelines</b><small>Despliegue entre DEV, QA y PROD</small></span></li>
+            <li class="tool"><span class="ico mono sm" style="--c:#0E7490">GW</span><span><b>Data Gateway</b><small>Dataflows sobre SQL Server local</small></span></li>
           </ul>
         </div>
-        <div>
-          <h3>Idiomas</h3>
-          <ul>
-            <li><b>Español</b>, nativo</li>
-            <li><b>Inglés</b>, básico</li>
+        <div class="tgroup" style="--g:#3FBFA3">
+          <h3>Desarrollo web<span class="tag-learn">Aprendiendo</span></h3>
+          <ul class="tools">
+            <li class="tool"><span class="ico"><img src="assets/icons/html5.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>HTML y CSS</b><small>Sitios adaptados a celular</small></span></li>
+            <li class="tool"><span class="ico"><img src="assets/icons/javascript.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>JavaScript</b><small>Apps de una sola página</small></span></li>
+            <li class="tool"><span class="ico"><img src="assets/icons/git.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>Git y GitHub Pages</b><small>Versiones y publicación</small></span></li>
+            <li class="tool"><span class="ico"><img src="assets/icons/vscode.svg" alt="" width="26" height="26" loading="lazy"></span><span><b>VS Code</b><small>Mi editor</small></span></li>
+          </ul>
+        </div>
+        <div class="tgroup" style="--g:#C2410C">
+          <h3>IA generativa</h3>
+          <ul class="tools">
+            <li class="tool"><span class="ico mono" style="--c:#2563EB">Co</span><span><b>Microsoft Copilot</b><small>En Power Platform y Microsoft 365</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#C2410C">IA</span><span><b>ChatGPT y Claude</b><small>Documentación y prototipos más rápidos</small></span></li>
+            <li class="tool"><span class="ico mono" style="--c:#15803D">✓</span><span><b>Siempre validado</b><small>Sin datos de clientes y revisado contra los requerimientos</small></span></li>
           </ul>
         </div>
       </div>
+      <p class="langs">Idiomas: <b>español</b>, nativo · <b>inglés</b>, básico.</p>
     </div>
   </section>
 
-  <section id="contacto" class="contact">
-    <div class="wrap">
-      <div>
-        <h2>¿Tienes un proceso que se puede ordenar?</h2>
-        <p>Cuéntame qué hace hoy tu equipo a mano y te propongo cómo resolverlo con Power Platform.</p>
-      </div>
-      <div class="contact-list">
-        <div class="contact-row">
-          <div>
-            <div class="k">Correo</div>
-            <div class="v" id="mail">leonardo@ldtdata.dev</div>
-          </div>
-          <button class="copy" id="copy-mail" type="button">Copiar correo</button>
-        </div>
-        <div class="contact-row">
-          <div>
-            <div class="k">LinkedIn</div>
-            <div class="v"><a href="https://www.linkedin.com/in/bleonardoe" target="_blank" rel="noopener">linkedin.com/in/bleonardoe</a></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 </main>
 
 <footer>
   <div class="wrap">
     <span>© 2026 Leonardo Bazán · LDT Data</span>
-    <span>ldtdata.dev</span>
+    <span class="socials">
+      <a class="soc" href="https://wa.me/51970877050" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp al +51 970 877 050"><img src="assets/icons/whatsapp.svg" alt="" width="22" height="22"></a>
+      <a class="soc" href="https://www.linkedin.com/in/bleonardoe" target="_blank" rel="noopener" aria-label="Perfil de LinkedIn"><img src="assets/icons/linkedin.svg" alt="" width="22" height="22"></a>
+    </span>
   </div>
 </footer>
 
 <script>
-document.getElementById('copy-mail').addEventListener('click', async function(){
-  var btn = this;
-  try{
-    await navigator.clipboard.writeText(document.getElementById('mail').textContent.trim());
-    btn.textContent = 'Correo copiado';
-  }catch(e){
-    btn.textContent = 'Selecciona y copia el correo';
+
+(function(){
+  var f=document.querySelector('.pfilter'), g=document.querySelector('.pgrid'); if(!f) return;
+  f.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    var v=b.dataset.f;
+    f.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed', x===b?'true':'false');});
+    g.classList.toggle('filtered', v!=='all');
+    var w=g.querySelector('.pcard.wide details'); if(w) w.open = (v==='all');
+    g.querySelectorAll('.pcard').forEach(function(c){ c.hidden = v!=='all' && c.dataset.type.split(' ').indexOf(v)<0; });
+  });
+})();
+
+(function(){
+  var svg=document.querySelector('.schema'); if(!svg) return;
+  var NS='http://www.w3.org/2000/svg', VB={w:540,h:400}, PAD=10;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var tbls=[].slice.call(svg.querySelectorAll('.tbl')), fact=svg.querySelector('.tbl.fact');
+  var btn=document.getElementById('schema-reset');
+  tbls.forEach(function(g){ var r=g.querySelector('rect.body'); g._b={x:+r.getAttribute('x'),y:+r.getAttribute('y'),w:+r.getAttribute('width'),h:+r.getAttribute('height')}; g._t={x:0,y:0}; g._p={x:0,y:0}; });
+  var relG=svg.querySelector('g.rel'), cardG=svg.querySelector('g.card');
+  relG.innerHTML=''; cardG.innerHTML='';
+  var dims=tbls.filter(function(g){return g!==fact;});
+  dims.forEach(function(g){
+    g._l=document.createElementNS(NS,'line'); relG.appendChild(g._l);
+    g._one=document.createElementNS(NS,'text'); g._one.textContent='1'; cardG.appendChild(g._one);
+    g._many=document.createElementNS(NS,'text'); g._many.textContent='*'; cardG.appendChild(g._many);
+  });
+  var dragging=null, raf=null;
+  function box(g,k){var o=g[k||'_p']; return {x:g._b.x+o.x,y:g._b.y+o.y,w:g._b.w,h:g._b.h};}
+  function ctr(b){return {x:b.x+b.w/2,y:b.y+b.h/2};}
+  function edge(b,c,dx,dy){var t=Math.min(dx?(b.w/2)/Math.abs(dx):Infinity, dy?(b.h/2)/Math.abs(dy):Infinity); return {x:c.x+dx*t,y:c.y+dy*t};}
+  function place(t,p,ux,uy,along){ t.setAttribute('x',(p.x+ux*along-uy*9-3).toFixed(1)); t.setAttribute('y',(p.y+uy*along+ux*9+4).toFixed(1)); }
+  function clamp(g){ g._t.x=Math.max(-g._b.x,Math.min(VB.w-g._b.x-g._b.w,g._t.x)); g._t.y=Math.max(-g._b.y,Math.min(VB.h-g._b.y-g._b.h,g._t.y)); }
+  function draw(){
+    var A=box(fact), ca=ctr(A);
+    tbls.forEach(function(g){ g.setAttribute('transform','translate('+g._p.x.toFixed(1)+' '+g._p.y.toFixed(1)+')'); });
+    dims.forEach(function(g){
+      var B=box(g), cb=ctr(B), dx=cb.x-ca.x, dy=cb.y-ca.y, len=Math.hypot(dx,dy)||1, ux=dx/len, uy=dy/len;
+      var pa=edge(A,ca,dx,dy), pb=edge(B,cb,-dx,-dy);
+      g._l.setAttribute('x1',pa.x);g._l.setAttribute('y1',pa.y);g._l.setAttribute('x2',pb.x);g._l.setAttribute('y2',pb.y);
+      place(g._many,pa,ux,uy,10); place(g._one,pb,-ux,-uy,10);
+    });
   }
-  setTimeout(function(){ btn.textContent = 'Copiar correo'; }, 2200);
-});
+  /* Si dos tablas se enciman, la que no estás moviendo se corre hacia el lado más corto */
+  function resolve(){
+    for(var it=0; it<12; it++){
+      var moved=false;
+      for(var i=0;i<tbls.length;i++) for(var j=i+1;j<tbls.length;j++){
+        var g1=tbls[i], g2=tbls[j], a=box(g1,'_t'), b=box(g2,'_t');
+        var ox=Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x)+PAD, oy=Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y)+PAD;
+        if(ox<=0||oy<=0) continue; moved=true;
+        var ca=ctr(a), cb=ctr(b), w1=g1===dragging?0:(g2===dragging?1:.5), w2=1-w1;
+        if(ox<oy){ var sx=(cb.x>=ca.x?1:-1)*ox; g1._t.x-=sx*w1; g2._t.x+=sx*w2; }
+        else { var sy=(cb.y>=ca.y?1:-1)*oy; g1._t.y-=sy*w1; g2._t.y+=sy*w2; }
+        if(g1!==dragging) clamp(g1); if(g2!==dragging) clamp(g2);
+      }
+      if(!moved) break;
+    }
+  }
+  function changed(){ return tbls.some(function(g){return Math.abs(g._t.x)>.5||Math.abs(g._t.y)>.5;}); }
+  function tick(){
+    var busy=!!dragging;
+    tbls.forEach(function(g){
+      var k=(g===dragging||reduce)?1:.22, dx=g._t.x-g._p.x, dy=g._t.y-g._p.y;
+      g._p.x+=dx*k; g._p.y+=dy*k;
+      if(Math.abs(dx)>.3||Math.abs(dy)>.3) busy=true; else { g._p.x=g._t.x; g._p.y=g._t.y; }
+    });
+    draw(); if(btn) btn.hidden=!changed();
+    raf=busy?requestAnimationFrame(tick):null;
+  }
+  function kick(){ if(!raf) raf=requestAnimationFrame(tick); }
+  function hi(g,on){ var list=g===fact?dims:[g]; list.forEach(function(d){ d._l.classList.toggle('on',on); d._one.classList.toggle('on',on); d._many.classList.toggle('on',on); }); }
+  function pt(e){ var p=svg.createSVGPoint(); p.x=e.clientX; p.y=e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+  tbls.forEach(function(g){
+    var start=null, moved=false, link=g.closest('a');
+    if(link) link.addEventListener('click',function(e){ if(moved){ e.preventDefault(); moved=false; } });
+    g.addEventListener('pointerenter',function(){ hi(g,true); });
+    g.addEventListener('pointerleave',function(){ if(!start) hi(g,false); });
+    g.addEventListener('pointerdown',function(e){
+      var p=pt(e); start={px:p.x,py:p.y,dx:g._t.x,dy:g._t.y}; moved=false; dragging=g;
+      var node=link||g; node.parentNode.appendChild(node);
+      g.setPointerCapture(e.pointerId); g.classList.add('drag'); hi(g,true); kick();
+    });
+    g.addEventListener('pointermove',function(e){
+      if(!start) return; var p=pt(e);
+      g._t.x=start.dx+p.x-start.px; g._t.y=start.dy+p.y-start.py; clamp(g);
+      if(Math.abs(g._t.x-start.dx)+Math.abs(g._t.y-start.dy)>4) moved=true;
+      resolve(); kick();
+    });
+    function release(){ if(!start) return; start=null; dragging=null; g.classList.remove('drag'); hi(g,false); resolve(); kick(); }
+    g.addEventListener('pointerup',release); g.addEventListener('pointercancel',release);
+  });
+  if(btn) btn.addEventListener('click',function(){ tbls.forEach(function(g){ g._t.x=0; g._t.y=0; }); kick(); });
+  draw();
+})();
 </script>
 </body>
 </html>
