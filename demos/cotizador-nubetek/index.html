@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Nubetek · Cotizador de licencias</title>
+<meta name="description" content="Demo de cotizador web: una pyme arma su plan de licencias de software, ve el precio al instante y descarga la cotización.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#0D1524; --navy:#1F3A5F; --navy-2:#2C4E7A; --amber:#F2B233; --amber-ink:#8A5A00; --amber-soft:#FDF3DC;
+  --paper:#F5F6F8; --card:#FFFFFF; --ink:#16202E; --muted:#556275; --line:#DCE1E8; --line-2:#C5CDD8;
+  --ok:#1E7A4C; --ok-soft:#E4F4EB; --bad:#B3261E;
+  --font:"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r:10px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);font-size:15.5px;line-height:1.55}
+h1,h2,h3{margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+.doc td.num,.doc td.r{white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* barra de demo */
+.demo-bar{background:var(--night);color:#AFC0D4;font-size:13.5px;padding:7px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:center}
+.demo-bar a{display:inline-flex;align-items:center;gap:6px;background:var(--amber);color:var(--night);font-weight:700;text-decoration:none;padding:5px 12px;border-radius:6px}
+
+/* cabecera */
+.top{background:var(--card);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:64px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand .mk{width:34px;height:34px;border-radius:9px;background:var(--navy);color:var(--amber);display:grid;place-items:center;font-weight:700;font-size:17px}
+.brand b{font-size:17px;letter-spacing:-.01em}
+.top .help{margin-left:auto;font-size:14px;color:var(--muted)}
+@media (max-width:560px){.top .help{display:none}}
+.top .help strong{color:var(--ink);font-weight:600}
+
+/* intro */
+.intro{padding:34px 0 22px}
+.intro h1{font-size:clamp(1.8rem,3.6vw,2.6rem);font-weight:700;letter-spacing:-.02em;max-width:22ch}
+.intro p{color:var(--muted);margin-top:10px;max-width:60ch;font-size:16.5px}
+
+/* pasos */
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px;padding:0;list-style:none;counter-reset:st}
+.steps li{flex:1 1 150px}
+.steps button{width:100%;display:flex;align-items:center;gap:10px;background:transparent;border:0;border-top:3px solid var(--line-2);padding:10px 2px 4px;text-align:left;cursor:pointer;color:var(--muted);font-weight:500}
+.steps button .n{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center;font-size:12.5px;font-weight:700;flex:none;background:var(--card)}
+.steps button[aria-current="step"]{border-top-color:var(--navy);color:var(--ink);font-weight:600}
+.steps button[aria-current="step"] .n{background:var(--navy);border-color:var(--navy);color:#fff}
+.steps button.done{border-top-color:var(--navy-2);color:var(--ink)}
+.steps button.done .n{background:var(--amber);border-color:var(--amber);color:var(--night)}
+.steps button:disabled{cursor:not-allowed;opacity:.6}
+
+/* layout */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start;padding-bottom:64px}
+@media (max-width:960px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(18px,3vw,28px)}
+.panel h2{font-size:1.35rem;font-weight:700;letter-spacing:-.01em}
+.panel .lead{color:var(--muted);margin-top:6px}
+.step[hidden]{display:none}
+
+/* formulario empresa */
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px;margin-top:22px}
+@media (max-width:620px){.fields{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-weight:600;font-size:14.5px}
+.field .hint{font-size:13px;color:var(--muted)}
+.field input,.field select{border:1.5px solid var(--line-2);border-radius:8px;padding:11px 12px;background:#fff;min-height:46px}
+.field input:focus,.field select:focus{border-color:var(--navy);outline:none;box-shadow:0 0 0 3px rgba(31,58,95,.15)}
+.field input[aria-invalid="true"]{border-color:var(--bad)}
+.err{color:var(--bad);font-size:13.5px;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-opt{position:relative}
+.chip-opt input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chip-opt span{display:inline-flex;align-items:center;min-height:40px;padding:8px 14px;border:1.5px solid var(--line-2);border-radius:999px;font-size:14.5px;background:#fff}
+.chip-opt input:checked+span{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip-opt input:focus-visible+span{outline:3px solid var(--amber);outline-offset:2px}
+
+/* productos */
+.cat{margin-top:24px}
+.cat h3{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:.02em;margin-bottom:10px}
+.prod{border:1.5px solid var(--line);border-radius:var(--r);padding:16px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 14px;align-items:start;background:#fff}
+.prod+.prod{margin-top:10px}
+.prod.on{border-color:var(--navy);background:#FAFBFD}
+.prod .tg{width:22px;height:22px;margin-top:2px;accent-color:var(--navy);cursor:pointer}
+.prod .nm{font-weight:600;font-size:16px}
+.prod .ds{grid-column:2;color:var(--muted);font-size:14px}
+.prod .pr{text-align:right;font-weight:600;white-space:nowrap}
+.prod .pr small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.prod .opts{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;margin-top:10px}
+.prod:not(.on) .opts{display:none}
+.seg{display:inline-flex;border:1.5px solid var(--line-2);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:8px 12px;cursor:pointer;min-height:40px;font-size:14px}
+.seg button+button{border-left:1.5px solid var(--line-2)}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.qty{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+.qty .box{display:inline-flex;border:1.5px solid var(--line-2);border-radius:8px;overflow:hidden;background:#fff}
+.qty button{border:0;background:#fff;width:40px;min-height:40px;cursor:pointer;font-size:18px;color:var(--ink)}
+.qty button:hover{background:var(--paper)}
+.qty input{width:64px;border:0;border-left:1.5px solid var(--line-2);border-right:1.5px solid var(--line-2);text-align:center;font-weight:600;color:var(--ink)}
+
+/* sugerencias */
+.tips{margin-top:20px;display:grid;gap:10px}
+.tip{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--amber-soft);border:1px solid #F1D79A;border-radius:var(--r);padding:12px 14px;font-size:14.5px}
+.tip svg{color:var(--amber-ink)}
+.tip button{border:1.5px solid var(--amber-ink);background:transparent;color:var(--amber-ink);font-weight:600;border-radius:7px;padding:7px 12px;cursor:pointer;min-height:38px;white-space:nowrap}
+.tip button:hover{background:#FBE7B8}
+@media (max-width:560px){.tip{grid-template-columns:auto 1fr}.tip button{grid-column:2;justify-self:start}}
+
+/* plazo */
+.terms{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media (max-width:560px){.terms{grid-template-columns:1fr}}
+.term{position:relative;border:1.5px solid var(--line-2);border-radius:var(--r);padding:18px;cursor:pointer;background:#fff;display:block}
+.term input{position:absolute;opacity:0}
+.term b{display:block;font-size:17px}
+.term span{color:var(--muted);font-size:14px}
+.term .tag{display:inline-block;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--ok);background:var(--ok-soft);padding:3px 9px;border-radius:999px}
+.term:has(input:checked){border-color:var(--navy);box-shadow:inset 0 0 0 1px var(--navy);background:#FAFBFD}
+.term:has(input:focus-visible){outline:3px solid var(--amber);outline-offset:2px}
+.extra{margin-top:22px;display:flex;flex-direction:column;gap:10px}
+.check{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--navy)}
+
+/* navegación de pasos */
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 20px;border-radius:8px;border:1.5px solid var(--navy);background:var(--navy);color:#fff;font-weight:600;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--navy-2)}
+.btn.ghost{background:transparent;color:var(--navy)}
+.btn.ghost:hover{background:#EEF2F7}
+.btn.amber{background:var(--amber);border-color:var(--amber);color:var(--night)}
+.btn.amber:hover{background:#E6A520}
+
+/* resumen final */
+.doc{margin-top:22px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.doc-h{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px 20px;background:var(--paper);border-bottom:1px solid var(--line)}
+.doc-h b{display:block;font-size:16px}
+.doc-h span{font-size:13.5px;color:var(--muted)}
+.doc table{width:100%;border-collapse:collapse;font-size:14.5px}
+.doc th{text-align:left;font-size:12.5px;color:var(--muted);font-weight:600;padding:12px 20px 8px}
+.doc td{padding:10px 20px;border-top:1px solid var(--line);vertical-align:top}
+.doc td.r,.doc th.r{text-align:right}
+.doc tfoot td{border-top:1px solid var(--line);font-weight:500}
+.doc tfoot tr.tot td{font-weight:700;font-size:16px;border-top:2px solid var(--ink)}
+.doc .sub{display:block;color:var(--muted);font-size:13px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.note{margin-top:14px;font-size:13.5px;color:var(--muted)}
+.toast{margin-top:12px;font-size:14px;color:var(--ok);font-weight:600;min-height:1.4em}
+
+/* recibo lateral */
+.receipt{position:sticky;top:18px;background:var(--night);color:#E9EEF5;border-radius:14px;padding:22px 22px 20px;overflow:hidden}
+.receipt h2{font-size:14px;font-weight:600;color:#AFC0D4;letter-spacing:.01em}
+.receipt .co{font-size:17px;font-weight:600;margin-top:4px;min-height:1.5em}
+.receipt ul{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px}
+.receipt li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:14px}
+.receipt li small{grid-column:1;color:#93A3B8;font-size:12.5px}
+.receipt .empty{color:#93A3B8;font-size:14px;margin-top:16px}
+.receipt hr{border:0;border-top:1px dashed #33476A;margin:16px 0}
+.receipt .row{display:flex;justify-content:space-between;font-size:14px;color:#C9D3E0;padding:2px 0}
+.receipt .row.disc{color:#7FD3A4}
+.receipt .big{margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.receipt .big span{font-size:13px;color:#AFC0D4}
+.receipt .big b{font-size:38px;font-weight:700;letter-spacing:-.02em;color:var(--amber);line-height:1.05}
+.receipt .big small{font-size:13px;color:#93A3B8}
+.receipt .per{margin-top:12px;font-size:13px;color:#C9D3E0;background:#17233A;border-radius:8px;padding:9px 11px}
+@media (max-width:960px){
+  .receipt{position:static}
+  .mbar{position:sticky;bottom:0;z-index:5;background:var(--night);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px}
+  .mbar b{color:var(--amber);font-size:20px}
+  .mbar a{color:#fff;font-size:14px}
+}
+@media (min-width:961px){.mbar{display:none}}
+
+/* envío y cierre */
+.send{margin-top:22px;border:1px solid var(--line);border-radius:var(--r);padding:18px;background:var(--paper)}
+.send h3{font-size:16px}
+.send p{color:var(--muted);font-size:14px;margin-top:4px}
+.send-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:12px}
+.send-row .field{flex:1 1 260px}
+.closing{margin-top:22px;border:1.5px solid var(--ok);border-radius:var(--r);padding:20px;background:#F4FBF7}
+.closing:focus{outline:none}
+.cl-ok{width:44px;height:44px;border-radius:50%;background:var(--ok);color:#fff;display:grid;place-items:center}
+.closing h3{font-size:18px;margin-top:12px}
+.closing>p{color:var(--muted);font-size:14px;margin-top:4px}
+.timeline{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:0;counter-reset:t}
+.timeline li{counter-increment:t;position:relative;padding:0 0 14px 40px;display:flex;flex-direction:column}
+.timeline li::before{content:counter(t);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:700}
+.timeline li:not(:last-child)::after{content:"";position:absolute;left:12.5px;top:28px;bottom:2px;width:1.5px;background:var(--line-2)}
+.timeline b{font-size:15px}
+.timeline span{color:var(--muted);font-size:14px}
+/* documento para PDF (solo se ve al imprimir) */
+.pdoc{display:none}
+@media print{
+  @page{size:A4;margin:0}
+  html,body{background:#fff}
+  body>*:not(.pdoc){display:none!important}
+  .pdoc{display:block;padding:14mm 15mm 12mm;font-size:9.5pt;line-height:1.45;color:#16202E;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.pdoc .ph{display:flex;justify-content:space-between;align-items:stretch;gap:20px;background:#0D1524;color:#fff;border-radius:6px;padding:14px 18px}
+.pdoc .ph .br{display:flex;align-items:center;gap:10px}
+.pdoc .ph .mk{width:32px;height:32px;border-radius:7px;background:#F2B233;color:#0D1524;display:grid;place-items:center;font-weight:700;font-size:16pt}
+.pdoc .ph .br b{font-size:15pt;display:block;line-height:1.1}
+.pdoc .ph .br span{font-size:8.5pt;color:#AFC0D4}
+.pdoc .ph .br .mk{color:#0D1524;font-size:16pt}
+.pdoc .ph .fo{text-align:right;display:flex;flex-direction:column;justify-content:center}
+.pdoc .ph .fo span{font-size:8.5pt;color:#AFC0D4}
+.pdoc .ph .fo b{font-size:13pt;color:#F2B233;letter-spacing:.01em}
+.pdoc .pi{display:grid;grid-template-columns:1.3fr 1fr;gap:12px;margin-top:12px}
+.pdoc .box{border:1px solid #DCE1E8;border-radius:6px;padding:10px 12px}
+.pdoc .box h3{font-size:8pt;color:#556275;font-weight:600;margin:0 0 4px}
+.pdoc .box .big{font-size:12pt;font-weight:700}
+.pdoc .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:9pt}
+.pdoc .kv dt{color:#556275}.pdoc .kv dd{margin:0;font-weight:600;text-align:right}
+.pdoc table{width:100%;border-collapse:collapse;margin-top:14px;font-size:9pt}
+.pdoc thead th{background:#EEF1F5;color:#3A4757;font-weight:600;font-size:8pt;text-align:left;padding:6px 8px;border-bottom:1px solid #C5CDD8}
+.pdoc thead th:first-child{border-radius:4px 0 0 0}.pdoc thead th:last-child{border-radius:0 4px 0 0}
+.pdoc td{padding:6px 8px;border-bottom:1px solid #E6EAEF;vertical-align:top}
+.pdoc td small{display:block;color:#6A7686;font-size:8pt}
+.pdoc .r{text-align:right;white-space:nowrap}
+.pdoc .n{color:#8A96A6;width:18px}
+.pdoc tr{break-inside:avoid}
+.pdoc .bottom{display:grid;grid-template-columns:1fr 250px;gap:18px;margin-top:12px;break-inside:avoid}
+.pdoc .cond h3{font-size:9pt;margin:0 0 4px}
+.pdoc .cond ul{margin:0;padding-left:14px;color:#3A4757;font-size:8.5pt}
+.pdoc .cond li{margin-bottom:2px}
+.pdoc .tot{border:1px solid #DCE1E8;border-radius:6px;overflow:hidden}
+.pdoc .tot div{display:flex;justify-content:space-between;padding:5px 12px;font-size:9pt}
+.pdoc .tot .dsc{color:#1E7A4C}
+.pdoc .tot .grand{background:#0D1524;color:#fff;padding:9px 12px;align-items:baseline}
+.pdoc .tot .grand b{color:#F2B233;font-size:14pt}
+.pdoc .tot .yr{background:#FDF3DC;font-weight:700}
+.pdoc .tot .sm{font-size:8pt;color:#556275;padding-top:0}
+.pdoc .pf{margin-top:16px;padding-top:8px;border-top:1px solid #DCE1E8;display:flex;justify-content:space-between;gap:16px;font-size:7.5pt;color:#6A7686}
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <a href="../../index.html#proyectos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Volver al portafolio</a>
+  <span>Demo de cotizador web. Empresa, productos y precios ficticios; no se envía ningún dato. Leonardo Bazán</span>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="Nubetek, inicio"><span class="mk" aria-hidden="true">N</span><b>Nubetek</b></a>
+    <p class="help">Licencias de software para pymes · <strong>Lima, Perú</strong></p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Arma el plan de licencias de tu empresa y ve el precio al instante</h1>
+    <p>Elige lo que tu equipo necesita, ajusta la cantidad de usuarios y descarga la cotización. Precios en soles, por usuario al mes.</p>
+  </section>
+
+  <ol class="steps" aria-label="Pasos de la cotización">
+    <li><button type="button" data-go="0"><span class="n">1</span>Tu empresa</button></li>
+    <li><button type="button" data-go="1"><span class="n">2</span>Productos</button></li>
+    <li><button type="button" data-go="2"><span class="n">3</span>Plazo de pago</button></li>
+    <li><button type="button" data-go="3"><span class="n">4</span>Cotización</button></li>
+  </ol>
+
+  <div class="layout">
+    <div class="panel">
+      <!-- paso 1 -->
+      <section class="step" data-step="0" aria-labelledby="s1">
+        <div class="step-head"><h2 id="s1" tabindex="-1">¿Para qué empresa es la cotización?</h2>
+        <p class="lead">Con esto calculamos cuántas licencias necesitas.</p></div>
+        <div class="fields">
+          <div class="field full">
+            <label for="empresa">Nombre de la empresa</label>
+            <input id="empresa" autocomplete="organization" placeholder="Ej.: Comercial Los Pinos" aria-describedby="empresa-err">
+            <span class="err" id="empresa-err" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="usuarios">Personas que usarán las herramientas</label>
+            <input id="usuarios" type="number" inputmode="numeric" min="1" max="500" value="15" aria-describedby="usuarios-hint usuarios-err">
+            <span class="hint" id="usuarios-hint">Entre 1 y 500. Lo usamos como cantidad inicial de licencias.</span>
+            <span class="err" id="usuarios-err" aria-live="polite"></span>
+          </div>
+          <div class="field">
+            <label for="ciudad">Ciudad</label>
+            <select id="ciudad">
+              <option>Lima</option><option>Arequipa</option><option>Trujillo</option><option>Piura</option><option>Cusco</option><option>Chiclayo</option><option>Otra</option>
+            </select>
+          </div>
+          <fieldset class="field full" style="border:0;padding:0;margin:0">
+            <legend style="font-weight:600;font-size:14.5px;margin-bottom:8px">Rubro</legend>
+            <div class="chips" id="rubros"></div>
+          </fieldset>
+        </div>
+        <div class="nav"><span></span><button class="btn" type="button" data-next>Elegir productos <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+      </section>
+
+      <!-- paso 2 -->
+      <section class="step" data-step="1" aria-labelledby="s2" hidden>
+        <div class="step-head"><h2 id="s2" tabindex="-1">¿Qué necesita tu equipo?</h2>
+        <p class="lead">Marca los productos y ajusta las licencias. El resumen de la derecha se actualiza solo.</p></div>
+        <div id="catalogo"></div>
+        <div class="tips" id="tips" aria-live="polite"></div>
+        <p class="err" id="prod-err" aria-live="polite" style="margin-top:12px"></p>
+        <div class="nav"><button class="btn ghost" type="button" data-prev>Atrás</button><button class="btn" type="button" data-next>Elegir plazo <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+      </section>
+
+      <!-- paso 3 -->
+      <section class="step" data-step="2" aria-labelledby="s3" hidden>
+        <div class="step-head"><h2 id="s3" tabindex="-1">¿Cómo prefieres pagar?</h2>
+        <p class="lead">El precio por licencia es el mismo; el pago anual tiene descuento.</p></div>
+        <div class="terms" role="radiogroup" aria-label="Plazo de pago">
+          <label class="term"><input type="radio" name="plazo" value="mensual"><b>Mensual</b><span>Pagas cada mes y puedes cambiar licencias cuando quieras.</span></label>
+          <label class="term"><input type="radio" name="plazo" value="anual" checked><b>Anual</b><span>Un solo pago por 12 meses.</span><span class="tag">10 % de descuento</span></label>
+        </div>
+        <div class="extra">
+          <label class="check"><input type="checkbox" id="instalacion"><span><b>Instalación y migración asistida</b><br><span style="color:var(--muted);font-size:14px">Un técnico configura las cuentas y migra correos y archivos. Pago único de S/ 25 por usuario.</span></span></label>
+        </div>
+        <div class="nav"><button class="btn ghost" type="button" data-prev>Atrás</button><button class="btn" type="button" data-next>Ver cotización <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+      </section>
+
+      <!-- paso 4 -->
+      <section class="step" data-step="3" aria-labelledby="s4" hidden>
+                <div class="step-head"><h2 id="s4" tabindex="-1">Tu cotización está lista</h2>
+        <p class="lead">Revísala, descárgala en PDF o envíala por correo.</p></div>
+        <div class="doc" id="doc"></div>
+        <div class="actions">
+          <button class="btn amber" type="button" id="pdf"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>Descargar PDF</button>
+          <button class="btn ghost" type="button" id="copiar">Copiar resumen</button>
+        </div>
+        <p class="toast" id="toast" role="status"></p>
+
+        <form class="send" id="send" novalidate>
+          <h3>Enviar la cotización por correo</h3>
+          <p>Se abre tu aplicación de correo con el resumen ya escrito. Revísalo, adjunta el PDF si quieres y envíalo tú.</p>
+          <div class="send-row">
+            <div class="field">
+              <label for="dest">Correo del destinatario <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+              <input id="dest" type="email" autocomplete="email" placeholder="nombre@empresa.com" aria-describedby="dest-err">
+            </div>
+            <button class="btn" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Enviar por correo</button>
+          </div>
+          <span class="err" id="dest-err" aria-live="polite"></span>
+        </form>
+
+        <div class="closing" id="closing" hidden tabindex="-1" aria-labelledby="cl-t">
+          <div class="cl-ok"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <h3 id="cl-t">Cotización <span id="cl-folio"></span> lista para enviar</h3>
+          <p id="cl-txt">Si tu aplicación de correo no se abrió, usa «Copiar resumen» y pégalo en un correo nuevo.</p>
+          <ol class="timeline">
+            <li><b>Un ejecutivo te contacta</b><span>En un día hábil, para resolver dudas y ajustar licencias.</span></li>
+            <li><b>Firmas la orden</b><span>Con el precio de esta cotización mientras esté vigente.</span></li>
+            <li><b>Activamos tus licencias</b><span>Cuentas listas en 48 horas; la migración asistida, si la elegiste, se agenda contigo.</span></li>
+          </ol>
+          <p class="note" style="margin-top:14px"><b>Demo:</b> aquí no se guarda ni se envía nada. En un proyecto real, este paso registraría la cotización en una lista de SharePoint, Power Automate la enviaría por correo con el PDF adjunto y avisaría al ejecutivo por Teams.</p>
+          <div class="actions" style="margin-top:14px"><button class="btn ghost" type="button" id="reiniciar">Hacer otra cotización</button></div>
+        </div>
+        <div class="nav"><button class="btn ghost" type="button" data-prev>Atrás</button><span></span></div>
+      </section>
+    </div>
+
+    <aside class="receipt" aria-labelledby="rc-t">
+      <h2 id="rc-t">Tu cotización</h2>
+      <p class="co" id="rc-co"></p>
+      <ul id="rc-lines"></ul>
+      <p class="empty" id="rc-empty">Todavía no agregas productos.</p>
+      <hr>
+      <div class="row"><span>Subtotal mensual</span><span class="num" id="rc-sub">S/ 0,00</span></div>
+      <div class="row disc" id="rc-vol-row" hidden><span id="rc-vol-l">Descuento por volumen</span><span class="num" id="rc-vol"></span></div>
+      <div class="row disc" id="rc-anual-row" hidden><span>Pago anual (−10 %)</span><span class="num" id="rc-anual"></span></div>
+      <div class="row"><span>IGV (18 %)</span><span class="num" id="rc-igv">S/ 0,00</span></div>
+      <div class="big" aria-live="polite"><span>Total al mes</span><b class="num" id="rc-total">S/ 0,00</b><small id="rc-plazo">con IGV</small></div>
+      <p class="per" id="rc-per"></p>
+    </aside>
+  </div>
+</main>
+<div class="pdoc" id="pdoc" aria-hidden="true"></div>
+<div class="mbar" aria-hidden="true"><span>Total al mes <b class="num" id="mb-total">S/ 0,00</b></span><a href="#rc-t">Ver detalle</a></div>
+
+<script>
+(function(){
+  'use strict';
+  /* ---------- catálogo (precios ficticios, S/ por licencia al mes, sin IGV) ---------- */
+  var CAT = [
+    {id:'suite', cat:'Ofimática y correo', nombre:'Suite Nubo', desc:'Correo con tu dominio, documentos, hojas de cálculo y almacenamiento en la nube.',
+      planes:[
+        {id:'basico',   n:'Básico',   p:23.76, d:'Correo de 30 GB y apps en el navegador'},
+        {id:'estandar', n:'Estándar', p:48.60, d:'Apps de escritorio, 1 TB y videollamadas de hasta 100 personas'},
+        {id:'premium',  n:'Premium',  p:86.40, d:'Todo Estándar más archivo legal y seguridad avanzada'}
+      ], porUsuario:true, def:true},
+    {id:'sala',    cat:'Ofimática y correo', nombre:'Sala Virtual', desc:'Videollamadas y webinars de hasta 300 personas con grabación.', p:28, porUsuario:true},
+    {id:'endpoint',cat:'Seguridad', nombre:'Escudo Endpoint', desc:'Antivirus y control de equipos administrado desde la nube.', p:18, porUsuario:true},
+    {id:'correo',  cat:'Seguridad', nombre:'Escudo Correo', desc:'Filtro de spam, phishing y adjuntos peligrosos.', p:9, porUsuario:true},
+    {id:'respaldo',cat:'Seguridad', nombre:'Respaldo Nube', desc:'Copia diaria de archivos y correos. Se contrata por bloques de 1 TB.', p:35, unidad:'TB', porUsuario:false, defQ:1},
+    {id:'cuenta',  cat:'Gestión', nombre:'Cuenta Pyme', desc:'Contabilidad, facturación electrónica y planillas.', p:140, porUsuario:false, defQ:2, unidad:'usuarios'},
+    {id:'crm',     cat:'Gestión', nombre:'Ventas360 CRM', desc:'Clientes, oportunidades y seguimiento comercial.', p:60, porUsuario:false, defQ:3, unidad:'usuarios'},
+    {id:'trazo',   cat:'Diseño', nombre:'Trazo Creativo', desc:'Edición de imágenes, video y diseño gráfico.', p:95, porUsuario:false, defQ:1, unidad:'usuarios'}
+  ];
+  var RUBROS = ['Comercio','Servicios profesionales','Educación','Salud','Logística','Manufactura'];
+  var IGV = 0.18, DESC_ANUAL = 0.10, INSTAL = 25;
+  var VOL = [{min:100, d:0.10}, {min:25, d:0.05}]; // sobre Suite Nubo
+
+  /* ---------- estado ---------- */
+  var KEY = 'nubetek-cotizador-v1';
+  function fresh(){
+    var items = {};
+    CAT.forEach(function(c){ items[c.id] = {on: !!c.def, plan: c.planes ? 'estandar' : null, q: c.porUsuario ? 15 : (c.defQ || 1)}; });
+    return {step:0, maxStep:0, empresa:'', usuarios:15, ciudad:'Lima', rubro:'Comercio', items:items, plazo:'anual', instal:false, folio:null, fecha:null};
+  }
+  var S;
+  try { S = JSON.parse(localStorage.getItem(KEY)) || fresh(); } catch(e){ S = fresh(); }
+  if (!S.items || !S.items.suite) S = fresh();
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+  /* ---------- utilidades ---------- */
+  var fmt = new Intl.NumberFormat('es-PE', {minimumFractionDigits:2, maximumFractionDigits:2});
+  function S_(v){ return 'S/ ' + fmt.format(v); }
+  function $(s, r){ return (r || document).querySelector(s); }
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function el(tag, attrs, html){ var e = document.createElement(tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (html != null) e.innerHTML = html; return e; }
+  function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function prodOf(id){ return CAT.filter(function(c){ return c.id === id; })[0]; }
+  function priceOf(c, it){ return c.planes ? c.planes.filter(function(p){ return p.id === it.plan; })[0].p : c.p; }
+  function planName(c, it){ return c.planes ? c.planes.filter(function(p){ return p.id === it.plan; })[0].n : ''; }
+
+  /* ---------- cálculo ---------- */
+  function calc(){
+    var lines = [], sub = 0, suiteSub = 0, suiteQ = 0;
+    CAT.forEach(function(c){
+      var it = S.items[c.id]; if (!it.on || it.q < 1) return;
+      var p = priceOf(c, it), t = p * it.q;
+      lines.push({c:c, it:it, p:p, t:t});
+      sub += t;
+      if (c.id === 'suite'){ suiteSub = t; suiteQ = it.q; }
+    });
+    var vol = 0, volPct = 0;
+    for (var i = 0; i < VOL.length; i++){ if (suiteQ >= VOL[i].min){ volPct = VOL[i].d; break; } }
+    vol = suiteSub * volPct;
+    var base = sub - vol;
+    var anual = S.plazo === 'anual' ? base * DESC_ANUAL : 0;
+    var neto = base - anual;
+    var igv = neto * IGV;
+    var total = neto + igv;
+    var instal = S.instal ? INSTAL * S.usuarios * (1 + IGV) : 0;
+    return {lines:lines, sub:sub, vol:vol, volPct:volPct, anual:anual, neto:neto, igv:igv, total:total, instal:instal, year: total * 12 + instal};
+  }
+
+  /* ---------- sugerencias ---------- */
+  function tips(){
+    var out = [], it = S.items, suite = it.suite;
+    if (suite.on && suite.plan !== 'basico' && it.sala.on)
+      out.push({t:'Suite Nubo ' + planName(prodOf('suite'), suite) + ' ya incluye videollamadas de hasta 100 personas. Sala Virtual solo hace falta para reuniones más grandes o webinars.', a:'Quitar Sala Virtual', f:function(){ it.sala.on = false; }});
+    if (suite.on && suite.plan === 'basico' && it.sala.on){
+      var dif = (48.60 - 23.76 - 28) * suite.q;
+      if (dif < 0) out.push({t:'Pasar a Suite Nubo Estándar te da videollamadas y apps de escritorio, y sale ' + S_(-dif) + ' más barato al mes que Básico con Sala Virtual.', a:'Cambiar a Estándar', f:function(){ suite.plan = 'estandar'; it.sala.on = false; }});
+    }
+    if (S.usuarios >= 10 && !it.endpoint.on)
+      out.push({t:'Con ' + S.usuarios + ' equipos, un antivirus administrado evita que un solo equipo infectado frene a todo el equipo.', a:'Agregar Escudo Endpoint', f:function(){ it.endpoint.on = true; it.endpoint.q = S.usuarios; }});
+    if (suite.on && suite.q >= 20 && suite.q < 25)
+      out.push({t:'Desde 25 licencias de Suite Nubo tienes 5 % de descuento por volumen. Te faltan ' + (25 - suite.q) + '.', a:null});
+    return out;
+  }
+
+  /* ---------- render: rubros ---------- */
+  var rubBox = $('#rubros');
+  RUBROS.forEach(function(r){
+    var l = el('label', {'class':'chip-opt'});
+    l.innerHTML = '<input type="radio" name="rubro" value="' + esc(r) + '"><span>' + esc(r) + '</span>';
+    rubBox.appendChild(l);
+  });
+
+  /* ---------- render: catálogo ---------- */
+  var catBox = $('#catalogo');
+  var cats = [];
+  CAT.forEach(function(c){ if (cats.indexOf(c.cat) < 0) cats.push(c.cat); });
+  cats.forEach(function(cn){
+    var sec = el('div', {'class':'cat'});
+    sec.appendChild(el('h3', {}, esc(cn)));
+    CAT.filter(function(c){ return c.cat === cn; }).forEach(function(c){
+      var box = el('div', {'class':'prod', 'data-id':c.id});
+      var idT = 'tg-' + c.id;
+      var priceTxt = c.planes ? 'desde ' + S_(c.planes[0].p) : S_(c.p);
+      var unit = c.unidad === 'TB' ? 'por TB al mes' : 'por usuario al mes';
+      var h = '<input class="tg" type="checkbox" id="' + idT + '" aria-describedby="ds-' + c.id + '">' +
+        '<label class="nm" for="' + idT + '">' + esc(c.nombre) + '</label>' +
+        '<span class="pr num" data-price>' + priceTxt + '<small>' + unit + '</small></span>' +
+        '<p class="ds" id="ds-' + c.id + '">' + esc(c.desc) + '</p><div class="opts">';
+      if (c.planes){
+        h += '<div class="seg" role="group" aria-label="Plan de ' + esc(c.nombre) + '">';
+        c.planes.forEach(function(p){ h += '<button type="button" data-plan="' + p.id + '" aria-pressed="false" title="' + esc(p.d) + '">' + p.n + ' · ' + S_(p.p) + '</button>'; });
+        h += '</div><p class="ds plan-d" style="grid-column:auto;flex-basis:100%"></p>';
+      }
+      var qLabel = c.unidad === 'TB' ? 'Bloques de 1 TB' : 'Licencias';
+      h += '<span class="qty"><span id="ql-' + c.id + '">' + qLabel + '</span><span class="box"><button type="button" data-d="-1" aria-label="Quitar una">−</button><input type="number" inputmode="numeric" min="1" max="500" aria-labelledby="ql-' + c.id + '"><button type="button" data-d="1" aria-label="Agregar una">+</button></span></span>';
+      if (c.porUsuario) h += '<button type="button" class="btn ghost" data-sync style="min-height:40px;padding:0 12px;font-size:14px">Igualar a usuarios</button>';
+      h += '</div>';
+      box.innerHTML = h;
+      sec.appendChild(box);
+    });
+    catBox.appendChild(sec);
+  });
+
+  catBox.addEventListener('change', function(e){
+    var box = e.target.closest('.prod'); if (!box) return;
+    var it = S.items[box.dataset.id];
+    if (e.target.classList.contains('tg')){ it.on = e.target.checked; }
+    else if (e.target.type === 'number'){ it.q = clampQ(e.target.value); }
+    update();
+  });
+  catBox.addEventListener('input', function(e){
+    if (e.target.type !== 'number') return;
+    var box = e.target.closest('.prod'); var it = S.items[box.dataset.id];
+    var v = parseInt(e.target.value, 10); if (v >= 1 && v <= 500){ it.q = v; update(true); }
+  });
+  catBox.addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    var box = b.closest('.prod'); var it = S.items[box.dataset.id];
+    if (b.dataset.plan){ it.plan = b.dataset.plan; }
+    else if (b.dataset.d){ it.q = clampQ(it.q + parseInt(b.dataset.d, 10)); }
+    else if (b.hasAttribute('data-sync')){ it.q = S.usuarios; }
+    else return;
+    update();
+  });
+  function clampQ(v){ v = parseInt(v, 10); if (isNaN(v)) v = 1; return Math.max(1, Math.min(500, v)); }
+
+  /* ---------- paso 1 ---------- */
+  var iEmp = $('#empresa'), iUsr = $('#usuarios'), iCiu = $('#ciudad');
+  iEmp.addEventListener('input', function(){ S.empresa = iEmp.value.trim(); if (S.empresa) setErr(iEmp, '#empresa-err', ''); update(true); });
+  iUsr.addEventListener('change', function(){
+    var old = S.usuarios, v = parseInt(iUsr.value, 10);
+    if (isNaN(v) || v < 1 || v > 500){ setErr(iUsr, '#usuarios-err', 'Escribe un número entre 1 y 500.'); return; }
+    setErr(iUsr, '#usuarios-err', '');
+    S.usuarios = v;
+    CAT.forEach(function(c){ var it = S.items[c.id]; if (c.porUsuario && it.q === old) it.q = v; });
+    update();
+  });
+  iCiu.addEventListener('change', function(){ S.ciudad = iCiu.value; save(); });
+  rubBox.addEventListener('change', function(e){ S.rubro = e.target.value; save(); });
+  function setErr(inp, id, msg){ $(id).textContent = msg; if (msg) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid'); }
+
+  /* ---------- paso 3 ---------- */
+  $$('input[name="plazo"]').forEach(function(r){ r.addEventListener('change', function(){ S.plazo = r.value; update(); }); });
+  $('#instalacion').addEventListener('change', function(e){ S.instal = e.target.checked; update(); });
+
+  /* ---------- navegación ---------- */
+  function valid(step){
+    if (step === 0){
+      var ok = true;
+      if (!S.empresa){ setErr(iEmp, '#empresa-err', 'Escribe el nombre de la empresa.'); ok = false; }
+      if (!(S.usuarios >= 1 && S.usuarios <= 500)){ setErr(iUsr, '#usuarios-err', 'Escribe un número entre 1 y 500.'); ok = false; }
+      if (!ok) (S.empresa ? iUsr : iEmp).focus();
+      return ok;
+    }
+    if (step === 1){
+      var any = calc().lines.length > 0;
+      $('#prod-err').textContent = any ? '' : 'Agrega al menos un producto para continuar.';
+      return any;
+    }
+    return true;
+  }
+  function go(n, focus){
+    if (n > S.step){ for (var s = S.step; s < n; s++){ if (!valid(s)) { n = s; break; } } }
+    S.step = n; S.maxStep = Math.max(S.maxStep, n);
+    if (n < 3) S.enviada = false;
+    if (n === 3 && !S.folio){ S.folio = 'NB-2026-' + String(Math.floor(1000 + Math.random() * 9000)); S.fecha = new Date().toISOString(); }
+    render();
+    if (focus !== false){ var h = $('.step[data-step="' + n + '"] h2'); if (h) h.focus({preventScroll:true}); window.scrollTo({top: $('.steps').getBoundingClientRect().top + window.scrollY - 12}); }
+  }
+  $$('[data-next]').forEach(function(b){ b.addEventListener('click', function(){ go(S.step + 1); }); });
+  $$('[data-prev]').forEach(function(b){ b.addEventListener('click', function(){ go(S.step - 1); }); });
+  $$('.steps button').forEach(function(b){ b.addEventListener('click', function(){ go(parseInt(b.dataset.go, 10)); }); });
+
+  /* ---------- acciones del paso 4 ---------- */
+  $('#pdf').addEventListener('click', function(){ window.print(); });
+  function resumen(){
+    var r = calc();
+    var txt = 'Cotización ' + S.folio + ' — ' + S.empresa + '\n' + S.rubro + ' · ' + S.ciudad + ' · ' + S.usuarios + ' usuarios\n\n';
+    r.lines.forEach(function(l){ txt += '- ' + l.c.nombre + (l.c.planes ? ' ' + planName(l.c, l.it) : '') + ': ' + l.it.q + ' x ' + S_(l.p) + ' = ' + S_(l.t) + '\n'; });
+    txt += '\nSubtotal: ' + S_(r.sub) + '\n';
+    if (r.vol) txt += 'Descuento por volumen: −' + S_(r.vol) + '\n';
+    if (r.anual) txt += 'Descuento por pago anual: −' + S_(r.anual) + '\n';
+    txt += 'IGV (18 %): ' + S_(r.igv) + '\nTotal al mes (con IGV): ' + S_(r.total) + '\n';
+    if (r.instal) txt += 'Instalación (pago único): ' + S_(r.instal) + '\n';
+    txt += 'Total primer año: ' + S_(r.year) + '\nPlazo de pago: ' + (S.plazo === 'anual' ? 'anual' : 'mensual') + '\n';
+    return txt;
+  }
+  $('#send').addEventListener('submit', function(e){
+    e.preventDefault();
+    var inp = $('#dest'), v = inp.value.trim();
+    if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ setErr(inp, '#dest-err', 'Revisa el correo: debe tener la forma nombre@empresa.com.'); inp.focus(); return; }
+    setErr(inp, '#dest-err', '');
+    var body = 'Hola:\n\nTe comparto la cotización de licencias de Nubetek.\n\n' + resumen() + '\nCotización de demostración: Nubetek es una empresa ficticia.\n';
+    var url = 'mailto:' + encodeURIComponent(v) + '?subject=' + encodeURIComponent('Cotización ' + S.folio + ' · Nubetek · ' + S.empresa) + '&body=' + encodeURIComponent(body);
+    window.location.href = url;
+    S.enviada = true; save();
+    showClosing(true);
+  });
+  function showClosing(focus){
+    $('#cl-folio').textContent = S.folio || '';
+    $('#closing').hidden = !S.enviada;
+    $('#send').hidden = !!S.enviada;
+    if (focus) $('#closing').focus();
+  }
+  $('#copiar').addEventListener('click', function(){
+    var txt = resumen();
+    var done = function(){ toast('Resumen copiado.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function(){ toast('No se pudo copiar; selecciona el texto de la cotización.'); });
+    else toast('Tu navegador no permite copiar; selecciona el texto de la cotización.');
+  });
+  $('#reiniciar').addEventListener('click', function(){ S = fresh(); save(); hydrate(); go(0); });
+  function toast(m){ var t = $('#toast'); t.textContent = m; setTimeout(function(){ t.textContent = ''; }, 3500); }
+
+  /* ---------- render general ---------- */
+  function update(light){
+    save();
+    renderReceipt();
+    if (!light) { renderProducts(); renderTips(); if (S.step === 3) renderDoc(); }
+    else if (S.step === 3) renderDoc();
+  }
+  function render(){
+    $$('.step').forEach(function(s){ s.hidden = parseInt(s.dataset.step, 10) !== S.step; });
+    $$('.steps button').forEach(function(b){
+      var i = parseInt(b.dataset.go, 10);
+      if (i === S.step) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      b.classList.toggle('done', i < S.step || (i <= S.maxStep && i !== S.step));
+      b.disabled = i > S.maxStep + 1;
+    });
+    update();
+    showClosing(false);
+  }
+  function renderProducts(){
+    $$('.prod').forEach(function(box){
+      var c = prodOf(box.dataset.id), it = S.items[c.id];
+      box.classList.toggle('on', it.on);
+      $('.tg', box).checked = it.on;
+      var q = $('input[type="number"]', box); if (document.activeElement !== q) q.value = it.q;
+      if (c.planes){
+        $$('[data-plan]', box).forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.plan === it.plan)); });
+        var pl = c.planes.filter(function(p){ return p.id === it.plan; })[0];
+        $('.plan-d', box).textContent = 'Plan ' + pl.n + ': ' + pl.d + '.';
+      }
+    });
+  }
+  function renderTips(){
+    var box = $('#tips'); box.innerHTML = '';
+    tips().forEach(function(t){
+      var d = el('div', {'class':'tip'});
+      d.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V16h8v-1.3A7 7 0 0 0 12 2z"/></svg><p>' + esc(t.t) + '</p>';
+      if (t.a){ var b = el('button', {type:'button'}, esc(t.a)); b.addEventListener('click', function(){ t.f(); update(); }); d.appendChild(b); }
+      box.appendChild(d);
+    });
+  }
+  function renderReceipt(){
+    var r = calc();
+    $('#rc-co').textContent = S.empresa || 'Tu empresa';
+    var ul = $('#rc-lines'); ul.innerHTML = '';
+    r.lines.forEach(function(l){
+      var li = el('li');
+      li.innerHTML = '<span>' + esc(l.c.nombre) + (l.c.planes ? ' ' + planName(l.c, l.it) : '') + '</span><span class="num">' + S_(l.t) + '</span><small class="num">' + l.it.q + (l.c.unidad === 'TB' ? ' TB' : ' lic.') + ' × ' + S_(l.p) + '</small>';
+      ul.appendChild(li);
+    });
+    $('#rc-empty').hidden = r.lines.length > 0;
+    $('#rc-sub').textContent = S_(r.sub);
+    $('#rc-vol-row').hidden = !r.vol; $('#rc-vol').textContent = '−' + S_(r.vol); $('#rc-vol-l').textContent = 'Volumen Suite Nubo (−' + Math.round(r.volPct * 100) + ' %)';
+    $('#rc-anual-row').hidden = !r.anual; $('#rc-anual').textContent = '−' + S_(r.anual);
+    $('#rc-igv').textContent = S_(r.igv);
+    $('#rc-total').textContent = S_(r.total); $('#mb-total').textContent = S_(r.total);
+    $('#rc-plazo').textContent = S.plazo === 'anual' ? 'con IGV · pago anual de ' + S_(r.total * 12) : 'con IGV · pago mensual';
+    var per = S.usuarios ? r.total / S.usuarios : 0;
+    $('#rc-per').textContent = r.lines.length ? 'Equivale a ' + S_(per) + ' al mes por persona' + (r.instal ? ' · instalación única de ' + S_(r.instal) : '') + '.' : 'Agrega productos para ver el costo por persona.';
+    $('#rc-per').hidden = false;
+  }
+  function renderDoc(){
+    var r = calc();
+    var f = S.fecha ? new Date(S.fecha) : new Date();
+    var v = new Date(f.getTime() + 15 * 864e5);
+    var df = new Intl.DateTimeFormat('es-PE', {day:'numeric', month:'long', year:'numeric'});
+    var h = '<div class="doc-h"><div><b>' + esc(S.empresa) + '</b><span>' + esc(S.rubro) + ' · ' + esc(S.ciudad) + ' · ' + S.usuarios + ' usuarios</span></div>' +
+      '<div style="margin-left:auto;text-align:right"><b>Cotización ' + esc(S.folio || '') + '</b><span>' + df.format(f) + ' · válida hasta el ' + df.format(v) + '</span></div></div>';
+    h += '<table><thead><tr><th scope="col">Producto</th><th scope="col" class="r">Cant.</th><th scope="col" class="r">Precio</th><th scope="col" class="r">Al mes</th></tr></thead><tbody>';
+    r.lines.forEach(function(l){
+      h += '<tr><td>' + esc(l.c.nombre) + (l.c.planes ? ' ' + planName(l.c, l.it) : '') + '<span class="sub">' + esc(l.c.planes ? l.c.planes.filter(function(p){ return p.id === l.it.plan; })[0].d : l.c.desc) + '</span></td><td class="r num">' + l.it.q + '</td><td class="r num">' + S_(l.p) + '</td><td class="r num">' + S_(l.t) + '</td></tr>';
+    });
+    h += '</tbody><tfoot><tr><td colspan="3">Subtotal</td><td class="r num">' + S_(r.sub) + '</td></tr>';
+    if (r.vol) h += '<tr><td colspan="3">Descuento por volumen Suite Nubo (' + Math.round(r.volPct * 100) + ' %)</td><td class="r num">−' + S_(r.vol) + '</td></tr>';
+    if (r.anual) h += '<tr><td colspan="3">Descuento por pago anual (10 %)</td><td class="r num">−' + S_(r.anual) + '</td></tr>';
+    h += '<tr><td colspan="3">IGV (18 %)</td><td class="r num">' + S_(r.igv) + '</td></tr>';
+    h += '<tr class="tot"><td colspan="3">Total al mes</td><td class="r num">' + S_(r.total) + '</td></tr>';
+    if (r.instal) h += '<tr><td colspan="3">Instalación y migración asistida (pago único, con IGV)</td><td class="r num">' + S_(r.instal) + '</td></tr>';
+    h += '<tr><td colspan="3"><b>Primer año</b><span class="sub">' + (S.plazo === 'anual' ? 'Un pago anual' : '12 pagos mensuales') + (r.instal ? ' más la instalación' : '') + '</span></td><td class="r num"><b>' + S_(r.year) + '</b></td></tr>';
+    h += '</tfoot></table>';
+    $('#doc').innerHTML = h;
+    renderPrint(r, f, v, df);
+  }
+  function renderPrint(r, f, v, df){
+    var p = '<div class="ph"><div class="br"><span class="mk">N</span><div><b>Nubetek</b><span>Licencias de software para pymes · Lima, Perú</span></div></div>' +
+      '<div class="fo"><span>Cotización de licencias</span><b>' + esc(S.folio || '') + '</b></div></div>';
+    p += '<div class="pi"><div class="box"><h3>Cliente</h3><div class="big">' + esc(S.empresa) + '</div><div style="color:#556275">' + esc(S.rubro) + ' · ' + esc(S.ciudad) + ' · ' + S.usuarios + ' usuarios</div></div>' +
+      '<div class="box"><dl class="kv" style="margin:0"><dt>Emisión</dt><dd>' + df.format(f) + '</dd><dt>Válida hasta</dt><dd>' + df.format(v) + '</dd><dt>Plazo de pago</dt><dd>' + (S.plazo === 'anual' ? 'Anual' : 'Mensual') + '</dd><dt>Moneda</dt><dd>Soles (S/)</dd></dl></div></div>';
+    p += '<table><thead><tr><th class="n">#</th><th>Producto</th><th class="r">Cant.</th><th class="r">Precio unit.</th><th class="r">Importe al mes</th></tr></thead><tbody>';
+    r.lines.forEach(function(l, i){
+      var d = l.c.planes ? l.c.planes.filter(function(x){ return x.id === l.it.plan; })[0].d : l.c.desc;
+      p += '<tr><td class="n">' + (i + 1) + '</td><td><b>' + esc(l.c.nombre) + (l.c.planes ? ' ' + planName(l.c, l.it) : '') + '</b><small>' + esc(d) + '</small></td><td class="r">' + l.it.q + (l.c.unidad === 'TB' ? ' TB' : '') + '</td><td class="r">' + S_(l.p) + '</td><td class="r">' + S_(l.t) + '</td></tr>';
+    });
+    p += '</tbody></table>';
+    var cond = ['Precios por usuario al mes, en soles; el IGV (18 %) se muestra aparte.',
+      'Cotización válida por 15 días calendario desde su emisión.',
+      S.plazo === 'anual' ? 'Pago anual adelantado con 10 % de descuento; las licencias se pueden aumentar durante el año a precio prorrateado.' : 'Pago mensual; puedes aumentar o reducir licencias de un mes a otro.',
+      'Descuento por volumen en Suite Nubo: 5 % desde 25 licencias y 10 % desde 100.'];
+    if (r.instal) cond.push('La instalación y migración asistida se paga una sola vez al inicio.');
+    p += '<div class="bottom"><div class="cond"><h3>Condiciones</h3><ul>' + cond.map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div><div class="tot">';
+    p += '<div><span>Subtotal</span><span>' + S_(r.sub) + '</span></div>';
+    if (r.vol) p += '<div class="dsc"><span>Volumen (−' + Math.round(r.volPct * 100) + ' %)</span><span>−' + S_(r.vol) + '</span></div>';
+    if (r.anual) p += '<div class="dsc"><span>Pago anual (−10 %)</span><span>−' + S_(r.anual) + '</span></div>';
+    p += '<div><span>Valor de venta</span><span>' + S_(r.neto) + '</span></div><div><span>IGV (18 %)</span><span>' + S_(r.igv) + '</span></div>';
+    p += '<div class="grand"><span>Total al mes</span><b>' + S_(r.total) + '</b></div>';
+    if (S.plazo === 'anual') p += '<div><span>Pago anual (12 meses)</span><span>' + S_(r.total * 12) + '</span></div>';
+    if (r.instal) p += '<div><span>Instalación (pago único)</span><span>' + S_(r.instal) + '</span></div>';
+    p += '<div class="yr"><span>Total primer año</span><span>' + S_(r.year) + '</span></div></div></div>';
+    p += '<div class="pf"><span>Nubetek es una empresa ficticia. Cotización de demostración generada por el cotizador web.</span><span>' + esc(S.folio || '') + '</span></div>';
+    $('#pdoc').innerHTML = p;
+  }
+
+  function hydrate(){
+    iEmp.value = S.empresa; iUsr.value = S.usuarios; iCiu.value = S.ciudad;
+    $$('input[name="rubro"]').forEach(function(r){ r.checked = r.value === S.rubro; });
+    $$('input[name="plazo"]').forEach(function(r){ r.checked = r.value === S.plazo; });
+    $('#instalacion').checked = S.instal;
+    setErr(iEmp, '#empresa-err', ''); setErr(iUsr, '#usuarios-err', '');
+  }
+  hydrate();
+  go(S.step, false);
+})();
+</script>
+</body>
+</html>
