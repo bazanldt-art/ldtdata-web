@@ -467,13 +467,14 @@ footer .wrap{border-top:0;padding-top:24px}
       </div>
 
       <div class="pfilter" role="group" aria-label="Filtrar proyectos por tipo">
-        <button type="button" aria-pressed="true" data-f="all">Todos <span>7</span></button>
+        <button type="button" aria-pressed="true" data-f="all">Todos <span>10</span></button>
         <button type="button" aria-pressed="false" data-f="pp">Power Platform <span>3</span></button>
         <button type="button" aria-pressed="false" data-f="bi">Power BI <span>2</span></button>
-        <button type="button" aria-pressed="false" data-f="web">Desarrollo web <span>2</span></button>
+        <button type="button" aria-pressed="false" data-f="web">Desarrollo web <span>3</span></button>
+        <button type="button" aria-pressed="false" data-f="datos">Análisis de datos <span>2</span></button>
       </div>
       <div class="pgrid">
-        <article class="pcard wide" data-type="pp">
+        <article class="pcard" data-type="pp">
           <div class="pband" style="--b1:#0F4C5C;--b2:#E36414" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Andina Pedidos</span><span class="bs">Distribuidora ficticia</span></div>
           <div class="pbody">
             <span class="ptype">Power Platform</span>
@@ -481,7 +482,7 @@ footer .wrap{border-top:0;padding-top:24px}
             <h3>Toma de pedidos con aprobación</h3>
             <p class="desc">Del pedido en el celular a la aprobación del supervisor, el despacho y el reporte de ventas, con usuarios, roles y datos maestros que administra el propio cliente.</p>
             <p class="addon"><i aria-hidden="true">BI</i>Incluye un reporte en <span style="white-space:nowrap">Power BI</span>.</p>
-            <details open><summary>Qué incluye</summary><ul><li>Validación de descuento, monto y crédito del cliente</li><li>Aprobación del supervisor en Teams y despacho desde el almacén</li><li>Reporte de ventas por sede, vendedor y producto</li><li>Roles de vendedor, supervisor, almacén y administrador</li></ul></details>
+            <details><summary>Qué incluye</summary><ul><li>Validación de descuento, monto y crédito del cliente</li><li>Aprobación del supervisor en Teams y despacho desde el almacén</li><li>Reporte de ventas por sede, vendedor y producto</li><li>Roles de vendedor, supervisor, almacén y administrador</li></ul></details>
             <div class="pfoot">
               <div class="chips"><span class="chip">Power Apps</span><span class="chip">Power Automate</span></div>
               <a class="proj-link" href="demos/andina-pedidos/" aria-label="Ver demo de Andina Pedidos">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
@@ -570,6 +571,48 @@ footer .wrap{border-top:0;padding-top:24px}
             <div class="pfoot">
               <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span></div>
               <a class="proj-link" href="demos/cotizador-nubetek/" aria-label="Ver demo del cotizador web de Nubetek">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
+          </div>
+        </article>
+        <article class="pcard" data-type="web">
+          <div class="pband" style="--b1:#0F4C5C;--b2:#E36414" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Andina</span><span class="bs">Seguimiento de pedidos</span></div>
+          <div class="pbody">
+            <span class="ptype">Desarrollo web</span>
+            <span class="pctx">Demo propia · distribución · 2026</span>
+            <h3>¿Dónde está mi pedido?</h3>
+            <p class="desc">El cliente de la distribuidora busca su pedido y ve en qué etapa está, si pasó por el supervisor y cuándo llega.</p>
+            <details><summary>Qué incluye</summary><ul><li>Datos leídos con fetch desde un JSON, como si fuera una API</li><li>Línea de avance con aprobación o rechazo del supervisor</li><li>Vista por cliente con filtros por estado</li><li>Enlaces directos a cada pedido y diseño para celular</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">JSON</span></div>
+              <a class="proj-link" href="demos/seguimiento-andina/" aria-label="Ver demo del seguimiento de pedidos de Andina">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
+          </div>
+        </article>
+        <article class="pcard" data-type="datos">
+          <div class="pband" style="--b1:#1B2240;--b2:#EE8C3A" aria-hidden="true"><span class="pill"><i></i>Demo en vivo</span><span class="bn">Cobranza</span><span class="bs">Tablero en JavaScript</span></div>
+          <div class="pbody">
+            <span class="ptype">Análisis de datos</span>
+            <span class="pctx">Proyecto final de SQL · Summa Center Latam · 2026</span>
+            <h3>Cartera de créditos y cobranza</h3>
+            <p class="desc">La base del curso convertida en un tablero web: muestra que la mora se dispara a fines de 2025 aunque la recuperación se mantiene.</p>
+            <details><summary>Qué incluye</summary><ul><li>Datos de SQL Server exportados a JSON solo como totales</li><li>Filtros por año, sede y segmento calculados en JavaScript</li><li>Gráficos con Chart.js y títulos que cambian con los filtros</li><li>Consulta SQL equivalente para comparar con la base</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">SQL</span><span class="chip">JavaScript</span><span class="chip">Chart.js</span></div>
+              <a class="proj-link" href="demos/cobranza-summa/" aria-label="Ver demo del tablero de cartera y cobranza">Ver demo<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
+            </div>
+          </div>
+        </article>
+        <article class="pcard" data-type="datos">
+          <div class="pband" style="--b1:#2F3C7E;--b2:#F4C95D" aria-hidden="true"><span class="pill"><i></i>Notebook</span><span class="bn">Python</span><span class="bs">Análisis de mora</span></div>
+          <div class="pbody">
+            <span class="ptype">Análisis de datos</span>
+            <span class="pctx">Proyecto final de SQL · Summa Center Latam · 2026</span>
+            <h3>¿Por qué se disparó la mora en 2025?</h3>
+            <p class="desc">Notebook que valida la base, compara cosechas de créditos y prueba con chi-cuadrado si alguna sede o segmento explica el atraso.</p>
+            <details><summary>Qué incluye</summary><ul><li>Carga desde SQL Server y validación contra la base</li><li>Revisión de calidad de datos con decisiones documentadas</li><li>Análisis por cosecha y prueba estadística con SciPy</li><li>Conclusiones y acciones para el área de cobranza</li></ul></details>
+            <div class="pfoot">
+              <div class="chips"><span class="chip">Python</span><span class="chip">pandas</span><span class="chip">SciPy</span></div>
+              <a class="proj-link" href="demos/python-cobranza/" aria-label="Ver el análisis de mora en Python">Ver análisis<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7"></path><path d="M8 7h9v9"></path></svg></a>
             </div>
           </div>
         </article>

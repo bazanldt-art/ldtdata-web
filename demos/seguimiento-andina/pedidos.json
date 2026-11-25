@@ -1,0 +1,1641 @@
+{
+ "empresa": "Andina Distribuciones (ficticia)",
+ "nota": "Datos ficticios. Las horas son relativas al momento de abrir la página.",
+ "pedidos": [
+  {
+   "pedido": "AP-26-5362",
+   "cliente": "C-5523",
+   "razon": "Abarrotes Qosqo",
+   "sede": "Cusco",
+   "direccion": "Av. de la Cultura 1530, Wanchaq",
+   "vendedor": "Rosa Quispe",
+   "estado": "aprobado",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 8,
+     "precio": 118.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 3,
+     "precio": 109.2
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 10,
+     "precio": 79.2
+    },
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 1,
+     "precio": 45.9
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 3,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -0.92,
+     "t": "Pedido registrado por Rosa Quispe"
+    },
+    {
+     "e": "aprobado",
+     "h": -0.82,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    }
+   ],
+   "eta_h": 26.5
+  },
+  {
+   "pedido": "AP-26-5299",
+   "cliente": "C-2187",
+   "razon": "Minimarket El Sol",
+   "sede": "Lima Sur",
+   "direccion": "Av. Pachacútec 815, Villa María del Triunfo",
+   "vendedor": "Luis Paredes",
+   "estado": "aprobado",
+   "motivo": null,
+   "descuento": 0.08,
+   "items": [
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 4,
+     "precio": 118.0
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 9,
+     "precio": 36.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 9,
+     "precio": 109.2
+    },
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 9,
+     "precio": 45.9
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -2.75,
+     "t": "Pedido registrado por Luis Paredes"
+    },
+    {
+     "e": "aprobado",
+     "h": -2.65,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    }
+   ],
+   "eta_h": 26.5
+  },
+  {
+   "pedido": "AP-26-5286",
+   "cliente": "C-3305",
+   "razon": "Comercial Misti",
+   "sede": "Arequipa",
+   "direccion": "Av. Ejército 402, Cayma",
+   "vendedor": "Miguel Soto",
+   "estado": "aprobacion",
+   "motivo": "Supera crédito disponible",
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 4,
+     "precio": 42.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 9,
+     "precio": 109.2
+    },
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 6,
+     "precio": 118.0
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 3,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -3.31,
+     "t": "Pedido registrado por Miguel Soto"
+    },
+    {
+     "e": "aprobacion",
+     "h": -3.11,
+     "t": "Enviado al supervisor: Supera crédito disponible"
+    }
+   ],
+   "eta_h": 31.2
+  },
+  {
+   "pedido": "AP-26-5230",
+   "cliente": "C-4410",
+   "razon": "Distribuidora La Esquina",
+   "sede": "Trujillo",
+   "direccion": "Av. España 1290, Trujillo",
+   "vendedor": "Diana Flores",
+   "estado": "registrado",
+   "motivo": "Descuento mayor a 10 %",
+   "descuento": 0.12,
+   "items": [
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 5,
+     "precio": 118.0
+    },
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 10,
+     "precio": 42.0
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 2,
+     "precio": 36.0
+    },
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 2,
+     "precio": 45.9
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -4.17,
+     "t": "Pedido registrado por Diana Flores"
+    },
+    {
+     "e": "aprobacion",
+     "h": -3.97,
+     "t": "Enviado al supervisor: Descuento mayor a 10 %"
+    },
+    {
+     "e": "aprobado",
+     "h": -1.57,
+     "t": "Aprobado por el supervisor de sede"
+    }
+   ],
+   "eta_h": 33.7
+  },
+  {
+   "pedido": "AP-26-5412",
+   "cliente": "C-4410",
+   "razon": "Distribuidora La Esquina",
+   "sede": "Trujillo",
+   "direccion": "Av. España 1290, Trujillo",
+   "vendedor": "Diana Flores",
+   "estado": "preparacion",
+   "motivo": null,
+   "descuento": 0.05,
+   "items": [
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 2,
+     "precio": 118.0
+    },
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 3,
+     "precio": 254.4
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -5.77,
+     "t": "Pedido registrado por Diana Flores"
+    },
+    {
+     "e": "aprobado",
+     "h": -5.67,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -2.27,
+     "t": "En preparación en el almacén Trujillo"
+    }
+   ],
+   "eta_h": 16.8
+  },
+  {
+   "pedido": "AP-26-5262",
+   "cliente": "C-6631",
+   "razon": "Market Grau",
+   "sede": "Piura",
+   "direccion": "Av. Grau 905, Piura",
+   "vendedor": "Kevin Ramos",
+   "estado": "preparacion",
+   "motivo": null,
+   "descuento": 0.03,
+   "items": [
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 2,
+     "precio": 45.9
+    },
+    {
+     "producto": "Detergente 2 kg (caja x 6)",
+     "cant": 3,
+     "precio": 97.8
+    },
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 3,
+     "precio": 254.4
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 4,
+     "precio": 109.2
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -6.32,
+     "t": "Pedido registrado por Kevin Ramos"
+    },
+    {
+     "e": "aprobado",
+     "h": -6.22,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -0.32,
+     "t": "En preparación en el almacén Piura"
+    }
+   ],
+   "eta_h": 17.7
+  },
+  {
+   "pedido": "AP-26-5500",
+   "cliente": "C-3305",
+   "razon": "Comercial Misti",
+   "sede": "Arequipa",
+   "direccion": "Av. Ejército 402, Cayma",
+   "vendedor": "Miguel Soto",
+   "estado": "preparacion",
+   "motivo": "Descuento mayor a 10 %",
+   "descuento": 0.15,
+   "items": [
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 9,
+     "precio": 42.0
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 4,
+     "precio": 79.2
+    },
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 5,
+     "precio": 45.9
+    },
+    {
+     "producto": "Arroz extra 5 kg (saco x 5)",
+     "cant": 2,
+     "precio": 132.5
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -8.38,
+     "t": "Pedido registrado por Miguel Soto"
+    },
+    {
+     "e": "aprobacion",
+     "h": -8.18,
+     "t": "Enviado al supervisor: Descuento mayor a 10 %"
+    },
+    {
+     "e": "aprobado",
+     "h": -6.58,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -3.98,
+     "t": "En preparación en el almacén Arequipa"
+    }
+   ],
+   "eta_h": 17.5
+  },
+  {
+   "pedido": "AP-26-5478",
+   "cliente": "C-3305",
+   "razon": "Comercial Misti",
+   "sede": "Arequipa",
+   "direccion": "Av. Ejército 402, Cayma",
+   "vendedor": "Miguel Soto",
+   "estado": "preparacion",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 8,
+     "precio": 42.0
+    },
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 2,
+     "precio": 58.5
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 12,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -11.53,
+     "t": "Pedido registrado por Miguel Soto"
+    },
+    {
+     "e": "aprobado",
+     "h": -11.43,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -3.43,
+     "t": "En preparación en el almacén Arequipa"
+    }
+   ],
+   "eta_h": 16.9
+  },
+  {
+   "pedido": "AP-26-5224",
+   "cliente": "C-2187",
+   "razon": "Minimarket El Sol",
+   "sede": "Lima Sur",
+   "direccion": "Av. Pachacútec 815, Villa María del Triunfo",
+   "vendedor": "Luis Paredes",
+   "estado": "preparacion",
+   "motivo": "Descuento mayor a 10 %",
+   "descuento": 0.12,
+   "items": [
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 8,
+     "precio": 71.6
+    },
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 11,
+     "precio": 254.4
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -15.94,
+     "t": "Pedido registrado por Luis Paredes"
+    },
+    {
+     "e": "aprobacion",
+     "h": -15.74,
+     "t": "Enviado al supervisor: Descuento mayor a 10 %"
+    },
+    {
+     "e": "aprobado",
+     "h": -9.94,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -3.24,
+     "t": "En preparación en el almacén Lima Sur"
+    }
+   ],
+   "eta_h": 18.8
+  },
+  {
+   "pedido": "AP-26-5213",
+   "cliente": "C-5523",
+   "razon": "Abarrotes Qosqo",
+   "sede": "Cusco",
+   "direccion": "Av. de la Cultura 1530, Wanchaq",
+   "vendedor": "Rosa Quispe",
+   "estado": "ruta",
+   "motivo": null,
+   "descuento": 0.05,
+   "items": [
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 9,
+     "precio": 254.4
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 3,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -16.16,
+     "t": "Pedido registrado por Rosa Quispe"
+    },
+    {
+     "e": "aprobado",
+     "h": -16.06,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -12.86,
+     "t": "En preparación en el almacén Cusco"
+    },
+    {
+     "e": "ruta",
+     "h": -2.66,
+     "t": "Salió en ruta: unidad DKW-640"
+    }
+   ],
+   "eta_h": 4.5
+  },
+  {
+   "pedido": "AP-26-5475",
+   "cliente": "C-5523",
+   "razon": "Abarrotes Qosqo",
+   "sede": "Cusco",
+   "direccion": "Av. de la Cultura 1530, Wanchaq",
+   "vendedor": "Rosa Quispe",
+   "estado": "rechazado",
+   "motivo": "Supera crédito disponible",
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Arroz extra 5 kg (saco x 5)",
+     "cant": 3,
+     "precio": 132.5
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 11,
+     "precio": 168.0
+    },
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 6,
+     "precio": 45.9
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -17.89,
+     "t": "Pedido registrado por Rosa Quispe"
+    },
+    {
+     "e": "aprobacion",
+     "h": -17.69,
+     "t": "Enviado al supervisor: Supera crédito disponible"
+    },
+    {
+     "e": "rechazado",
+     "h": -14.09,
+     "t": "Rechazado por el supervisor: el cliente tiene facturas vencidas"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5405",
+   "cliente": "C-6631",
+   "razon": "Market Grau",
+   "sede": "Piura",
+   "direccion": "Av. Grau 905, Piura",
+   "vendedor": "Kevin Ramos",
+   "estado": "ruta",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Arroz extra 5 kg (saco x 5)",
+     "cant": 7,
+     "precio": 132.5
+    },
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 2,
+     "precio": 58.5
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 5,
+     "precio": 168.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 1,
+     "precio": 109.2
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -18.55,
+     "t": "Pedido registrado por Kevin Ramos"
+    },
+    {
+     "e": "aprobado",
+     "h": -18.45,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -15.75,
+     "t": "En preparación en el almacén Piura"
+    },
+    {
+     "e": "ruta",
+     "h": -2.35,
+     "t": "Salió en ruta: unidad CLM-305"
+    }
+   ],
+   "eta_h": 6.7
+  },
+  {
+   "pedido": "AP-26-5440",
+   "cliente": "C-4410",
+   "razon": "Distribuidora La Esquina",
+   "sede": "Trujillo",
+   "direccion": "Av. España 1290, Trujillo",
+   "vendedor": "Diana Flores",
+   "estado": "ruta",
+   "motivo": null,
+   "descuento": 0.08,
+   "items": [
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 5,
+     "precio": 168.0
+    },
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 8,
+     "precio": 42.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 1,
+     "precio": 109.2
+    },
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 5,
+     "precio": 71.6
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -21.9,
+     "t": "Pedido registrado por Diana Flores"
+    },
+    {
+     "e": "aprobado",
+     "h": -21.8,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -12.0,
+     "t": "En preparación en el almacén Trujillo"
+    },
+    {
+     "e": "ruta",
+     "h": -0.3,
+     "t": "Salió en ruta: unidad CLM-305"
+    }
+   ],
+   "eta_h": 4.5
+  },
+  {
+   "pedido": "AP-26-5366",
+   "cliente": "C-5523",
+   "razon": "Abarrotes Qosqo",
+   "sede": "Cusco",
+   "direccion": "Av. de la Cultura 1530, Wanchaq",
+   "vendedor": "Rosa Quispe",
+   "estado": "ruta",
+   "motivo": null,
+   "descuento": 0.03,
+   "items": [
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 8,
+     "precio": 45.9
+    },
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 2,
+     "precio": 118.0
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 9,
+     "precio": 79.2
+    },
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 1,
+     "precio": 71.6
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -23.34,
+     "t": "Pedido registrado por Rosa Quispe"
+    },
+    {
+     "e": "aprobado",
+     "h": -23.24,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -19.04,
+     "t": "En preparación en el almacén Cusco"
+    },
+    {
+     "e": "ruta",
+     "h": -1.94,
+     "t": "Salió en ruta: unidad BQT-719"
+    }
+   ],
+   "eta_h": 5.5
+  },
+  {
+   "pedido": "AP-26-5377",
+   "cliente": "C-4410",
+   "razon": "Distribuidora La Esquina",
+   "sede": "Trujillo",
+   "direccion": "Av. España 1290, Trujillo",
+   "vendedor": "Diana Flores",
+   "estado": "ruta",
+   "motivo": null,
+   "descuento": 0.03,
+   "items": [
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 9,
+     "precio": 79.2
+    },
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 9,
+     "precio": 58.5
+    },
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 8,
+     "precio": 42.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -23.97,
+     "t": "Pedido registrado por Diana Flores"
+    },
+    {
+     "e": "aprobado",
+     "h": -23.87,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -14.47,
+     "t": "En preparación en el almacén Trujillo"
+    },
+    {
+     "e": "ruta",
+     "h": -1.47,
+     "t": "Salió en ruta: unidad CLM-305"
+    }
+   ],
+   "eta_h": 5.7
+  },
+  {
+   "pedido": "AP-26-5422",
+   "cliente": "C-3305",
+   "razon": "Comercial Misti",
+   "sede": "Arequipa",
+   "direccion": "Av. Ejército 402, Cayma",
+   "vendedor": "Miguel Soto",
+   "estado": "ruta",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 5,
+     "precio": 58.5
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 1,
+     "precio": 36.0
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 1,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -24.32,
+     "t": "Pedido registrado por Miguel Soto"
+    },
+    {
+     "e": "aprobado",
+     "h": -24.22,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -18.12,
+     "t": "En preparación en el almacén Arequipa"
+    },
+    {
+     "e": "ruta",
+     "h": -2.32,
+     "t": "Salió en ruta: unidad BQT-719"
+    }
+   ],
+   "eta_h": 6.6
+  },
+  {
+   "pedido": "AP-26-5270",
+   "cliente": "C-2187",
+   "razon": "Minimarket El Sol",
+   "sede": "Lima Sur",
+   "direccion": "Av. Pachacútec 815, Villa María del Triunfo",
+   "vendedor": "Luis Paredes",
+   "estado": "ruta",
+   "motivo": "Descuento mayor a 10 %",
+   "descuento": 0.12,
+   "items": [
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 8,
+     "precio": 109.2
+    },
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 11,
+     "precio": 118.0
+    },
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 9,
+     "precio": 71.6
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 7,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -25.62,
+     "t": "Pedido registrado por Luis Paredes"
+    },
+    {
+     "e": "aprobacion",
+     "h": -25.42,
+     "t": "Enviado al supervisor: Descuento mayor a 10 %"
+    },
+    {
+     "e": "aprobado",
+     "h": -21.72,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -15.82,
+     "t": "En preparación en el almacén Lima Sur"
+    },
+    {
+     "e": "ruta",
+     "h": -2.52,
+     "t": "Salió en ruta: unidad AFR-482"
+    }
+   ],
+   "eta_h": 3.4
+  },
+  {
+   "pedido": "AP-26-5314",
+   "cliente": "C-6631",
+   "razon": "Market Grau",
+   "sede": "Piura",
+   "direccion": "Av. Grau 905, Piura",
+   "vendedor": "Kevin Ramos",
+   "estado": "rechazado",
+   "motivo": "Supera crédito disponible",
+   "descuento": 0.08,
+   "items": [
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 4,
+     "precio": 254.4
+    },
+    {
+     "producto": "Detergente 2 kg (caja x 6)",
+     "cant": 9,
+     "precio": 97.8
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 8,
+     "precio": 79.2
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -35.4,
+     "t": "Pedido registrado por Kevin Ramos"
+    },
+    {
+     "e": "aprobacion",
+     "h": -35.2,
+     "t": "Enviado al supervisor: Supera crédito disponible"
+    },
+    {
+     "e": "rechazado",
+     "h": -29.7,
+     "t": "Rechazado por el supervisor: el cliente tiene facturas vencidas"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5282",
+   "cliente": "C-1042",
+   "razon": "Bodega Santa Rosa",
+   "sede": "Lima Norte",
+   "direccion": "Av. Túpac Amaru 2140, Comas",
+   "vendedor": "Carla Rivas",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0.03,
+   "items": [
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 1,
+     "precio": 36.0
+    },
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 2,
+     "precio": 71.6
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -79.9,
+     "t": "Pedido registrado por Carla Rivas"
+    },
+    {
+     "e": "aprobado",
+     "h": -79.8,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -76.6,
+     "t": "En preparación en el almacén Lima Norte"
+    },
+    {
+     "e": "ruta",
+     "h": -67.1,
+     "t": "Salió en ruta: unidad DKW-640"
+    },
+    {
+     "e": "entregado",
+     "h": -63.2,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5386",
+   "cliente": "C-2187",
+   "razon": "Minimarket El Sol",
+   "sede": "Lima Sur",
+   "direccion": "Av. Pachacútec 815, Villa María del Triunfo",
+   "vendedor": "Luis Paredes",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Arroz extra 5 kg (saco x 5)",
+     "cant": 5,
+     "precio": 132.5
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 3,
+     "precio": 109.2
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 8,
+     "precio": 36.0
+    },
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 4,
+     "precio": 45.9
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -96.5,
+     "t": "Pedido registrado por Luis Paredes"
+    },
+    {
+     "e": "aprobado",
+     "h": -96.4,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -87.3,
+     "t": "En preparación en el almacén Lima Sur"
+    },
+    {
+     "e": "ruta",
+     "h": -70.8,
+     "t": "Salió en ruta: unidad DKW-640"
+    },
+    {
+     "e": "entregado",
+     "h": -67.4,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5433",
+   "cliente": "C-1042",
+   "razon": "Bodega Santa Rosa",
+   "sede": "Lima Norte",
+   "direccion": "Av. Túpac Amaru 2140, Comas",
+   "vendedor": "Carla Rivas",
+   "estado": "entregado",
+   "motivo": "Monto mayor a S/ 3,000",
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 12,
+     "precio": 254.4
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 12,
+     "precio": 36.0
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 11,
+     "precio": 79.2
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -378.86,
+     "t": "Pedido registrado por Carla Rivas"
+    },
+    {
+     "e": "aprobacion",
+     "h": -378.66,
+     "t": "Enviado al supervisor: Monto mayor a S/ 3,000"
+    },
+    {
+     "e": "aprobado",
+     "h": -374.96,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -365.06,
+     "t": "En preparación en el almacén Lima Norte"
+    },
+    {
+     "e": "ruta",
+     "h": -346.46,
+     "t": "Salió en ruta: unidad CLM-305"
+    },
+    {
+     "e": "entregado",
+     "h": -342.96,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5394",
+   "cliente": "C-4410",
+   "razon": "Distribuidora La Esquina",
+   "sede": "Trujillo",
+   "direccion": "Av. España 1290, Trujillo",
+   "vendedor": "Diana Flores",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 9,
+     "precio": 42.0
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 2,
+     "precio": 168.0
+    },
+    {
+     "producto": "Detergente 2 kg (caja x 6)",
+     "cant": 2,
+     "precio": 97.8
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 4,
+     "precio": 36.0
+    },
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 2,
+     "precio": 58.5
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -389.07,
+     "t": "Pedido registrado por Diana Flores"
+    },
+    {
+     "e": "aprobado",
+     "h": -388.97,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -384.77,
+     "t": "En preparación en el almacén Trujillo"
+    },
+    {
+     "e": "ruta",
+     "h": -366.97,
+     "t": "Salió en ruta: unidad CLM-305"
+    },
+    {
+     "e": "entregado",
+     "h": -363.37,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5329",
+   "cliente": "C-5523",
+   "razon": "Abarrotes Qosqo",
+   "sede": "Cusco",
+   "direccion": "Av. de la Cultura 1530, Wanchaq",
+   "vendedor": "Rosa Quispe",
+   "estado": "entregado",
+   "motivo": "Monto mayor a S/ 3,000",
+   "descuento": 0.03,
+   "items": [
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 12,
+     "precio": 254.4
+    },
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 6,
+     "precio": 71.6
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 6,
+     "precio": 36.0
+    },
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 2,
+     "precio": 42.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -472.25,
+     "t": "Pedido registrado por Rosa Quispe"
+    },
+    {
+     "e": "aprobacion",
+     "h": -472.05,
+     "t": "Enviado al supervisor: Monto mayor a S/ 3,000"
+    },
+    {
+     "e": "aprobado",
+     "h": -469.95,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -466.35,
+     "t": "En preparación en el almacén Cusco"
+    },
+    {
+     "e": "ruta",
+     "h": -448.25,
+     "t": "Salió en ruta: unidad DKW-640"
+    },
+    {
+     "e": "entregado",
+     "h": -445.95,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5493",
+   "cliente": "C-1042",
+   "razon": "Bodega Santa Rosa",
+   "sede": "Lima Norte",
+   "direccion": "Av. Túpac Amaru 2140, Comas",
+   "vendedor": "Carla Rivas",
+   "estado": "entregado",
+   "motivo": "Monto mayor a S/ 3,000",
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 1,
+     "precio": 42.0
+    },
+    {
+     "producto": "Detergente 2 kg (caja x 6)",
+     "cant": 10,
+     "precio": 97.8
+    },
+    {
+     "producto": "Arroz extra 5 kg (saco x 5)",
+     "cant": 11,
+     "precio": 132.5
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 11,
+     "precio": 79.2
+    },
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 4,
+     "precio": 58.5
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -477.92,
+     "t": "Pedido registrado por Carla Rivas"
+    },
+    {
+     "e": "aprobacion",
+     "h": -477.72,
+     "t": "Enviado al supervisor: Monto mayor a S/ 3,000"
+    },
+    {
+     "e": "aprobado",
+     "h": -472.92,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -468.92,
+     "t": "En preparación en el almacén Lima Norte"
+    },
+    {
+     "e": "ruta",
+     "h": -460.82,
+     "t": "Salió en ruta: unidad CLM-305"
+    },
+    {
+     "e": "entregado",
+     "h": -456.02,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5346",
+   "cliente": "C-6631",
+   "razon": "Market Grau",
+   "sede": "Piura",
+   "direccion": "Av. Grau 905, Piura",
+   "vendedor": "Kevin Ramos",
+   "estado": "entregado",
+   "motivo": "Descuento mayor a 10 %",
+   "descuento": 0.12,
+   "items": [
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 11,
+     "precio": 42.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 6,
+     "precio": 109.2
+    },
+    {
+     "producto": "Detergente 2 kg (caja x 6)",
+     "cant": 2,
+     "precio": 97.8
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -480.54,
+     "t": "Pedido registrado por Kevin Ramos"
+    },
+    {
+     "e": "aprobacion",
+     "h": -480.34,
+     "t": "Enviado al supervisor: Descuento mayor a 10 %"
+    },
+    {
+     "e": "aprobado",
+     "h": -476.34,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -468.54,
+     "t": "En preparación en el almacén Piura"
+    },
+    {
+     "e": "ruta",
+     "h": -449.64,
+     "t": "Salió en ruta: unidad AFR-482"
+    },
+    {
+     "e": "entregado",
+     "h": -443.74,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5450",
+   "cliente": "C-1042",
+   "razon": "Bodega Santa Rosa",
+   "sede": "Lima Norte",
+   "direccion": "Av. Túpac Amaru 2140, Comas",
+   "vendedor": "Carla Rivas",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Atún en lata 170 g (caja x 48)",
+     "cant": 2,
+     "precio": 254.4
+    },
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 5,
+     "precio": 118.0
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 2,
+     "precio": 168.0
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -549.57,
+     "t": "Pedido registrado por Carla Rivas"
+    },
+    {
+     "e": "aprobado",
+     "h": -549.47,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -542.77,
+     "t": "En preparación en el almacén Lima Norte"
+    },
+    {
+     "e": "ruta",
+     "h": -533.77,
+     "t": "Salió en ruta: unidad DKW-640"
+    },
+    {
+     "e": "entregado",
+     "h": -528.17,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5255",
+   "cliente": "C-2187",
+   "razon": "Minimarket El Sol",
+   "sede": "Lima Sur",
+   "direccion": "Av. Pachacútec 815, Villa María del Triunfo",
+   "vendedor": "Luis Paredes",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0.03,
+   "items": [
+    {
+     "producto": "Gaseosa 3 L (paquete x 6)",
+     "cant": 3,
+     "precio": 45.9
+    },
+    {
+     "producto": "Bebida rehidratante 500 ml (paquete x 12)",
+     "cant": 10,
+     "precio": 36.0
+    },
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 2,
+     "precio": 168.0
+    },
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 8,
+     "precio": 42.0
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 1,
+     "precio": 79.2
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -598.81,
+     "t": "Pedido registrado por Luis Paredes"
+    },
+    {
+     "e": "aprobado",
+     "h": -598.71,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -595.71,
+     "t": "En preparación en el almacén Lima Sur"
+    },
+    {
+     "e": "ruta",
+     "h": -586.71,
+     "t": "Salió en ruta: unidad CLM-305"
+    },
+    {
+     "e": "entregado",
+     "h": -581.41,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5462",
+   "cliente": "C-1042",
+   "razon": "Bodega Santa Rosa",
+   "sede": "Lima Norte",
+   "direccion": "Av. Túpac Amaru 2140, Comas",
+   "vendedor": "Carla Rivas",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0,
+   "items": [
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 12,
+     "precio": 79.2
+    },
+    {
+     "producto": "Fideos spaghetti 1 kg (paquete x 10)",
+     "cant": 10,
+     "precio": 42.0
+    },
+    {
+     "producto": "Aceite vegetal 1 L (caja x 12)",
+     "cant": 11,
+     "precio": 109.2
+    },
+    {
+     "producto": "Galletas de soda (caja x 30)",
+     "cant": 3,
+     "precio": 58.5
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -627.02,
+     "t": "Pedido registrado por Carla Rivas"
+    },
+    {
+     "e": "aprobado",
+     "h": -626.92,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -619.02,
+     "t": "En preparación en el almacén Lima Norte"
+    },
+    {
+     "e": "ruta",
+     "h": -604.92,
+     "t": "Salió en ruta: unidad DKW-640"
+    },
+    {
+     "e": "entregado",
+     "h": -600.62,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5354",
+   "cliente": "C-3305",
+   "razon": "Comercial Misti",
+   "sede": "Arequipa",
+   "direccion": "Av. Ejército 402, Cayma",
+   "vendedor": "Miguel Soto",
+   "estado": "entregado",
+   "motivo": "Descuento mayor a 10 %",
+   "descuento": 0.12,
+   "items": [
+    {
+     "producto": "Leche evaporada 400 g (caja x 48)",
+     "cant": 9,
+     "precio": 168.0
+    },
+    {
+     "producto": "Avena 900 g (caja x 12)",
+     "cant": 12,
+     "precio": 79.2
+    },
+    {
+     "producto": "Arroz extra 5 kg (saco x 5)",
+     "cant": 3,
+     "precio": 132.5
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -641.17,
+     "t": "Pedido registrado por Miguel Soto"
+    },
+    {
+     "e": "aprobacion",
+     "h": -640.97,
+     "t": "Enviado al supervisor: Descuento mayor a 10 %"
+    },
+    {
+     "e": "aprobado",
+     "h": -634.07,
+     "t": "Aprobado por el supervisor de sede"
+    },
+    {
+     "e": "preparacion",
+     "h": -625.47,
+     "t": "En preparación en el almacén Arequipa"
+    },
+    {
+     "e": "ruta",
+     "h": -614.57,
+     "t": "Salió en ruta: unidad BQT-719"
+    },
+    {
+     "e": "entregado",
+     "h": -612.07,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  },
+  {
+   "pedido": "AP-26-5239",
+   "cliente": "C-6631",
+   "razon": "Market Grau",
+   "sede": "Piura",
+   "direccion": "Av. Grau 905, Piura",
+   "vendedor": "Kevin Ramos",
+   "estado": "entregado",
+   "motivo": null,
+   "descuento": 0.08,
+   "items": [
+    {
+     "producto": "Azúcar rubia 5 kg (saco x 5)",
+     "cant": 6,
+     "precio": 118.0
+    },
+    {
+     "producto": "Papel higiénico (paquete x 40)",
+     "cant": 6,
+     "precio": 71.6
+    }
+   ],
+   "eventos": [
+    {
+     "e": "registrado",
+     "h": -692.4,
+     "t": "Pedido registrado por Kevin Ramos"
+    },
+    {
+     "e": "aprobado",
+     "h": -692.3,
+     "t": "Aprobado automáticamente: dentro de las condiciones del cliente"
+    },
+    {
+     "e": "preparacion",
+     "h": -685.7,
+     "t": "En preparación en el almacén Piura"
+    },
+    {
+     "e": "ruta",
+     "h": -672.0,
+     "t": "Salió en ruta: unidad DKW-640"
+    },
+    {
+     "e": "entregado",
+     "h": -667.4,
+     "t": "Entregado y firmado por el cliente"
+    }
+   ],
+   "eta_h": null
+  }
+ ]
+}

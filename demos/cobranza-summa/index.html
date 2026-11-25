@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cartera y cobranza 2021–2025 · Tablero en JavaScript</title>
+<meta name="description" content="Tablero web hecho con JavaScript y Chart.js sobre la base académica de finanzas y cobranza del proyecto final de Análisis de Datos con SQL.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#1B2240; --muted:#58607A; --line:#DDE1EA; --bg:#F3F4F8; --card:#fff;
+  --ind:#2F3C7E; --ind-2:#5664B0; --ind-l:#E7E9F5;
+  --b1:#F4C95D; --b2:#EE8C3A; --b3:#C8372D; --ok:#2E7D57;
+  --font:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --r:10px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5}
+h1,h2,h3{margin:0;line-height:1.2;text-wrap:balance}
+p{margin:0}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--b2);outline-offset:2px;border-radius:6px}
+[hidden]{display:none!important}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(14px,3vw,28px)}
+
+.demo-bar{background:#141A33;color:#B9BFD8;font-size:13.5px;padding:7px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:center}
+.demo-bar a{display:inline-flex;align-items:center;gap:6px;background:var(--b1);color:#141A33;font-weight:700;text-decoration:none;padding:5px 12px;border-radius:6px}
+
+header.top{padding:26px 0 14px}
+.eyebrow{font-size:13.5px;color:var(--muted)}
+header.top h1{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800;letter-spacing:-.02em;margin-top:4px}
+
+.filters{position:sticky;top:0;z-index:5;background:rgba(243,244,248,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 0}
+.filters .wrap{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:8px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:6px;padding:6px 11px;cursor:pointer;font-size:14px;min-height:36px;color:var(--muted);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ind);color:#fff}
+.flt{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);min-width:0;flex:0 1 auto}
+.flt select{border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 10px;min-height:42px;color:var(--ink);min-width:0;max-width:100%}
+@media (max-width:700px){.filters{position:static}.flt{flex:1 1 100%}.flt select{flex:1}.seg{max-width:100%;overflow-x:auto}.reset{margin-left:0}}
+html,body{overflow-x:hidden}
+.reset{margin-left:auto;border:0;background:none;color:var(--ind);font-weight:600;cursor:pointer;min-height:40px}
+.reset:hover{text-decoration:underline}
+
+main{padding:18px 0 56px;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+@media (max-width:560px){.kpi b{font-size:21px}table th:last-child,table td:last-child{display:none}.card{padding:16px 14px}}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.01em;margin-top:2px}
+.kpi small{font-size:12.5px;color:var(--muted)}
+.kpi.alert b{color:var(--b3)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.card h2{font-size:17px;font-weight:700}
+.card .sub{font-size:13.5px;color:var(--muted);margin-top:3px}
+.chart{position:relative;margin-top:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.grid-main{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,1fr);gap:16px}
+@media (max-width:980px){.grid2,.grid-main{grid-template-columns:minmax(0,1fr)}}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+.finds{display:flex;flex-direction:column;gap:14px}
+.finds ol{margin:6px 0 0;padding:0;list-style:none;counter-reset:f;display:grid;gap:14px}
+.finds li{counter-increment:f;display:grid;grid-template-columns:28px 1fr;gap:10px;font-size:14.5px}
+.finds li::before{content:counter(f);width:26px;height:26px;border-radius:50%;background:var(--ind-l);color:var(--ind);font-weight:700;display:grid;place-items:center;font-size:13px}
+.finds b{font-weight:700}
+
+.tabs{display:inline-flex;gap:4px;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+th{font-size:12.5px;color:var(--muted);font-weight:600;text-align:left;padding:0 6px 8px 0}
+td{padding:9px 6px 9px 0;border-top:1px solid var(--line)}
+td.r,th.r{text-align:right;white-space:nowrap}
+.bar{height:8px;background:var(--ind-l);border-radius:4px;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;background:var(--ind-2)}
+
+details.sql{background:#141A33;color:#DDE2F5;border-radius:var(--r);padding:14px 18px}
+details.sql summary{cursor:pointer;font-weight:600;color:#fff}
+details.sql pre{margin:12px 0 0;overflow:auto;font-size:13px;line-height:1.55;font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+.notes{font-size:13px;color:var(--muted);display:grid;gap:4px}
+.err{padding:24px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <a href="../../index.html#proyectos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Volver al portafolio</a>
+  <span>Tablero web sobre la base académica del proyecto final de SQL (Summa Center Latam). Datos ficticios, en dólares. Leonardo Bazán</span>
+</div>
+
+<header class="top wrap">
+  <p class="eyebrow">Proyecto final · Especialización en Análisis de Datos con SQL, Summa Center Latam</p>
+  <h1>Cartera de créditos y cobranza, 2021–2025</h1>
+</header>
+
+<div class="filters" role="region" aria-label="Filtros">
+  <div class="wrap">
+    <div class="seg" role="group" aria-label="Año" id="f-anio"></div>
+    <label class="flt">Sede <select id="f-sede"><option value="">Todas</option></select></label>
+    <label class="flt">Segmento <select id="f-seg"><option value="">Todos</option></select></label>
+    <button class="reset" type="button" id="reset">Quitar filtros</button>
+  </div>
+</div>
+
+<main class="wrap" id="app">
+  <section class="kpis" aria-label="Indicadores">
+    <div class="kpi"><span>Monto colocado</span><b class="num" id="k-col">–</b><small id="k-col-s"></small></div>
+    <div class="kpi"><span>Recuperación</span><b class="num" id="k-rec">–</b><small>pagado sobre programado</small></div>
+    <div class="kpi" id="kb-atr"><span>Cuotas con atraso</span><b class="num" id="k-atr">–</b><small id="k-atr-s"></small></div>
+    <div class="kpi" id="kb-venc"><span>Cuotas vencidas</span><b class="num" id="k-venc">–</b><small>más de 30 días o sin pago</small></div>
+    <div class="kpi"><span>Saldo pendiente</span><b class="num" id="k-sal">–</b><small>de las cuotas registradas</small></div>
+  </section>
+
+  <div class="grid-main">
+    <section class="card" aria-labelledby="t-atr">
+      <h2 id="t-atr">–</h2>
+      <p class="sub">Porcentaje de cuotas pagadas con atraso, por trimestre de vencimiento. El T1 2021 tiene pocas cuotas porque la cartera recién empieza.</p>
+      <div class="chart" style="height:300px"><canvas id="c-atr" role="img" aria-label="Cuotas con atraso por trimestre"></canvas></div>
+      <div class="legend"><span><i style="background:var(--b1)"></i>7 días</span><span><i style="background:var(--b2)"></i>18 días</span><span><i style="background:var(--b3)"></i>45 días o sin pago</span></div>
+    </section>
+    <section class="card finds" aria-labelledby="t-f">
+      <h2 id="t-f">Lo que encontré</h2>
+      <ol>
+        <li><span>La mora se dispara en el <b>segundo semestre de 2025</b>: las cuotas con atraso pasan de un 15 % estable a 25 % en el T3 y a 41 % en el T4.</span></li>
+        <li><span>Vuelven los <b>atrasos de 45 días</b>, ausentes entre 2022 y 2024: las cuotas vencidas suben de 2 % a 32 % en el T4.</span></li>
+        <li><span>Aun así, la <b>recuperación se mantiene en ~95 %</b> (96,5 % en el T4): los clientes pagan, pero tarde. Es un problema de oportunidad de cobro, no de pérdida, y afecta por igual a todas las sedes, segmentos y ejecutivos (95,0 %–95,7 %).</span></li>
+      </ol>
+      <p class="notes" style="margin-top:auto">Los hallazgos usan todos los datos; los gráficos responden a los filtros.</p>
+    </section>
+  </div>
+
+  <div class="grid2">
+    <section class="card" aria-labelledby="t-col">
+      <h2 id="t-col">Colocaciones por año y tipo de crédito</h2>
+      <p class="sub">Monto otorgado en dólares</p>
+      <div class="chart" style="height:280px"><canvas id="c-col" role="img" aria-label="Colocaciones por año y tipo de crédito"></canvas></div>
+    </section>
+    <section class="card" aria-labelledby="t-cmp">
+      <h2 id="t-cmp">Comparativo</h2>
+      <p class="sub">Recuperación, atraso y saldo pendiente</p>
+      <div class="tabs seg" role="group" aria-label="Comparar por">
+        <button type="button" data-cmp="sede" aria-pressed="true">Por sede</button>
+        <button type="button" data-cmp="seg" aria-pressed="false">Por segmento</button>
+      </div>
+      <table><thead><tr><th id="cmp-h">Sede</th><th class="r">Recuperación</th><th class="r">Con atraso</th><th class="r">Saldo pendiente</th><th style="width:28%"><span style="position:absolute;left:-9999px">Peso en el saldo</span></th></tr></thead><tbody id="cmp"></tbody></table>
+    </section>
+  </div>
+
+  <details class="sql">
+    <summary>Consulta SQL equivalente al gráfico de atraso</summary>
+<pre>SELECT
+    CONCAT(YEAR(d.FechaProgramadaPago), '-T', DATEPART(QUARTER, d.FechaProgramadaPago)) AS Trimestre,
+    COUNT(*) AS Cuotas,
+    AVG(CASE WHEN d.FechaPago IS NOT NULL AND d.DiasMora = 7  THEN 1.0 ELSE 0 END) AS PctAtraso7,
+    AVG(CASE WHEN d.FechaPago IS NOT NULL AND d.DiasMora = 18 THEN 1.0 ELSE 0 END) AS PctAtraso18,
+    AVG(CASE WHEN d.FechaPago IS NULL OR d.DiasMora = 45     THEN 1.0 ELSE 0 END) AS PctAtraso45OSinPago,
+    SUM(d.MontoPagado) / SUM(d.MontoProgramado) AS Recuperacion
+FROM DetallePagosCredito d
+WHERE d.FechaProgramadaPago &lt; '2026-01-01'
+GROUP BY YEAR(d.FechaProgramadaPago), DATEPART(QUARTER, d.FechaProgramadaPago)
+ORDER BY YEAR(d.FechaProgramadaPago), DATEPART(QUARTER, d.FechaProgramadaPago);</pre>
+  </details>
+
+  <div class="notes">
+    <p>Fuente: base académica BD_FinanzasCobranza (1.500 créditos, 4 sedes, 12 clientes ficticios), replicada y publicada solo como totales agregados.</p>
+    <p>La base registra las 6 primeras cuotas de cada crédito; el saldo pendiente se calcula sobre esas cuotas. Se excluyen las cuotas con vencimiento en 2026, fuera del periodo de estudio.</p>
+  </div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var D, F = {anio:'', sede:'', seg:''}, cmpBy = 'sede', charts = {};
+  var usd = {format:function(v){ return 'US$ ' + Math.round(v).toLocaleString('es-PE'); }};
+  var usdK = function(v){ return v >= 1e6 ? 'US$ ' + (v / 1e6).toLocaleString('es-PE', {maximumFractionDigits:1}) + ' M' : 'US$ ' + Math.round(v / 1e3).toLocaleString('es-PE') + ' mil'; };
+  var pct = function(v, d){ return (v * 100).toLocaleString('es-PE', {minimumFractionDigits:d == null ? 1 : d, maximumFractionDigits:d == null ? 1 : d}) + ' %'; };
+  var $ = function(s){ return document.querySelector(s); };
+  var TIPOC = ['#2F3C7E','#5664B0','#8A94CC','#B9BFE3','#E0E3F3'];
+
+  function rows(name){ var cols = D[name + '_cols']; return D[name].map(function(r){ var o = {}; cols.forEach(function(c, i){ o[c] = r[i]; }); return o; }); }
+  function pass(r, yearKey){
+    if (F.sede && String(r.sede) !== F.sede) return false;
+    if (F.seg && String(r.seg) !== F.seg) return false;
+    if (F.anio && yearKey && String(yearKey(r)) !== F.anio) return false;
+    return true;
+  }
+  function sum(a, k){ return a.reduce(function(s, r){ return s + r[k]; }, 0); }
+
+  var CU, CO, CT;
+  function init(){
+    CU = rows('cuotas'); CO = rows('colocaciones'); CT = rows('colocaciones_tipo');
+    // filtros
+    var fa = $('#f-anio');
+    ['', '2021', '2022', '2023', '2024', '2025'].forEach(function(y){
+      var b = document.createElement('button'); b.type = 'button'; b.dataset.y = y; b.textContent = y || 'Todos'; b.setAttribute('aria-pressed', String(y === ''));
+      b.addEventListener('click', function(){ F.anio = y; update(); }); fa.appendChild(b);
+    });
+    Object.keys(D.sedes).forEach(function(k){ var o = document.createElement('option'); o.value = k; o.textContent = D.sedes[k].sede + ' (' + D.sedes[k].pais + ')'; $('#f-sede').appendChild(o); });
+    Object.keys(D.segmentos).forEach(function(k){ var o = document.createElement('option'); o.value = k; o.textContent = D.segmentos[k].n + ' · riesgo ' + D.segmentos[k].riesgo.toLowerCase(); $('#f-seg').appendChild(o); });
+    $('#f-sede').addEventListener('change', function(e){ F.sede = e.target.value; update(); });
+    $('#f-seg').addEventListener('change', function(e){ F.seg = e.target.value; update(); });
+    $('#reset').addEventListener('click', function(){ F = {anio:'', sede:'', seg:''}; $('#f-sede').value = ''; $('#f-seg').value = ''; update(); });
+    document.querySelectorAll('[data-cmp]').forEach(function(b){ b.addEventListener('click', function(){ cmpBy = b.dataset.cmp; document.querySelectorAll('[data-cmp]').forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); }); renderCmp(); }); });
+
+    Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+    Chart.defaults.color = '#58607A';
+    charts.atr = new Chart($('#c-atr'), {type:'bar', data:{labels:[], datasets:[
+      {label:'7 días', data:[], backgroundColor:[], stack:'a'},
+      {label:'18 días', data:[], backgroundColor:[], stack:'a'},
+      {label:'45 días o sin pago', data:[], backgroundColor:[], stack:'a'}]},
+      options:{maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:function(c){ return c.dataset.label + ': ' + pct(c.raw); }, footer:function(items){ var t = items.reduce(function(s, i){ return s + i.raw; }, 0); return 'Total con atraso: ' + pct(t); }}}},
+        scales:{x:{stacked:true, grid:{display:false}, ticks:{autoSkip:false, maxRotation:0, callback:function(v, i){ var l = this.getLabelForValue(v); return l.endsWith('T1') ? l.slice(0, 4) : ''; }}},
+                y:{stacked:true, max:0.5, ticks:{callback:function(v){ return pct(v, 0); }}, grid:{color:'#EEF0F5'}}}}});
+    charts.col = new Chart($('#c-col'), {type:'bar', data:{labels:['2021','2022','2023','2024','2025'], datasets:[]},
+      options:{maintainAspectRatio:false, plugins:{legend:{position:'bottom', labels:{boxWidth:11, boxHeight:11}}, tooltip:{callbacks:{label:function(c){ return c.dataset.label + ': ' + usd.format(c.raw); }}}},
+        scales:{x:{stacked:true, grid:{display:false}}, y:{stacked:true, ticks:{callback:function(v){ return (v / 1e6).toLocaleString('es-PE') + ' M'; }}, grid:{color:'#EEF0F5'}}}}});
+    update();
+  }
+
+  function update(){
+    document.querySelectorAll('#f-anio button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.y === F.anio)); });
+    var y4 = function(r){ return r.mes.slice(0, 4); };
+    var cu = CU.filter(function(r){ return pass(r, y4); });
+    var co = CO.filter(function(r){ return pass(r, function(x){ return x.trimestre.slice(0, 4); }); });
+    var n = sum(cu, 'n'), prog = sum(cu, 'programado'), pag = sum(cu, 'pagado');
+    var atr = sum(cu, 'atraso7') + sum(cu, 'atraso18') + sum(cu, 'atraso45') + sum(cu, 'sinPago');
+    var venc = sum(cu, 'vencidas');
+    $('#k-col').textContent = usdK(sum(co, 'monto'));
+    $('#k-col-s').textContent = sum(co, 'creditos').toLocaleString('es-PE') + ' créditos otorgados';
+    $('#k-rec').textContent = n ? pct(pag / prog) : '–';
+    $('#k-atr').textContent = n ? pct(atr / n) : '–';
+    $('#k-atr-s').textContent = n ? atr.toLocaleString('es-PE') + ' de ' + n.toLocaleString('es-PE') + ' cuotas' : '';
+    $('#k-venc').textContent = n ? pct(venc / n) : '–';
+    $('#k-sal').textContent = usdK(prog - pag);
+    $('#kb-atr').classList.toggle('alert', n && atr / n > 0.2);
+    $('#kb-venc').classList.toggle('alert', n && venc / n > 0.1);
+    renderAtr(); renderCol(); renderCmp();
+  }
+
+  function renderAtr(){
+    var cu = CU.filter(function(r){ return pass(r, null); });
+    var q = {};
+    cu.forEach(function(r){
+      var t = r.mes.slice(0, 4) + '-T' + (Math.floor((+r.mes.slice(5) - 1) / 3) + 1);
+      var o = q[t] || (q[t] = {n:0, a:0, b:0, c:0});
+      o.n += r.n; o.a += r.atraso7; o.b += r.atraso18; o.c += r.atraso45 + r.sinPago;
+    });
+    var L = Object.keys(q).sort();
+    var fade = function(col, l){ return !F.anio || l.slice(0, 4) === F.anio ? col : col + '40'; };
+    charts.atr.data.labels = L;
+    var cols = ['#F4C95D', '#EE8C3A', '#C8372D'];
+    ['a', 'b', 'c'].forEach(function(k, i){
+      charts.atr.data.datasets[i].data = L.map(function(l){ return q[l].n ? q[l][k] / q[l].n : 0; });
+      charts.atr.data.datasets[i].backgroundColor = L.map(function(l){ return fade(cols[i], l); });
+    });
+    charts.atr.update();
+    // título dinámico: trimestre con más atraso dentro del filtro
+    // los trimestres con pocas cuotas (inicio de la cartera) no se usan para el título
+    var minN = 0.4 * Math.max.apply(null, L.map(function(l){ return q[l].n; }));
+    var pool = L.filter(function(l){ return (!F.anio || l.slice(0, 4) === F.anio) && q[l].n >= minN; });
+    var best = pool.reduce(function(b, l){ var v = (q[l].a + q[l].b + q[l].c) / q[l].n; return !b || v > b.v ? {l:l, v:v} : b; }, null);
+    $('#t-atr').textContent = best ? 'En el ' + best.l.slice(5) + ' de ' + best.l.slice(0, 4) + ', ' + pct(best.v, 0) + ' de las cuotas se pagó con atraso' : 'Cuotas con atraso por trimestre';
+  }
+
+  function renderCol(){
+    var ct = CT.filter(function(r){ return pass(r, function(x){ return x.anio; }); });
+    var years = F.anio ? [F.anio] : ['2021','2022','2023','2024','2025'];
+    charts.col.data.labels = years;
+    charts.col.data.datasets = Object.keys(D.tipos).map(function(k, i){
+      return {label:D.tipos[k].replace('Crédito ', '').replace('Línea ', 'Línea '), backgroundColor:TIPOC[i], borderRadius:2,
+        data:years.map(function(y){ return sum(ct.filter(function(r){ return String(r.anio) === y && String(r.tipo) === k; }), 'monto'); })};
+    });
+    charts.col.update();
+  }
+
+  function renderCmp(){
+    var y4 = function(r){ return r.mes.slice(0, 4); };
+    var keys = cmpBy === 'sede' ? Object.keys(D.sedes) : Object.keys(D.segmentos);
+    $('#cmp-h').textContent = cmpBy === 'sede' ? 'Sede' : 'Segmento';
+    var data = keys.map(function(k){
+      var rs = CU.filter(function(r){ return pass(r, y4) && String(r[cmpBy]) === k; });
+      var n = sum(rs, 'n'), prog = sum(rs, 'programado'), pag = sum(rs, 'pagado');
+      return {k:k, name:cmpBy === 'sede' ? D.sedes[k].sede.replace('Sede Financiera ', '') : D.segmentos[k].n, n:n, rec:prog ? pag / prog : null,
+        atr:n ? (sum(rs, 'atraso7') + sum(rs, 'atraso18') + sum(rs, 'atraso45') + sum(rs, 'sinPago')) / n : null, sal:prog - pag};
+    }).filter(function(d){ return d.n > 0; });
+    var max = Math.max.apply(null, data.map(function(d){ return d.sal; }).concat([1]));
+    $('#cmp').innerHTML = data.map(function(d){
+      return '<tr><td>' + d.name + '</td><td class="r num">' + pct(d.rec) + '</td><td class="r num">' + pct(d.atr) + '</td><td class="r num">' + usd.format(d.sal) + '</td><td><div class="bar"><i style="width:' + (d.sal / max * 100).toFixed(1) + '%"></i></div></td></tr>';
+    }).join('') || '<tr><td colspan="5">Sin datos para este filtro.</td></tr>';
+  }
+
+  fetch('cartera.json', {cache:'no-store'}).then(function(r){ if (!r.ok) throw 0; return r.json(); })
+    .then(function(d){ D = d; if (!window.Chart) throw 0; init(); })
+    .catch(function(){ $('#app').innerHTML = '<div class="card err">No se pudieron cargar los datos. Abre la página con un servidor local (Live Server en VS Code) o desde el portafolio publicado.</div>'; });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Andina · Seguimiento de pedidos</title>
+<meta name="description" content="Demo web: un cliente de una distribuidora consulta el estado de sus pedidos, la aprobación del supervisor y la ventana de entrega.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pet:#0F4C5C; --pet-d:#0A3540; --pet-l:#E3EEF0; --org:#E36414; --org-d:#B3470A; --org-l:#FCEBDD;
+  --bg:#F4F6F6; --card:#FFFFFF; --ink:#142228; --muted:#52646B; --line:#D8E0E2; --line-2:#BFCBCE;
+  --ok:#1F7A4D; --ok-l:#E3F3EA; --warn:#8A5B00; --warn-l:#FFF2D2; --bad:#B3261E; --bad-l:#FBE5E3;
+  --font:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif; --r:10px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15.5px;line-height:1.55}
+h1,h2,h3{margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--org);outline-offset:2px;border-radius:6px}
+[hidden]{display:none!important}
+[tabindex="-1"]:focus{outline:none}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1160px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+.demo-bar{background:var(--pet-d);color:#BFD6DB;font-size:13.5px;padding:7px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:center}
+.demo-bar a{display:inline-flex;align-items:center;gap:6px;background:var(--org);color:#fff;font-weight:700;text-decoration:none;padding:5px 12px;border-radius:6px}
+
+/* cabecera + buscador */
+.hero{background:var(--pet);color:#fff;padding:18px 0 34px}
+.hero .bar{display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.01em;color:#fff;text-decoration:none}
+.logo svg{flex:none}
+.hero .bar span{margin-left:auto;font-size:14px;color:#BFD6DB}
+.hero h1{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:800;letter-spacing:-.02em;margin-top:30px}
+.hero p.sub{color:#CFE1E5;margin-top:6px;max-width:58ch}
+.search{margin-top:20px;display:flex;gap:10px;max-width:640px}
+.search input{flex:1;min-width:0;border:0;border-radius:8px;padding:0 16px;min-height:52px;font-size:17px;background:#fff;color:var(--ink)}
+.search input::placeholder{color:#7D8E94}
+.search button{border:0;border-radius:8px;min-height:52px;padding:0 22px;background:var(--org);color:#fff;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.search button:hover{background:var(--org-d)}
+@media (max-width:520px){.search{flex-direction:column}}
+.tries{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:14px;color:#CFE1E5}
+.tries button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:5px 12px;cursor:pointer;font-size:14px;min-height:34px}
+.tries button:hover{background:rgba(255,255,255,.22)}
+.msg{margin-top:10px;min-height:1.4em;font-size:14.5px;color:#FFD9BF;font-weight:500}
+
+main{padding:28px 0 64px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.empty-state{padding:36px;text-align:center;color:var(--muted)}
+.empty-state b{display:block;color:var(--ink);font-size:18px;margin-bottom:6px}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.badge i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.b-entregado{background:var(--ok-l);color:var(--ok)}
+.b-ruta{background:var(--org-l);color:var(--org-d)}
+.b-preparacion,.b-aprobado,.b-registrado{background:var(--pet-l);color:var(--pet)}
+.b-aprobacion{background:var(--warn-l);color:var(--warn)}
+.b-rechazado{background:var(--bad-l);color:var(--bad)}
+
+/* detalle de pedido */
+.ohead{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-start;padding:22px 24px;border-bottom:1px solid var(--line)}
+.ohead .id span{font-size:13px;color:var(--muted)}
+.ohead .id h2{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.ohead .id p{color:var(--muted);font-size:14.5px;margin-top:2px}
+.eta{margin-left:auto;background:var(--pet);color:#fff;border-radius:var(--r);padding:12px 16px;min-width:240px}
+.eta span{font-size:13px;color:#CFE1E5;display:block}
+.eta b{font-size:19px;font-weight:700;display:block;margin-top:2px}
+.eta.done{background:var(--ok)}
+.eta.bad{background:var(--bad)}
+.eta.wait{background:#5E4A12}
+@media (max-width:640px){.eta{margin-left:0;width:100%}}
+
+.track{list-style:none;margin:0;padding:26px 24px 8px;display:grid;grid-template-columns:repeat(5,1fr);gap:0}
+.track li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 6px}
+.track li::before{content:"";position:absolute;top:15px;left:-50%;width:100%;height:4px;background:var(--line);z-index:0}
+.track li:first-child::before{display:none}
+.track li.ok::before{background:var(--pet)}
+.track .dot{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;border:3px solid var(--line-2);color:var(--muted)}
+.track li.ok .dot{background:var(--pet);border-color:var(--pet);color:#fff}
+.track li.now .dot{background:#fff;border-color:var(--org);color:var(--org);box-shadow:0 0 0 5px var(--org-l)}
+.track li.now::before{background:var(--pet)}
+.track li.bad .dot{background:var(--bad);border-color:var(--bad);color:#fff}
+.track li.bad::before{background:var(--bad)}
+.track li > div{display:flex;flex-direction:column;align-items:center}
+.track b{font-size:14px;margin-top:8px}
+.track small{font-size:12.5px;color:var(--muted);min-height:1.3em}
+@media (max-width:640px){
+  .track{grid-template-columns:1fr;padding:20px 20px 4px}
+  .track li{flex-direction:row;text-align:left;gap:12px;padding:0 0 18px}
+  .track li::before{top:-18px;left:15px;width:4px;height:22px}
+  .track li > div{align-items:flex-start}
+  .track b{margin-top:0}
+}
+.appr{margin:10px 24px 0;padding:10px 14px;border-radius:8px;font-size:14px;display:flex;gap:10px;align-items:flex-start}
+.appr.w{background:var(--warn-l);color:#5E4300}
+.appr.o{background:var(--pet-l);color:var(--pet-d)}
+.appr.x{background:var(--bad-l);color:#7A1A14}
+.cols{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:0;border-top:1px solid var(--line);margin-top:22px}
+@media (max-width:860px){.cols{grid-template-columns:1fr}}
+.cols > section{padding:20px 24px}
+.cols > section + section{border-left:1px solid var(--line)}
+@media (max-width:860px){.cols > section + section{border-left:0;border-top:1px solid var(--line)}}
+.cols h3{font-size:16px;font-weight:700;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font-size:12.5px;font-weight:600;color:var(--muted);padding:0 0 8px}
+td{padding:9px 0;border-top:1px solid var(--line);vertical-align:top}
+td.r,th.r{text-align:right;white-space:nowrap}
+td.q{width:52px;color:var(--muted)}
+tfoot td{font-size:14px}
+tfoot tr.t td{font-weight:800;font-size:16px;border-top:2px solid var(--ink)}
+dl.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 18px;font-size:14.5px}
+dl.kv dt{color:var(--muted)} dl.kv dd{margin:0;font-weight:500}
+.log{list-style:none;margin:0;padding:0}
+.log li{position:relative;padding:0 0 14px 22px;font-size:14px}
+.log li::before{content:"";position:absolute;left:4px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--pet)}
+.log li:not(:last-child)::after{content:"";position:absolute;left:8px;top:17px;bottom:0;width:1.5px;background:var(--line-2)}
+.log li.x::before{background:var(--bad)} .log li.w::before{background:#C99400}
+.log time{display:block;color:var(--muted);font-size:12.5px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--pet);font-weight:600;text-decoration:none;margin-bottom:14px}
+.back:hover{color:var(--org-d)}
+
+/* vista de cliente */
+.chead{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;padding:22px 24px;border-bottom:1px solid var(--line)}
+.chead h2{font-size:24px;font-weight:800}
+.chead p{color:var(--muted);font-size:14.5px}
+.kpis{margin-left:auto;display:flex;gap:22px}
+.kpis div{display:flex;flex-direction:column}
+.kpis b{font-size:22px;font-weight:800}
+.kpis span{font-size:12.5px;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;padding:16px 24px 6px}
+.filters button{border:1.5px solid var(--line-2);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;font-size:14px;min-height:38px}
+.filters button[aria-pressed="true"]{background:var(--pet);border-color:var(--pet);color:#fff}
+.olist{list-style:none;margin:0;padding:6px 24px 18px}
+.olist li a{display:grid;grid-template-columns:150px 1fr auto auto;gap:6px 18px;align-items:center;padding:14px 4px;border-top:1px solid var(--line);text-decoration:none;color:inherit}
+.olist li:first-child a{border-top:0}
+.olist li a:hover{background:#F8FAFA}
+.olist b{font-weight:700}
+.olist .when{color:var(--muted);font-size:14px}
+.olist .amt{font-weight:600;text-align:right;white-space:nowrap}
+@media (max-width:640px){.olist li a{grid-template-columns:1fr auto}.olist .when{grid-column:1/-1;order:3}}
+.foot-note{margin-top:16px;font-size:13.5px;color:var(--muted)}
+.loading{padding:30px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <a href="../../index.html#proyectos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Volver al portafolio</a>
+  <span>Demo web de seguimiento de pedidos. Distribuidora, clientes y pedidos ficticios. Leonardo Bazán</span>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="bar">
+      <a class="logo" href="#" aria-label="Andina, inicio del seguimiento"><svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#E36414"/><path d="M6 24l7-13 4 7 3-4 6 10z" fill="#fff"/></svg>Andina</a>
+      <span>Seguimiento de pedidos</span>
+    </div>
+    <h1>¿Dónde está tu pedido?</h1>
+    <p class="sub">Escribe el número de pedido que te dio tu vendedor, o tu código de cliente para ver todos tus pedidos.</p>
+    <form class="search" id="form" role="search">
+      <label class="sr" for="q" style="position:absolute;left:-9999px">Número de pedido o código de cliente</label>
+      <input id="q" autocomplete="off" spellcheck="false" placeholder="Ej.: AP-26-5474 o C-1042" aria-describedby="msg">
+      <button type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Buscar</button>
+    </form>
+    <p class="msg" id="msg" role="status"></p>
+    <div class="tries" id="tries" aria-label="Ejemplos para probar la demo"><span>Prueba con:</span></div>
+  </div>
+</header>
+
+<main class="wrap" id="main" tabindex="-1">
+  <div id="view"><p class="loading">Cargando pedidos…</p></div>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var DATA = null;
+  var NOW = Date.now();
+  var IGV = 0.18;
+  var ETAPAS = [
+    {e:'registrado', n:'Registrado'},
+    {e:'aprobado', n:'Aprobado'},
+    {e:'preparacion', n:'En preparación'},
+    {e:'ruta', n:'En ruta'},
+    {e:'entregado', n:'Entregado'}
+  ];
+  var NOMBRE = {registrado:'Registrado', aprobacion:'Esperando aprobación', aprobado:'Aprobado', preparacion:'En preparación', ruta:'En ruta', entregado:'Entregado', rechazado:'Rechazado'};
+  var money = new Intl.NumberFormat('es-PE', {style:'currency', currency:'PEN', minimumFractionDigits:2});
+  var dfull = new Intl.DateTimeFormat('es-PE', {weekday:'short', day:'numeric', month:'short', hour:'numeric', minute:'2-digit'});
+  var dday = new Intl.DateTimeFormat('es-PE', {weekday:'long', day:'numeric', month:'long'});
+  var dhour = new Intl.DateTimeFormat('es-PE', {hour:'numeric', minute:'2-digit'});
+  var rel = new Intl.RelativeTimeFormat('es', {numeric:'auto'});
+  var $ = function(s, r){ return (r || document).querySelector(s); };
+  function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function at(h){ return new Date(NOW + h * 3600e3); }
+  function hace(h){
+    var a = Math.abs(h);
+    if (a < 1) return rel.format(Math.round(h * 60), 'minute');
+    if (a < 36) return rel.format(Math.round(h), 'hour');
+    return rel.format(Math.round(h / 24), 'day');
+  }
+  function dayLabel(d){
+    var t = new Date(NOW); t.setHours(0,0,0,0);
+    var x = new Date(d); x.setHours(0,0,0,0);
+    var diff = Math.round((x - t) / 864e5);
+    if (diff === 0) return 'hoy';
+    if (diff === 1) return 'mañana';
+    return dday.format(d);
+  }
+  function totals(p){
+    var sub = p.items.reduce(function(s, i){ return s + i.cant * i.precio; }, 0);
+    var desc = sub * (p.descuento || 0), base = sub - desc, igv = base * IGV;
+    return {sub:sub, desc:desc, base:base, igv:igv, total:base + igv};
+  }
+  function badge(st){ return '<span class="badge b-' + st + '"><i></i>' + NOMBRE[st] + '</span>'; }
+  function norm(q){ return q.trim().toUpperCase().replace(/\s+/g, ''); }
+
+  /* ---------- búsqueda ---------- */
+  var form = $('#form'), q = $('#q'), msg = $('#msg');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = norm(q.value);
+    if (!v){ msg.textContent = 'Escribe un número de pedido o un código de cliente.'; q.focus(); return; }
+    if (/^\d{4}$/.test(v)) v = 'AP-26-' + v;
+    if (/^AP-?26-?\d{4}$/.test(v)) v = 'AP-26-' + v.slice(-4);
+    if (/^C-?\d{4}$/.test(v)) v = 'C-' + v.slice(-4);
+    location.hash = v;
+  });
+  window.addEventListener('hashchange', route);
+
+  /* ---------- ruteo por hash ---------- */
+  function route(){
+    if (!DATA) return;
+    var h = decodeURIComponent(location.hash.slice(1)).split('?')[0];
+    msg.textContent = '';
+    if (!h){ home(); return; }
+    q.value = h;
+    var ped = DATA.pedidos.filter(function(p){ return p.pedido === h; })[0];
+    if (ped){ showPedido(ped); return; }
+    var mios = DATA.pedidos.filter(function(p){ return p.cliente === h; });
+    if (mios.length){ showCliente(h, mios); return; }
+    if (/^AP-26-\d{4}$/.test(h)) msg.textContent = 'No encontramos el pedido ' + h + '. Revisa el número en tu comprobante o en el mensaje del vendedor.';
+    else if (/^C-\d{4}$/.test(h)) msg.textContent = 'No encontramos el código de cliente ' + h + '.';
+    else msg.textContent = 'Usa el formato AP-26-1234 para pedidos o C-1234 para clientes.';
+    home();
+    q.focus();
+  }
+
+  function home(){
+    $('#view').innerHTML = '<div class="card empty-state"><b>Busca un pedido para empezar</b>Puedes usar los ejemplos de arriba. Los datos se leen de un archivo JSON, como si vinieran de una API.</div>';
+  }
+
+  /* ---------- vista de un pedido ---------- */
+  function showPedido(p){
+    var ev = p.eventos, last = ev[ev.length - 1], t = totals(p);
+    var hit = {}; ev.forEach(function(x){ hit[x.e] = x; });
+    var etaBox;
+    if (p.estado === 'entregado') etaBox = '<div class="eta done"><span>Entregado</span><b>' + esc(dfull.format(at(hit.entregado.h))) + '</b></div>';
+    else if (p.estado === 'rechazado') etaBox = '<div class="eta bad"><span>Pedido rechazado</span><b>Tu vendedor te contactará</b></div>';
+    else if (p.estado === 'aprobacion') etaBox = '<div class="eta wait"><span>Entrega estimada</span><b>Cuando se apruebe</b></div>';
+    else {
+      var d = at(p.eta_h); d.setMinutes(0, 0, 0);
+      var d2 = new Date(d.getTime() + 3 * 3600e3);
+      etaBox = '<div class="eta"><span>Llega ' + esc(dayLabel(d)) + '</span><b class="num">entre ' + esc(dhour.format(d)) + ' y ' + esc(dhour.format(d2)) + '</b></div>';
+    }
+    // línea de avance
+    var idxNow = -1;
+    ETAPAS.forEach(function(s, i){ if (hit[s.e]) idxNow = i; });
+    var track = '<ol class="track" aria-label="Avance del pedido">';
+    ETAPAS.forEach(function(s, i){
+      var cls = '', icon = String(i + 1), when = '';
+      if (p.estado === 'rechazado' && i === 1){
+        cls = 'bad'; icon = '✕'; when = esc(hace(hit.rechazado.h));
+        track += '<li class="' + cls + '"><span class="dot" aria-hidden="true">' + icon + '</span><div><b>Rechazado</b><small>' + when + '</small></div></li>';
+        return;
+      }
+      if (hit[s.e]){ cls = (i === idxNow && p.estado !== 'entregado' && p.estado !== 'rechazado') ? 'now' : 'ok'; icon = cls === 'ok' ? '✓' : String(i + 1); when = esc(hace(hit[s.e].h)); }
+      if (p.estado === 'aprobacion' && i === 1){ cls = 'now'; when = 'pendiente'; }
+      var sr = cls === 'ok' ? ' (completado)' : cls === 'now' ? ' (etapa actual)' : ' (pendiente)';
+      track += '<li class="' + cls + '"><span class="dot" aria-hidden="true">' + icon + '</span><div><b>' + s.n + '<span class="sr" style="position:absolute;left:-9999px">' + sr + '</span></b><small>' + when + '</small></div></li>';
+    });
+    track += '</ol>';
+    var appr = '';
+    if (p.estado === 'aprobacion') appr = '<p class="appr w"><b>Esperando al supervisor.</b>&nbsp;' + esc(p.motivo) + '. Suele resolverse en unas horas.</p>';
+    else if (p.estado === 'rechazado') appr = '<p class="appr x">' + esc(hit.rechazado.t) + '.</p>';
+    else if (p.motivo) appr = '<p class="appr o">Este pedido pasó por aprobación del supervisor: ' + esc(p.motivo.toLowerCase()) + '.</p>';
+
+    var rows = p.items.map(function(i){ return '<tr><td class="q num">' + i.cant + '</td><td>' + esc(i.producto) + '</td><td class="r num">' + money.format(i.cant * i.precio) + '</td></tr>'; }).join('');
+    var tf = '<tr><td></td><td>Subtotal</td><td class="r num">' + money.format(t.sub) + '</td></tr>';
+    if (t.desc) tf += '<tr><td></td><td>Descuento (' + Math.round(p.descuento * 100) + ' %)</td><td class="r num">−' + money.format(t.desc) + '</td></tr>';
+    tf += '<tr><td></td><td>IGV (18 %)</td><td class="r num">' + money.format(t.igv) + '</td></tr><tr class="t"><td></td><td>Total</td><td class="r num">' + money.format(t.total) + '</td></tr>';
+
+    var log = ev.slice().reverse().map(function(x){
+      var c = x.e === 'rechazado' ? 'x' : x.e === 'aprobacion' ? 'w' : '';
+      return '<li class="' + c + '">' + esc(x.t) + '<time datetime="' + at(x.h).toISOString() + '">' + esc(dfull.format(at(x.h))) + ' · ' + esc(hace(x.h)) + '</time></li>';
+    }).join('');
+
+    $('#view').innerHTML =
+      '<a class="back" href="#' + esc(p.cliente) + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Todos los pedidos de ' + esc(p.razon) + '</a>' +
+      '<article class="card" aria-labelledby="ped-t">' +
+        '<div class="ohead"><div class="id"><span>Pedido</span><h2 id="ped-t" tabindex="-1">' + esc(p.pedido) + '</h2><p>' + esc(p.razon) + ' · ' + esc(p.sede) + '</p><p style="margin-top:8px">' + badge(p.estado) + '</p></div>' + etaBox + '</div>' +
+        track + appr +
+        '<div class="cols">' +
+          '<section aria-labelledby="h-prod"><h3 id="h-prod">Productos</h3><table><thead><tr><th>Cant.</th><th>Producto</th><th class="r">Importe</th></tr></thead><tbody>' + rows + '</tbody><tfoot>' + tf + '</tfoot></table></section>' +
+          '<section aria-labelledby="h-ent"><h3 id="h-ent">Entrega</h3><dl class="kv"><dt>Dirección</dt><dd>' + esc(p.direccion) + '</dd><dt>Almacén</dt><dd>' + esc(p.sede) + '</dd><dt>Vendedor</dt><dd>' + esc(p.vendedor) + '</dd></dl>' +
+          '<h3>Historial</h3><ol class="log">' + log + '</ol></section>' +
+        '</div>' +
+      '</article>' +
+      '<p class="foot-note">El estado se actualiza desde la app de pedidos de los vendedores. En esta demo, los datos vienen de un archivo JSON y las fechas se calculan desde el momento en que abriste la página.</p>';
+    $('#ped-t').focus({preventScroll:false});
+  }
+
+  /* ---------- vista de un cliente ---------- */
+  var FILTROS = [
+    {id:'todos', n:'Todos', f:function(){ return true; }},
+    {id:'curso', n:'En curso', f:function(p){ return ['registrado','aprobado','preparacion','ruta'].indexOf(p.estado) >= 0; }},
+    {id:'aprob', n:'Por aprobar', f:function(p){ return p.estado === 'aprobacion'; }},
+    {id:'entreg', n:'Entregados', f:function(p){ return p.estado === 'entregado'; }},
+    {id:'rech', n:'Rechazados', f:function(p){ return p.estado === 'rechazado'; }}
+  ];
+  function showCliente(cod, list, filtro){
+    filtro = filtro || 'todos';
+    var c = list[0];
+    var enCurso = list.filter(FILTROS[1].f).length + list.filter(FILTROS[2].f).length;
+    var mes = list.filter(function(p){ return p.eventos[0].h > -30 * 24; }).reduce(function(s, p){ return p.estado === 'rechazado' ? s : s + totals(p).total; }, 0);
+    var fl = '<div class="filters" role="group" aria-label="Filtrar pedidos">' + FILTROS.map(function(f){
+      var n = list.filter(f.f).length;
+      return '<button type="button" data-f="' + f.id + '" aria-pressed="' + (f.id === filtro) + '"' + (n ? '' : ' disabled') + '>' + f.n + ' · ' + n + '</button>';
+    }).join('') + '</div>';
+    var fx = FILTROS.filter(function(f){ return f.id === filtro; })[0].f;
+    var items = list.filter(fx).map(function(p){
+      return '<li><a href="#' + esc(p.pedido) + '"><b>' + esc(p.pedido) + '</b><span class="when">' + esc(dfull.format(at(p.eventos[0].h))) + ' · ' + p.items.length + ' productos</span><span class="amt num">' + money.format(totals(p).total) + '</span>' + badge(p.estado) + '</a></li>';
+    }).join('');
+    $('#view').innerHTML =
+      '<section class="card" aria-labelledby="cli-t">' +
+        '<div class="chead"><div><p>Cliente ' + esc(cod) + ' · ' + esc(c.sede) + '</p><h2 id="cli-t" tabindex="-1">' + esc(c.razon) + '</h2><p>Vendedor: ' + esc(c.vendedor) + '</p></div>' +
+        '<div class="kpis"><div><b class="num">' + list.length + '</b><span>pedidos</span></div><div><b class="num">' + enCurso + '</b><span>en curso</span></div><div><b class="num">' + money.format(mes) + '</b><span>últimos 30 días</span></div></div></div>' +
+        fl + '<ul class="olist">' + (items || '<li class="loading">No hay pedidos con este filtro.</li>') + '</ul>' +
+      '</section>';
+    document.querySelectorAll('.filters button').forEach(function(b){
+      b.addEventListener('click', function(){ showCliente(cod, list, b.dataset.f); var nb = document.querySelector('.filters [data-f="' + b.dataset.f + '"]'); if (nb) nb.focus(); });
+    });
+    if (!filtro || filtro === 'todos') $('#cli-t').focus({preventScroll:false});
+  }
+
+  /* ---------- carga de datos ---------- */
+  fetch('pedidos.json', {cache:'no-store'})
+    .then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d){
+      DATA = d;
+      var ej = [d.pedidos[0].pedido, d.pedidos.filter(function(p){ return p.estado === 'aprobacion'; })[0].pedido, d.pedidos.filter(function(p){ return p.estado === 'rechazado'; })[0].pedido, 'C-3305'];
+      var tr = $('#tries');
+      ej.forEach(function(x){ var b = document.createElement('button'); b.type = 'button'; b.textContent = x; b.addEventListener('click', function(){ location.hash = x; }); tr.appendChild(b); });
+      route();
+    })
+    .catch(function(){
+      $('#view').innerHTML = '<div class="card empty-state"><b>No se pudieron cargar los pedidos</b>Si abriste el archivo directamente desde la carpeta, el navegador bloquea la lectura del JSON. Ábrelo con un servidor local (por ejemplo, Live Server en VS Code) o desde el portafolio publicado.</div>';
+    });
+})();
+</script>
+</body>
+</html>
