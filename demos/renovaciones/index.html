@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Nubetek · Renovaciones de licencias en Power BI</title>
+<meta name="description" content="Reporte en Power BI para un revendedor ficticio de licencias de software: gasto mensual, renovaciones, próximos vencimientos y concentración de clientes.">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0D1524; --surface:#131E32; --ink:#E9EEF5; --muted:#A3B1C4; --line:#22304A;
+  --pri:#17233A; --pri-dark:#09101C; --org:#F2B233; --org-ink:#F2B233;
+  --font:"Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55}
+h1,h2{margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+:focus-visible{outline:3px solid var(--org);outline-offset:2px;border-radius:4px}
+
+.demo-bar{background:var(--pri-dark);color:#A3B1C4;font-size:13.5px;padding:7px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:center}
+.demo-bar a{display:inline-flex;align-items:center;gap:6px;background:var(--org);color:#09101C;font-weight:800;text-decoration:none;padding:5px 12px;border-radius:6px}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 clamp(16px,3vw,32px)}
+header{background:var(--pri);color:#fff;padding:32px 0 36px;border-bottom:1px solid var(--line)}
+header .tag{color:#F2B233;font-size:13px;font-weight:700}
+header h1{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:800;margin:6px 0 10px}
+header p.lead{color:#C9D3E0;max-width:68ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.chip{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.12);color:#fff}
+
+main.wrap{padding-top:28px;padding-bottom:48px}
+.frame{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.frame .ratio{position:relative;width:100%;aspect-ratio:1280/755}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.frame .wait{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted)}
+.frame .wait b{display:block;color:var(--ink);font-size:1.05rem;margin-bottom:4px}
+.hint{font-size:13.5px;color:var(--muted);margin-top:10px}
+.mobile-note{display:none;background:#2A2416;color:#F5D58A;border-radius:8px;padding:10px 14px;font-size:14px;margin-bottom:14px}
+@media (max-width:720px){.mobile-note{display:block}}
+
+.pages{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:32px}
+.pages h2{grid-column:1/-1;font-size:1.25rem;font-weight:800;margin-bottom:-2px}
+.page{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.page b{display:block;font-size:15px;margin-bottom:4px}
+.page p{color:var(--muted);font-size:14px}
+.page p em{font-style:normal;color:var(--org);font-weight:700}
+
+.build{margin-top:32px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.build h2{grid-column:1/-1;font-size:1.25rem;font-weight:800;margin-bottom:-2px}
+.build ul{margin:0;padding:0 0 0 18px;display:grid;gap:4px}
+.build li::marker{color:var(--org)}
+.build .page{padding:18px 20px}
+footer.wrap{color:var(--muted);font-size:13px;padding-bottom:36px}
+</style>
+</head>
+<body>
+<div class="demo-bar">
+  <a href="../../index.html#proyectos"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>Volver al portafolio</a>
+  <span>Reporte en Power BI de un revendedor ficticio de licencias. Empresa, marcas, clientes y montos inventados. Leonardo Bazán</span>
+</div>
+
+<header>
+  <div class="wrap">
+    <span class="tag">Power BI · licencias de software</span>
+    <h1>Nubetek: renovaciones de licencias</h1>
+    <p class="lead">Junta 22 reportes mensuales de licencias en un solo historial y responde qué movió el gasto, quién deja de renovar y qué vence en los próximos meses. Los títulos del reporte cambian con los filtros y cuentan lo que muestran los datos.</p>
+    <div class="chips"><span class="chip">Power BI</span><span class="chip">Power Query</span><span class="chip">DAX</span><span class="chip">Deneb</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <p class="mobile-note">En el celular se ve mejor en horizontal o con el botón de pantalla completa del reporte.</p>
+  <div class="frame">
+    <div class="ratio" id="report">
+      <div class="wait"><div><b>El reporte se está publicando</b>Vuelve en unos minutos.</div></div>
+    </div>
+  </div>
+  <p class="hint">Usa el menú de la izquierda del reporte para cambiar de página y los filtros de año, ejecutivo y categoría.</p>
+
+  <section class="pages" aria-labelledby="pg">
+    <h2 id="pg">Qué responde cada página</h2>
+    <div class="page"><b>Resumen</b><p>Gasto mensual contra el año anterior y una cascada de lo que lo movió. <em>Sin las bajas, el gasto habría subido 21 %.</em></p></div>
+    <div class="page"><b>Renovaciones</b><p>Renovación por trimestre, por producto y por ejecutivo, contra el mismo periodo del año anterior. <em>Un producto pasa de 93 % a 29 %.</em></p></div>
+    <div class="page"><b>Vencimientos</b><p>Qué vence cada mes y un mapa de calor de cliente por mes para saber a quién llamar primero.</p></div>
+    <div class="page"><b>Clientes y productos</b><p>Concentración de la facturación y cambio de licencias por producto. <em>Un solo cliente es la cuarta parte del gasto.</em></p></div>
+  </section>
+
+  <section class="build" aria-labelledby="bd">
+    <h2 id="bd">Cómo está construido</h2>
+    <div class="page"><b>Carga de datos</b><ul><li>Power Query combina una carpeta de Excel mensuales</li><li>Limpia títulos y totales, y saca el periodo del nombre del archivo</li><li>Un archivo nuevo en la carpeta se suma al actualizar</li></ul></div>
+    <div class="page"><b>Medidas</b><ul><li>Renovación calculada desde las fotos mensuales, sin tabla de renovaciones</li><li>Cascada del gasto: clientes nuevos, más licencias, precio y bajas</li><li>Títulos dinámicos que se escriben según el filtro</li></ul></div>
+    <div class="page"><b>Diseño</b><ul><li>Tema oscuro propio y menú lateral con navegador de páginas</li><li>Mancuernas en Deneb y mapa de calor con formato condicional</li><li>Prototipo de las cuatro páginas antes de construirlas</li></ul></div>
+  </section>
+</main>
+
+<footer class="wrap">Datos generados para la demo: 22 reportes mensuales de licencias, de enero 2025 a octubre 2026.</footer>
+
+<script>
+// Pega aquí el enlace de "Publicar en la web" (el src del iframe que da Power BI).
+var EMBED_URL = 'https://app.powerbi.com/view?r=eyJrIjoiN2Q1NzgyNDAtMzlkZC00N2JlLThhOWEtMWRiOGEyNmJjODAyIiwidCI6Ijg3YTdjMThkLTc1ZWMtNDc1Ny1hYTcxLWQ0YmEzZDIyYWIzZSIsImMiOjR9';
+(function(){
+  if(!EMBED_URL) return;
+  var box = document.getElementById('report');
+  var f = document.createElement('iframe');
+  f.title = 'Reporte Nubetek de renovaciones en Power BI';
+  f.src = EMBED_URL;
+  f.loading = 'lazy';
+  f.allowFullscreen = true;
+  box.innerHTML = '';
+  box.appendChild(f);
+})();
+</script>
+</body>
+</html>
